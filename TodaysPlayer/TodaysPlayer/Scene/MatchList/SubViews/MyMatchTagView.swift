@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// 경기정보 태그 enum
-enum MatchTag: String {
+enum MatchInfoTag: String {
     case futsal = "풋살"
     case soccer = "축구"
     case deadline = "마감임박"
@@ -49,7 +49,7 @@ enum MatchTag: String {
 
 /// 경기정보 태그 스타일
 struct MatchTagStyle: ViewModifier {
-    var matchTag: MatchTag
+    var matchTag: MatchInfoTag
     
     func body(content: Content) -> some View {
         content
@@ -77,11 +77,11 @@ struct MyMatchTagView: View {
                     .matchTagStyle(tagType: matchInfo.matchType == .futsal ? .futsal : .soccer)
                 
                 #warning("데드라인 어떻게 설정할지 정해야함")
-                Text(MatchTag.deadline.rawValue)
+                Text(MatchInfoTag.deadline.rawValue)
                     .matchTagStyle(tagType: .deadline)
                 
                 if matchInfo.maxCount - matchInfo.applyCount == 1 {
-                    Text(MatchTag.lastOne.rawValue)
+                    Text(MatchInfoTag.lastOne.rawValue)
                         .matchTagStyle(tagType: .lastOne)
                 }
                 
