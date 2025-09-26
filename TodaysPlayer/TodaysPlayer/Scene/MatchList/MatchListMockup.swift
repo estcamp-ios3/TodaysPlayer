@@ -167,7 +167,7 @@ let mockMatchData: [MatchInfo] = [
     MatchInfo(
         matchId: "M010",
         matchType: .soccer,
-        applyStatus: .rejected, // 취소되거나 모집 미달로 가정
+        applyStatus: .rejected,
         matchLocation: "대구 수성구 스타디움",
         matchTitle: "평일 저녁 가볍게 즐길 팀 모집",
         matchTime: "19:30~21:30",
