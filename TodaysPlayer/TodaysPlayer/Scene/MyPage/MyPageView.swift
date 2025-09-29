@@ -10,8 +10,9 @@ import SwiftUI
 struct MyPageView: View {
     @AppStorage("profile_name") private var profileName: String = ""
     @AppStorage("profile_nickname") private var profileNickname: String = ""
-    @AppStorage("profile_position") private var profilePosition: String = "포지션 선택"
-    @AppStorage("profile_level") private var profileLevel: String = "실력 선택"
+    @AppStorage("profile_position") private var profilePosition: String = ""
+    @AppStorage("profile_level") private var profileLevel: String = ""
+    @AppStorage("profile_avatar") private var avatarData: Data?
     
     var body: some View {
         NavigationStack {
@@ -36,21 +37,28 @@ struct MyPageView: View {
                     ZStack(alignment: .topTrailing) {
                         RoundedRectangle(cornerRadius: 20)
                             .fill(Color(.systemGray6))
-                            .shadow(color: .black.opacity(0.04), radius: 1, x: 0, y: 2)
                         HStack(alignment: .center, spacing: 16) {
-                            Image(systemName: "person.crop.circle")
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 74, height: 74)
-                                .clipShape(Circle())
+                            Group {
+                                if let data = avatarData, let uiImage = UIImage(data: data) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                } else {
+                                    Image(systemName: "person.crop.circle.fill")
+                                        .resizable()
+                                        .scaledToFill()
+                                }
+                            }
+                            .frame(width: 74, height: 74)
+                            .clipShape(Circle())
                             VStack(alignment: .leading, spacing: 6) {
                                 HStack {
-                                    Text(profileName.isEmpty ? "프로필 미설정" : profileName)
+                                    Text(profileName)
                                         .font(.system(size: 20, weight: .bold))
                                     Text(profileNickname.isEmpty ? "별명 미설정" : profileNickname)
                                         .font(.system(size: 15, weight: .regular))
                                 }
-                                HStack(spacing: 10) {
+                                HStack(spacing: 11.5) {
                                     Text(profilePosition)
                                         .font(.caption)
                                         .padding(.horizontal, 5)
@@ -59,7 +67,7 @@ struct MyPageView: View {
                                         .cornerRadius(5)
                                     Text(profileLevel)
                                         .font(.caption)
-                                        .padding(.horizontal, 5)
+                                        .padding(.horizontal, 7)
                                         .padding(.vertical, 2)
                                         .background(Color(.systemGray5))
                                         .cornerRadius(5)
@@ -121,9 +129,15 @@ struct MyPageView: View {
 
                     // 메뉴 리스트
                     VStack(spacing: 12) {
-                        MyPageRowView(icon: "megaphone.fill", iconColor: .blue, title: "앱 공지사항", subtitle: "최신 공지사항 및 업데이트 정보")
-                        MyPageRowView(icon: "questionmark.circle.fill", iconColor: .green, title: "운영자에게 문의하기", subtitle: "궁금한 점이나 문제점을 문의하세요")
-                        MyPageRowView(icon: "shield.lefthalf.fill", iconColor: .purple, title: "개인정보 처리방침", subtitle: "개인정보 보호 정책 및 이용약관")
+                        NavigationLink(destination: AnnouncementView()) {
+                            MyPageRowView(icon: "megaphone.fill", iconColor: .blue, title: "앱 공지사항", subtitle: "최신 공지사항 및 업데이트 정보")
+                        }
+                        NavigationLink(destination: QuestionView()) {
+                            MyPageRowView(icon: "questionmark.circle.fill", iconColor: .green, title: "운영자에게 문의하기", subtitle: "궁금한 점이나 문제점을 문의하세요")
+                        }
+                        NavigationLink(destination: PersonalityView()) {
+                            MyPageRowView(icon: "shield.lefthalf.fill", iconColor: .purple, title: "개인정보 처리방침", subtitle: "개인정보 보호 정책 및 이용약관")
+                        }
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 32)
@@ -184,10 +198,10 @@ struct MyPageRowView: View {
         .padding()
         .background(Color.white)
         .cornerRadius(14)
-        .shadow(color: .black.opacity(0.01), radius: 1, x: 0, y: 1)
     }
 }
 
 #Preview {
     MyPageView()
 }
+
