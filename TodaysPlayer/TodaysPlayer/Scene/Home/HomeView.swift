@@ -17,9 +17,9 @@ struct HomeView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
-                    // 개발용 샘플 데이터 생성 버튼 (나중에 삭제)
 #if DEBUG
-                    sampleDataButton
+                    // 개발용 샘플 데이터 생성 버튼 (나중에 삭제)
+//                    sampleDataButton
 #endif
                     
                     // 다음 경기
@@ -29,11 +29,11 @@ struct HomeView: View {
                     )
                     .padding(.top, 24)
                     
-                            // 내 주변 가까운 매치
-                            NearbyMatchesCard(
-                                matches: viewModel.getNearbyMatches(),
-                                viewModel: viewModel
-                            )
+                    // 내 주변 가까운 매치
+                    NearbyMatchesCard(
+                        matches: viewModel.getNearbyMatches(),
+                        viewModel: viewModel
+                    )
                     
                     // 내 활동 통계
                     ActivityStatsCard()
