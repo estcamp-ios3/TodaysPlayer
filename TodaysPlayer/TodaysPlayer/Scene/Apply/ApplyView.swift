@@ -185,15 +185,17 @@ struct ApplyView: View {
                     // 주간 달력 추가
                     CalendarView(selectedDate: $selectedDate)
                         .frame(height: 200)
+                        .clipped()
                         .padding(.horizontal, 16)
-                        .padding(.bottom, 0)
+                        .padding(.bottom, -100)
                     
                     // 게시글 공고 스크롤뷰
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             // 스크롤 감지를 위한 투명한 뷰
                             Rectangle()
-                                .fill(Color.clear)
+                                .fill(Color.clear
+                                )
                                 .frame(height: 1)
                                 .id("top")
                                 .onAppear {
