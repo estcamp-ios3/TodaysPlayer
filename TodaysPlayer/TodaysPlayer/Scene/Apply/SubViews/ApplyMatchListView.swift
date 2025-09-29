@@ -14,7 +14,7 @@ struct ApplyMatchListView: View {
         LazyVStack(spacing: 16) {
             ForEach(matchList, id: \.matchId) { match in
                 NavigationLink(destination: ApplyMatchDetailView(matchInfo: match)) {
-                    MyMatchView(testMatchData: match)
+                    MyMatchView(matchInfo: match)
                 }
                 .buttonStyle(PlainButtonStyle()) // NavigationLink의 기본 파란색 제거
             }
