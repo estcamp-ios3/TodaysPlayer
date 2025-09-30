@@ -13,7 +13,11 @@ struct ApplyMatchListView: View {
     var body: some View {
         LazyVStack(spacing: 16) {
             ForEach(matchList, id: \.matchId) { match in
-                NavigationLink(destination: ApplyMatchDetailView(matchInfo: match)) {
+                NavigationLink(destination: ApplyMatchDetailView(
+                    matchInfo: match,
+                    postedMatchCase: .allMatches
+                    )
+                ) {
                     VStack(spacing: 20) {
                         MatchTagView(matchInfo: match, postedMatchCase: .allMatches)
                         
