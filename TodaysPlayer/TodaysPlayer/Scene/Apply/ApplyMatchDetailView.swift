@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - 메인 뷰
 struct ApplyMatchDetailView: View {
     let matchInfo: MatchInfo
+    let postedMatchCase: PostedMatchCase
     
     var body: some View {
         ScrollView {
@@ -50,7 +51,10 @@ struct ApplyMatchDetailView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            MatchActionButtonsView(matchInfo: matchInfo)
+            MatchActionButtonsView(
+                matchInfo: matchInfo,
+                postedMatchCase: postedMatchCase
+            )
         }
     }
 }
@@ -300,16 +304,21 @@ struct OrganizerInfoView: View {
 // MARK: - 하단 버튼 (참여신청하기)
 struct MatchActionButtonsView: View {
     let matchInfo: MatchInfo
+    let postedMatchCase: PostedMatchCase
+        
+    private var actionType: MatchActionType {
+        postedMatchCase.defaultActionType
+    }
     
     var body: some View {
         NavigationLink(
             destination: ApplyMatchView()
         ) {
-            Text("참여신청하기")
+            Text(actionType.title)
                 .font(.headline)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.green)
+                .background(actionType.backgroundColor)
                 .foregroundColor(.white)
                 .cornerRadius(12)
         }
