@@ -11,12 +11,13 @@ struct LoginView: View {
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var isLoggedIn: Bool = false
+
     
     var body: some View {
         NavigationView {
             ZStack {
                 Color.gray.opacity(0.1)
-                    .ignoresSafeArea()
+                    //.ignoresSafeArea()
                 
                 VStack(spacing: 30) {
                     // 앱 로고 및 브랜딩
@@ -70,7 +71,7 @@ struct LoginView: View {
                                     .padding(.trailing, 12)
                             }
                             .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                         
                         // 비밀번호 입력 필드
@@ -90,7 +91,7 @@ struct LoginView: View {
                                     .padding(.trailing, 12)
                             }
                             .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                         
                         // 로그인 버튼
@@ -104,7 +105,42 @@ struct LoginView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
                                 .background(Color.blue)
-                                .cornerRadius(8)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                        Button(action: {
+                            // 네이버 로그인 기능
+                        }) {
+                            HStack {
+                                Image(systemName: "n.circle.fill")
+                                    .font(.title2)
+                                    .foregroundColor(.white)
+                                
+                                Text("네이버로 로그인하기")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color.green)
+                            .cornerRadius(8)
+                        }
+                        
+                        Button(action: {
+                            // 인스타그램 로그인 기능
+                        }) {
+                            HStack {
+                                Image(systemName: "i.circle.fill")
+                                    .font(.title3)
+                                    .foregroundColor(.white)
+                                
+                                Text("인스타그램으로 로그인하기")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(Color.blue)
+                            .cornerRadius(8)
                         }
                         
                         // 비밀번호 찾기 링크
@@ -130,12 +166,12 @@ struct LoginView: View {
                                     RoundedRectangle(cornerRadius: 8)
                                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                                 )
-                                .cornerRadius(8)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
                     .padding(24)
                     .background(Color.white)
-                    .cornerRadius(16)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                     .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
                     .padding(.horizontal, 20)
                     
