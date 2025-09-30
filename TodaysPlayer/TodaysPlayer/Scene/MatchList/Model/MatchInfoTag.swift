@@ -15,7 +15,7 @@ protocol MatchInfoTag {
 }
  
 /// 경기타입 태그 enum
-enum MatchType: String, MatchInfoTag {
+enum MatchType: String, MatchInfoTag, CaseIterable {
     case futsal = "풋살"
     case soccer = "축구"
     
