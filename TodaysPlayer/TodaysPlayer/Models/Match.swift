@@ -1,4 +1,12 @@
+//
+//  Match.swift
+//  TodaysPlayer
+//
+//  Created by J on 10/1/25.
+//
+
 import Foundation
+import SwiftUI
 
 struct Match: Codable, Identifiable {
     let id: String
@@ -100,125 +108,29 @@ struct Match: Codable, Identifiable {
     }
 }
 
-struct MatchLocation: Codable {
-    let name: String
-    let address: String
-    let coordinates: Coordinates
-}
-
-struct Coordinates: Codable {
-    let latitude: Double
-    let longitude: Double
-}
-
-struct Apply: Codable, Identifiable {
-    let id: String
-    let matchId: String
-    let applicantId: String
-    let position: String?
-    let participantCount: Int
-    let message: String?
-    let status: String // "pending", "accepted", "rejected", "cancelled"
-    let rejectionReason: String?
-    let appliedAt: Date
-    let processedAt: Date?
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "applyId"
-        case matchId
-        case applicantId
-        case position
-        case participantCount
-        case message
-        case status
-        case rejectionReason
-        case appliedAt
-        case processedAt
-    }
-}
-
-struct Notification: Codable, Identifiable {
-    let id: String
-    let type: String // "application_received", "application_accepted", "application_rejected", "match_reminder", "match_cancelled"
-    let title: String
-    let message: String
-    let data: [String: String]? // Any 대신 String으로 변경
-    let isRead: Bool
-    let createdAt: Date
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "notificationId"
-        case type
-        case title
-        case message
-        case data
-        case isRead
-        case createdAt
-    }
-}
-
-struct Review: Codable, Identifiable {
-    let id: String
-    let matchId: String
-    let reviewerId: String
-    let revieweeId: String
-    let rating: Int // 1-5
-    let comment: String?
-    let createdAt: Date
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "reviewId"
-        case matchId
-        case reviewerId
-        case revieweeId
-        case rating
-        case comment
-        case createdAt
-    }
-}
-
-struct Favorite: Codable, Identifiable {
-    let id: String
-    let userId: String
-    let matchId: String
-    let createdAt: Date
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "favoriteId"
-        case userId
-        case matchId
-        case createdAt
-    }
-}
-
-struct RegionData: Codable, Identifiable {
-    let id: String
-    let name: String
-    let parentRegion: String?
-    let coordinates: Coordinates
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "regionId"
-        case name
-        case parentRegion
-        case coordinates
-    }
-}
-
-struct Announcement: Codable, Identifiable {
-    let id: String
-    let title: String
-    let content: String
-    let isImportant: Bool
-    let createdAt: Date
-    let updatedAt: Date
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "announcementId"
-        case title
-        case content
-        case isImportant
-        case createdAt
-        case updatedAt
+extension Match {
+    /// 매치에 대한 태그 생성
+    /// - Returns: 가격, 실력 레벨, 마감 임박 등에 따른 태그 배열
+    func createMatchTags() -> [MatchTag] {
+        var tags: [MatchTag] = []
+        
+        // 가격 태그
+        if self.price == 0 {
+            tags.append(MatchTag(text: "무료", color: .green, icon: "gift.fill"))
+        } else if self.price <= 5000 {
+            tags.append(MatchTag(text: "저렴", color: .blue, icon: "wonsign.circle.fill"))
+        }
+        
+        // 실력 레벨 태그
+        if self.skillLevel == "beginner" {
+            tags.append(MatchTag(text: "초보환영", color: .blue, icon: "person.fill"))
+        }
+        
+        // 마감 임박 태그 (임시)
+        if Int.random(in: 1...10) <= 3 {
+            tags.append(MatchTag(text: "마감임박", color: .orange, icon: "bolt.fill"))
+        }
+        
+        return tags
     }
 }

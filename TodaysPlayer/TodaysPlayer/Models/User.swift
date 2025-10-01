@@ -1,3 +1,10 @@
+//
+//  User.swift
+//  TodaysPlayer
+//
+//  Created by J on 10/1/25.
+//
+
 import Foundation
 
 struct User: Codable, Identifiable {
@@ -78,44 +85,4 @@ struct User: Codable, Identifiable {
         self.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         self.isActive = try container.decode(Bool.self, forKey: .isActive)
     }
-}
-
-struct UserStats: Codable {
-    let userId: String
-    let totalGames: Int
-    let averageRating: Double
-    let reviewCount: Int
-    let lastUpdated: Date
-}
-
-struct Team: Codable, Identifiable {
-    let id: String
-    let teamName: String
-    let description: String
-    let teamImageUrl: String?
-    let leaderId: String
-    let region: String
-    let skillLevel: String
-    let createdAt: Date
-    let isActive: Bool
-    
-    enum CodingKeys: String, CodingKey {
-        case id = "teamId"
-        case teamName
-        case description
-        case teamImageUrl
-        case leaderId
-        case region
-        case skillLevel
-        case createdAt
-        case isActive
-    }
-}
-
-struct TeamMember: Codable {
-    let teamId: String
-    let userId: String
-    let role: String // "leader", "member", "substitute"
-    let joinedAt: Date
-    let isActive: Bool
 }

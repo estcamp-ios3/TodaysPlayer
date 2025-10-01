@@ -141,8 +141,6 @@ extension LocationManager: CLLocationManagerDelegate {
         
         currentLocation = location
         errorMessage = nil
-        
-        print("위치 업데이트: \(location.coordinate.latitude), \(location.coordinate.longitude)")
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
