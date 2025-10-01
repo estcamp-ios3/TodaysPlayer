@@ -22,7 +22,7 @@ let mockMatchData: [MatchInfo] = [
         maxCount: 12,
         matchFee: 5000,
         genderLimit: "남성",
-        levelLimit: "초/중급",
+        levelLimit: "중급",
         imageURL: "url_001",
         postUserName: "용헌",
         rejectionReason: ""
@@ -94,7 +94,7 @@ let mockMatchData: [MatchInfo] = [
         maxCount: 10,
         matchFee: 3000,
         genderLimit: "남성",
-        levelLimit: "중/상급",
+        levelLimit: "상급",
         imageURL: "url_005",
         postUserName: "저가매치",
         rejectionReason: ""
@@ -156,6 +156,7 @@ let mockMatchData: [MatchInfo] = [
     
     // 9. 풋살 - 너만 오면 GO (10/10)
     MatchInfo(
+        
         matchId: 9,
         matchType: .futsal,
         applyStatus: .accepted,
@@ -184,7 +185,7 @@ let mockMatchData: [MatchInfo] = [
         maxCount: 20,
         matchFee: 4000,
         genderLimit: "무관",
-        levelLimit: "초/중급",
+        levelLimit: "초급",
         imageURL: "url_010",
         postUserName: "용병대모집",
         rejectionReason: "거절했어요"
