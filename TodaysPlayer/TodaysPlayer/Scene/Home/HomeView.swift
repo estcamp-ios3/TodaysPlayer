@@ -12,6 +12,7 @@ struct HomeView: View {
     @State private var isCreatingSampleData = false
     @State private var showSampleDataAlert = false
     @State private var sampleDataMessage = ""
+    @State private var hasAppeared = false  // 중복 로딩 방지
     
     var body: some View {
         NavigationView {
@@ -53,7 +54,16 @@ struct HomeView: View {
             }
         }
         .onAppear {
-            
+            // 중복 호출 방지
+            if hasAppeared == false {
+                hasAppeared = true
+                
+                Task {
+                    await viewModel.loadInitialData()
+                    // 홈 화면 진입 시 위치 권한 요청
+                    await viewModel.requestLocationPermission()
+                }
+            }
         }
         .alert("샘플 데이터 생성", isPresented: $showSampleDataAlert) {
             Button("확인") { }

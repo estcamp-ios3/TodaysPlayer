@@ -153,5 +153,3 @@ struct MatchItemView: View {
         tags: []
     )
 }
-
-
