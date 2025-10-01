@@ -68,6 +68,7 @@ struct ApplyMatchListView: View {
                     .background(Color(.systemBackground))
                     .cornerRadius(12)
                     .shadow(color: Color.primary.opacity(0.1), radius: 4, x: 0, y: 2)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(PlainButtonStyle())
             }
