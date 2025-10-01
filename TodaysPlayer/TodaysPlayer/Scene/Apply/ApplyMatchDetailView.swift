@@ -30,6 +30,9 @@ struct ApplyMatchDetailView: View {
                 // 상세 정보 섹션
                 MatchDetailInfoSection(matchInfo: matchInfo)
                 
+                // 상세 설명 섹션
+                MatchDescriptionSection(description: matchInfo.matchDescription)
+                
                 // 주의사항
                 WarningNoticeView()
                 
@@ -227,6 +230,25 @@ struct DetailRowView: View {
     }
 }
 
+// MARK: - 설명 섹션
+struct MatchDescriptionSection: View {
+    let description: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeaderView(title: "설명")
+            
+            Text(description)
+                .font(.body)
+                .foregroundColor(.primary)
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+        }
+    }
+}
+
 // MARK: - 주의사항
 struct WarningNoticeView: View {
     var body: some View {
@@ -245,16 +267,6 @@ struct WarningNoticeView: View {
             .padding()
             .background(Color.yellow.opacity(0.1))
             .cornerRadius(8)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("준비물:")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                
-                Text("• 풋살화 (축구화 권장)\n• 개인 음료\n• 수건")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
         }
     }
 }
