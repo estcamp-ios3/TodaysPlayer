@@ -1,3 +1,10 @@
+//
+//  Date+Extensions.swift
+//  TodaysPlayer
+//
+//  Created by J on 9/24/25.
+//
+
 import Foundation
 
 extension Date {
@@ -8,13 +15,13 @@ extension Date {
         let calendar = Calendar.current
         
         if calendar.isDateInToday(self) {
-            formatter.dateFormat = "HH:mm분"
+            formatter.dateFormat = "HH시mm분"
             return "오늘 \(formatter.string(from: self))"
         } else if calendar.isDateInTomorrow(self) {
-            formatter.dateFormat = "HH:mm분"
+            formatter.dateFormat = "HH시mm분"
             return "내일 \(formatter.string(from: self))"
         } else {
-            formatter.dateFormat = "MM/dd일  HH:mm분"
+            formatter.dateFormat = "MM월dd일  HH시mm분"
             return formatter.string(from: self)
         }
     }
@@ -22,14 +29,14 @@ extension Date {
     /// 간단한 시간 포맷팅 (HH:mm)
     func formatTime() -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
+        formatter.dateFormat = "HH시mm분"
         return formatter.string(from: self)
     }
     
     /// 간단한 날짜 포맷팅 (MM/dd)
     func formatDate() -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MM/dd"
+        formatter.dateFormat = "MM월dd일"
         return formatter.string(from: self)
     }
     
