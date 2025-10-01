@@ -89,6 +89,7 @@ struct ProfileEditView: View {
                                 Image(systemName: "person.crop.circle.fill")
                                     .resizable()
                                     .scaledToFill()
+                                    .foregroundStyle(Color(.green))
                             }
                         }
                         .frame(width: 100, height: 100)
@@ -168,6 +169,7 @@ struct ProfileEditView: View {
                         }
                         .padding(10)
                         .background(RoundedRectangle(cornerRadius: 8).fill(Color(.white)))
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.15), lineWidth: 1))
                     }
                 }
                 .padding()
@@ -200,7 +202,6 @@ struct ProfileEditView: View {
                             .pickerStyle(.menu)
                             .frame(maxWidth: .infinity, alignment: .center)
                             .background(RoundedRectangle(cornerRadius: 8).fill(Color(.systemGray5)))
-
                         }
                     }
                     VStack(alignment: .leading, spacing: 4) {
@@ -220,7 +221,7 @@ struct ProfileEditView: View {
                                         .foregroundColor(editPreferredTimes.contains(t) ? .white : .black)
                                         .padding(.vertical, 8)
                                         .padding(.horizontal, 12)
-                                        .background(editPreferredTimes.contains(t) ? Color(.black) : Color(.systemGray5))
+                                        .background(editPreferredTimes.contains(t) ? Color(.green) : Color(.systemGray5))
                                         .cornerRadius(8)
                                 }
                             }
