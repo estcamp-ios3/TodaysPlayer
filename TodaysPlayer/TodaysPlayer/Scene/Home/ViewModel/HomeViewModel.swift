@@ -42,13 +42,7 @@ class HomeViewModel {
     ]
     
     
-    init() {
-        Task {
-            await loadInitialData()
-            // 홈 화면 진입 시 위치 권한 요청
-            await requestLocationPermission()
-        }
-    }
+    init() { }
     
     
     @MainActor
