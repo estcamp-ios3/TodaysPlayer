@@ -26,6 +26,7 @@ struct MyPageView: View {
     // MARK: - State / ViewModel
     // 홈에서 재사용하는 프로모션 배너 뷰모델
     @State private var homeViewModel = HomeViewModel()
+    @State private var notifications: [String] = []
     
     // MARK: - Defaults (ProfileEditView와 동일한 기본값)
     private let defaultName: String = "홍길동"
@@ -70,7 +71,7 @@ struct MyPageView: View {
                 .font(.system(size: 26, weight: .bold))
             Spacer()
             HStack(spacing: 20) {
-                NavigationLink(destination: NotiView()) {
+                NavigationLink(destination: NotiView(notifications: $notifications)) {
                     Image(systemName: "bell")
                         .font(.system(size: 20))
                         .foregroundStyle(.black)
@@ -202,3 +203,4 @@ struct MyPageView: View {
 #Preview {
     MyPageView()
 }
+
