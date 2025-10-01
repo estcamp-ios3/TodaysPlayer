@@ -47,3 +47,8 @@ struct ParticipantSegmentControlView: View {
         }
     }
 }
+
+
+#Preview {
+    ParticipantSegmentControlView()
+}
