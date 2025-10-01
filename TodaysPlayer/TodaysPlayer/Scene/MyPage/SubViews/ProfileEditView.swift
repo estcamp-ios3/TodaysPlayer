@@ -109,7 +109,7 @@ struct ProfileEditView: View {
                         .foregroundColor(.gray)
                 }
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemGray6)))
+                .background(RoundedRectangle(cornerRadius: 16).fill(Color(.white)))
                 
                 // 기본 정보
                 VStack(alignment: .leading, spacing: 16) {
@@ -171,7 +171,7 @@ struct ProfileEditView: View {
                     }
                 }
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemGray6)))
+                .background(RoundedRectangle(cornerRadius: 14).fill(Color(.white)))
                 
                 // 축구/풋살 정보
                 VStack(alignment: .leading, spacing: 16) {
@@ -235,12 +235,12 @@ struct ProfileEditView: View {
                     }
                 }
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 16).fill(Color(.systemGray6)))
+                .background(RoundedRectangle(cornerRadius: 16).fill(Color(.white)))
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
-        .background(Color(.systemBackground).ignoresSafeArea())
+        .background(Color.gray.opacity(0.1).ignoresSafeArea())
         .navigationTitle("프로필 편집")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
