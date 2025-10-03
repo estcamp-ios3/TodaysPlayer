@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ParticipantListView: View {
     @State private var viewModel = ParticipantListViewModel()
-    
+    @State private var selectedStatus: ApplyStatus = .standby
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -17,8 +18,11 @@ struct ParticipantListView: View {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 10) {
-                    ParticipantSegmentControlView { status in
-                        viewModel.fetchParticipantDatas(status: status)
+                    ParticipantSegmentControlView(
+                        categories: ApplyStatus.allCases.map({$0.rawValue}),
+                        initialSelection: viewModel.selectedStatus.rawValue
+                    ) { status in
+                        viewModel.fetchParticipantDatas(status: ApplyStatus(rawValue: status) ?? .standby)
                     }
                     
                     ScrollView {

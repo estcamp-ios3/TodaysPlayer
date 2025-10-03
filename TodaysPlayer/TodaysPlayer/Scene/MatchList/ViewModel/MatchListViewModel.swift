@@ -10,14 +10,15 @@ import SwiftUI
 @Observable
 final class MatchListViewModel {
     var matchListDatas: [MatchInfo] = mockMatchData.filter { $0.postUserName != "용헌" }
+    var matchListType: [String] = ["신청한 경기", "내가 모집중인 경기", "종료된 경기"]
     var myName: String = "용헌"
     var postedMatchCase: PostedMatchCase = .appliedMatch
     
     
     /// 매치 데이터 불러오기
     /// - Parameter selectedIndex: 내가 신청한 매치(0) / 내가 작성한 매치(1)
-    func fetchMatchListDatas(selectedIndex: Int) {
-        if selectedIndex == 0 {
+    func fetchMatchListDatas(selectedIndex: String) {
+        if selectedIndex == matchListType[0] {
             // 신청한 경기 필터링
             matchListDatas = mockMatchData.filter { $0.postUserName != "용헌" }
             postedMatchCase = .appliedMatch

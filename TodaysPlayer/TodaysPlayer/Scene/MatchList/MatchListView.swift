@@ -20,12 +20,16 @@ struct MatchListView: View {
                     Text("나의 매치 관리")
                         .font(.title)
                         .bold()
-                    
-                    MyListSegmentedControl(preselectedIndex: 0) {
-                        viewModel.fetchMatchListDatas(selectedIndex: $0)
-                    }
+                        .padding(.horizontal, 20)
+
+                    ParticipantSegmentControlView(
+                        categories: viewModel.matchListType,
+                        initialSelection: viewModel.matchListType.first ?? "신청한 경기") {
+                            viewModel.fetchMatchListDatas(selectedIndex: $0)
+                        }
                     
                     MatchDashboardView()
+                        .padding(.horizontal, 20)
                     
                     ScrollView {
                         LazyVStack(spacing: 16) {
@@ -50,9 +54,13 @@ struct MatchListView: View {
                         }
                         .padding(.vertical)
                     }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
             }
         }
     }
+}
+
+#Preview {
+    MatchListView()
 }

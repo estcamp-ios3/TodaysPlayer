@@ -8,30 +8,42 @@
 import SwiftUI
 
 struct ParticipantSegmentControlView: View {
-    let categories: [ApplyStatus] = ApplyStatus.allCases
+    let categories: [String]
+    @State private var selectedStatus: String
     
-    @State private var selectedStatus: ApplyStatus = .standby
+    @Namespace private var underlineNamespace
     
-    @Namespace private var namespace2
+    var onSelectionChanged: ((String) -> Void)? = nil
     
-    var onSelectionChanged: ((ApplyStatus) -> Void)? = nil
+    init(categories: [String],
+         initialSelection: String,
+         onSelectionChanged: ((String) -> Void)? = nil
+    ) {
+        self.categories = categories
+        _selectedStatus = State(initialValue: initialSelection)
+        self.onSelectionChanged = onSelectionChanged
+    }
     
     var body: some View {
         VStack {
             HStack {
                 ForEach(categories, id: \.self) { status in
                     ZStack(alignment: .bottom) {
-                        if selectedStatus == status {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.green.opacity(0.5))
-                                .matchedGeometryEffect(id: "categoryBack", in: namespace2)
-                                .frame(width: 50, height: 3)
-                                .offset(y: 10)
-                        }
-                        
-                        Text(status.rawValue)
+                        Text(status)
                             .foregroundColor(selectedStatus == status ? .green : .gray)
                             .font(.headline)
+                            .overlay(
+                                VStack {
+                                    if selectedStatus == status {
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(Color.green.opacity(0.5))
+                                            .frame(height: 3)
+                                            .matchedGeometryEffect(id: "underline", in: underlineNamespace)
+                                            .offset(y: 10)
+                                    }
+                                },
+                                alignment: .bottom
+                            )
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 55)
@@ -43,7 +55,6 @@ struct ParticipantSegmentControlView: View {
                     }
                 }
             }
-            .padding()
         }
     }
 }
