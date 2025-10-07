@@ -16,7 +16,7 @@ struct ApplyMatchDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // 기존 MatchTagView 재사용
-                MatchTagView(matchInfo: matchInfo, postedMatchCase: .allMatches)
+                MatchTagView(info: matchInfo, matchCase: .allMatches)
                 
                 // 헤더
                 MatchDetailHeaderView(

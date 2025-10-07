@@ -11,42 +11,44 @@ import Combine
 @Observable
 final class MatchListViewModel {
     var matchListDatas: [MatchInfo] = mockMatchData.filter { $0.postUserName != "용헌" }
-    var matchListType: [String]
-    var appliedMatchType: [String] = ApplyStatus.allCases.map { $0.filterTitle }
-    var myName: String = "용헌"
+    var myMatchSegmentTitles: [String]
+    
     var postedMatchCase: PostedMatchCase = .appliedMatch
     
-    var selectedMatchType: ApplyStatus = .allType {
+    var filteringButtonTypes: [MatchFilter]
+    var selectedFilterButton: MatchFilter = .applied(.all) {
         didSet {
-            print(selectedMatchType)
-            filteringAppliedMatchType(selectedMatchType.rawValue)
+            print(selectedFilterButton)
         }
     }
     
     init(){
-        self.matchListType = PostedMatchCase.allCases
+        self.myMatchSegmentTitles = PostedMatchCase.allCases
             .map { $0.rawValue }
             .filter { $0 != PostedMatchCase.allMatches.rawValue }
+        
+        self.filteringButtonTypes = AppliedMatch.allCases.map { MatchFilter.applied($0) }
         
         fetchMatchListDatas(selectedType: .appliedMatch)
     }
 
     /// 매치 데이터 불러오기
-    /// - Parameter selectedIndex: 내가 신청한 매치(0) / 내가 모집중인 매치(1) / 종료된 경기
+    /// - 상위 세그먼트 (신청한 경기, 내가 모집중인 경기, 종료된 경기) 별로 다른 데이터를 불러와야함
+    /// - 하위 필터링 버튼을 통해 불러온 데이터를 필터링
     func fetchMatchListDatas(selectedType: PostedMatchCase) {
         switch selectedType {
         case .appliedMatch:
-            appliedMatchType = ApplyStatus.allCases.map { $0.filterTitle }
+            filteringButtonTypes = MatchFilter.appliedCases
             matchListDatas = mockMatchData.filter { $0.postUserName != "용헌" }
             postedMatchCase = .appliedMatch
         case .myRecruitingMatch:
             let tempDatas: [MatchInfo] = [mockMatchData.first!]
             // 모집중인 경기 필터링
-            appliedMatchType = []
+            filteringButtonTypes = []
             matchListDatas = tempDatas
             postedMatchCase = .myRecruitingMatch
         case .finishedMatch:
-            appliedMatchType = ["전체", "참여한 경기", "모집한 경기"]
+            filteringButtonTypes = MatchFilter.finishedCases
             postedMatchCase = .allMatches
             
         default: break
@@ -57,20 +59,5 @@ final class MatchListViewModel {
     /// 신청한 매치 삭제
     func deleteAppliedMatch(matchId: Int) {
         matchListDatas.removeAll { $0.matchId == matchId }
-    }
-    
-    func filteringAppliedMatchType(_ type: String) {
-
-        
-        
-        let filteredType = ApplyStatus(filterTitle: type)
-
-
-        if filteredType == .allType {
-            matchListDatas = mockMatchData
-        }else {
-            matchListDatas = mockMatchData.filter { $0.applyStatus == filteredType }
-        }
-
     }
 }

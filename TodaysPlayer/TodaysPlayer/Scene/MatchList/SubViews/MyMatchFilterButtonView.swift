@@ -9,24 +9,24 @@ import SwiftUI
 
 
 /// MatchList DashBoard Component
-struct MatchDashboardComponentView: View {
-    var buttonTitle: String
-    @Binding var selectedTitle: ApplyStatus
-    
+struct MatchDashboardComponentView<T: MatchFilterType>: View {
+    var buttonType: T
+    @Binding var selectedTitle: T
+
     var body: some View {
         Button {
-            selectedTitle = ApplyStatus(filterTitle: buttonTitle)
+            selectedTitle = buttonType
         } label: {
-            Text(buttonTitle)
+            Text(buttonType.title)
                 .foregroundStyle(.black)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
-                .background(selectedTitle.filterTitle == buttonTitle ? .green.opacity(0.1) : .gray.opacity(0.2))
+                .background(selectedTitle == buttonType ? .green.opacity(0.1) : .gray.opacity(0.2))
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .overlay {
                     RoundedRectangle(cornerRadius: 20)
                         .strokeBorder(
-                            selectedTitle.filterTitle == buttonTitle ? Color.green.opacity(0.8) : Color.gray.opacity(0.8),
+                            selectedTitle == buttonType ? Color.green.opacity(0.8) : Color.gray.opacity(0.8),
                             lineWidth: 2
                         )
                 }
@@ -36,23 +36,26 @@ struct MatchDashboardComponentView: View {
 
 
 
+
 /// MatchList DashBoard
 /// - 나의 매치 필터링 버튼
 /// 클로져달기
-struct MyMatchFilterButtonView: View {
-    var titles: [String]
-    @Binding var selectedTitle: ApplyStatus
-        
+struct MyMatchFilterButtonView<T: MatchFilterType>: View {
+    var filterTypes: [T]
+    @Binding var selectedFilter: T
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .center, spacing: 10) {
-                ForEach(titles, id: \.self) { title in
+                ForEach(filterTypes, id: \.self) { type in
                     MatchDashboardComponentView(
-                        buttonTitle: title,
-                        selectedTitle: $selectedTitle
+                        buttonType: type,
+                        selectedTitle: $selectedFilter
                     )
                 }
             }
+            .padding(.horizontal)
         }
     }
 }
+

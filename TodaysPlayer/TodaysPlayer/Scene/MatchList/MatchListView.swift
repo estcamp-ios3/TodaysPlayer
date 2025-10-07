@@ -23,14 +23,14 @@ struct MatchListView: View {
                         .padding(.horizontal, 20)
 
                     ParticipantSegmentControlView(
-                        categories: viewModel.matchListType,
-                        initialSelection: viewModel.matchListType.first ?? "신청한 경기") {
+                        categories: viewModel.myMatchSegmentTitles,
+                        initialSelection: viewModel.myMatchSegmentTitles.first ?? "신청한 경기") {
                             viewModel.fetchMatchListDatas(selectedType: $0)
                         }
                     
                     MyMatchFilterButtonView(
-                        titles: viewModel.appliedMatchType,
-                        selectedTitle: $viewModel.selectedMatchType
+                        filterTypes: viewModel.filteringButtonTypes,
+                        selectedFilter: $viewModel.selectedFilterButton
                     )
                         .padding(.horizontal, 10)
                     
@@ -38,13 +38,7 @@ struct MatchListView: View {
                         LazyVStack(spacing: 16) {
                             ForEach(viewModel.matchListDatas, id: \.self) { match in
                                 VStack(spacing: 20) {
-                                    MatchTagView(
-                                        matchInfo: match,
-                                        postedMatchCase: viewModel.postedMatchCase,
-                                    ) {
-                                        viewModel.deleteAppliedMatch(matchId: $0)
-                                    }
-                                            
+                                    MatchTagView(info: match, matchCase: viewModel.postedMatchCase)
                                     MatchInfoView(
                                         matchInfo: match,
                                         postedMatchCase: viewModel.postedMatchCase
@@ -62,8 +56,4 @@ struct MatchListView: View {
             }
         }
     }
-}
-
-#Preview {
-    MatchListView()
 }

@@ -60,7 +60,7 @@ struct ApplyMatchListView: View {
                     )
                 ) {
                     VStack(spacing: 20) {
-                        MatchTagView(matchInfo: match, postedMatchCase: .allMatches)
+                        MatchTagView(info: match, matchCase: .allMatches)
                         
                         MatchInfoView(matchInfo: match, postedMatchCase: .allMatches)
                     }
