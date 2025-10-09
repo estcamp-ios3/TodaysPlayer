@@ -41,7 +41,8 @@ struct MatchListView: View {
                                     MatchTagView(info: match, matchCase: viewModel.postedMatchCase)
                                     MatchInfoView(
                                         matchInfo: match,
-                                        postedMatchCase: viewModel.postedMatchCase
+                                        postedMatchCase: viewModel.postedMatchCase,
+                                        userName: "용헌"
                                     )
                                 }
                                 .padding()

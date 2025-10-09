@@ -49,7 +49,7 @@ final class MatchListViewModel {
             postedMatchCase = .myRecruitingMatch
         case .finishedMatch:
             filteringButtonTypes = MatchFilter.finishedCases
-            postedMatchCase = .allMatches
+            postedMatchCase = .finishedMatch
             
         default: break
             

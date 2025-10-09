@@ -62,7 +62,7 @@ struct ApplyMatchListView: View {
                     VStack(spacing: 20) {
                         MatchTagView(info: match, matchCase: .allMatches)
                         
-                        MatchInfoView(matchInfo: match, postedMatchCase: .allMatches)
+                        MatchInfoView(matchInfo: match, postedMatchCase: .allMatches, userName: "용헌")
                     }
                     .padding(16)
                     .background(Color(.systemBackground))
