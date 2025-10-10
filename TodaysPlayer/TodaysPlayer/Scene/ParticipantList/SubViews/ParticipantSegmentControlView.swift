@@ -34,13 +34,12 @@ struct ParticipantSegmentControlView: View {
                             .font(.headline)
                             .overlay(
                                 VStack {
-                                    if selectedStatus == status {
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color.green.opacity(0.5))
-                                            .frame(height: 3)
-                                            .matchedGeometryEffect(id: "underline", in: underlineNamespace)
-                                            .offset(y: 10)
-                                    }
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color.green.opacity(0.5))
+                                        .frame(height: 3)
+                                        .matchedGeometryEffect(id: "underline", in: underlineNamespace)
+                                        .offset(y: 10)
+                                        .visible(selectedStatus == status)
                                 },
                                 alignment: .bottom
                             )

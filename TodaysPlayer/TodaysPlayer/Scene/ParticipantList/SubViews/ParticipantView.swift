@@ -42,44 +42,45 @@ struct ParticipantView: View {
                 }
             }
             
-            if participantData.status != .accepted {
-                VStack(alignment: .leading, spacing: 4) {
-                    if participantData.status == .rejected {
-                        Text("거절사유")
-                            .foregroundStyle(Color.gray.opacity(0.5))
-                    }
-                    
-                    Text(participantData.rejectionReason ?? "없음")
-                }
-                .modifier(DescriptionTextStyle())
-                .padding(.top, 20)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("거절사유")
+                    .foregroundStyle(Color.gray.opacity(0.5))
+                    .visible(participantData.status == .rejected)
+                
+                
+                Text(participantData.rejectionReason ?? "없음")
             }
+            .modifier(DescriptionTextStyle())
+            .padding(.top, 20)
+            .visible(participantData.status != .accepted)
+            
             
             // 대기중의 경우 버튼 활성화
-            if participantData.status == .standby {
-                Divider()
-                
-                HStack(spacing: 10) {
-                    Button("거절") {
-                        viewModel.isShowRejectSheet = true
-                        viewModel.selectedPersonInfo = participantData
-                    }
-                    .foregroundStyle(Color.gray)
-                    .frame(maxWidth: .infinity, minHeight: 30)
-                    
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.5))
-                        .frame(width: 1)
-                    
-                    Button("수락") {
-                        viewModel.isShowAcceptAlert = true
-                        viewModel.selectedPersonInfo = participantData
-                    }
-                    .foregroundStyle(Color.green)
-                    .frame(maxWidth: .infinity)
+            Divider()
+                .visible(participantData.status == .standby)
+            
+            HStack(spacing: 10) {
+                Button("거절") {
+                    viewModel.isShowRejectSheet = true
+                    viewModel.selectedPersonInfo = participantData
                 }
+                .foregroundStyle(Color.gray)
+                .frame(maxWidth: .infinity, minHeight: 30)
                 
+                Rectangle()
+                    .fill(Color.gray.opacity(0.5))
+                    .frame(width: 1)
+                
+                Button("수락") {
+                    viewModel.isShowAcceptAlert = true
+                    viewModel.selectedPersonInfo = participantData
+                }
+                .foregroundStyle(Color.green)
+                .frame(maxWidth: .infinity)
             }
+            .visible(participantData.status == .standby)
+            
+            
         }
         
     }
