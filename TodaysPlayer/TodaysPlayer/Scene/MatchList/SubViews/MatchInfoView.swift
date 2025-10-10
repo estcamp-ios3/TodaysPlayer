@@ -99,8 +99,11 @@ struct MatchInfoView: View {
             }
             .visible(postedMatchCase != .myRecruitingMatch)
             
-            Button("참여자 평가하기") {
-                print("평가데스")
+            
+            NavigationLink {
+                PlayerRatingView(viewModel: PlayerRatingViewModel(matchInfo: matchInfo))
+            } label: {
+                Text("참여자 평가하기")
             }
             .visible(postedMatchCase == .finishedMatch && matchInfo.postUserName == userName)
         }
