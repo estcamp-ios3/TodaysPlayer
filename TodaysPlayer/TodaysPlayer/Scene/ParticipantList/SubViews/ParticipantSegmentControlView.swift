@@ -13,11 +13,11 @@ struct ParticipantSegmentControlView: View {
     
     @Namespace private var underlineNamespace
     
-    var onSelectionChanged: ((PostedMatchCase) -> Void)? = nil
+    var onSelectionChanged: ((String) -> Void)? = nil
     
     init(categories: [String],
          initialSelection: String,
-         onSelectionChanged: ((PostedMatchCase) -> Void)? = nil
+         onSelectionChanged: ((String) -> Void)? = nil
     ) {
         self.categories = categories
         _selectedStatus = State(initialValue: initialSelection)
@@ -25,36 +25,35 @@ struct ParticipantSegmentControlView: View {
     }
     
     var body: some View {
-        VStack {
-            HStack {
-                ForEach(categories, id: \.self) { status in
-                    ZStack(alignment: .bottom) {
-                        Text(status)
-                            .foregroundColor(selectedStatus == status ? .green : .gray)
-                            .font(.headline)
-                            .overlay(
-                                VStack {
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(Color.green.opacity(0.5))
-                                        .frame(height: 3)
-                                        .matchedGeometryEffect(id: "underline", in: underlineNamespace)
-                                        .offset(y: 10)
-                                        .visible(selectedStatus == status)
-                                },
-                                alignment: .bottom
-                            )
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 55)
-                    .onTapGesture {
-                        withAnimation(.spring()) {
-                            selectedStatus = status
-                            guard let title = PostedMatchCase(rawValue: selectedStatus) else { return }
-                            onSelectionChanged?(title)
-                        }
+        HStack {
+            ForEach(categories, id: \.self) { status in
+                ZStack(alignment: .bottom) {
+                    Text(status)
+                        .foregroundColor(selectedStatus == status ? .green : .gray)
+                        .font(.footnote)
+                        .overlay(
+                            VStack {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(Color.green.opacity(0.5))
+                                    .frame(height: 3)
+                                    .matchedGeometryEffect(id: "underline", in: underlineNamespace)
+                                    .offset(y: 10)
+                                    .visible(selectedStatus == status)
+                            },
+                            alignment: .bottom
+                        )
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 55)
+                .onTapGesture {
+                    withAnimation(.spring()) {
+                        selectedStatus = status
+                        onSelectionChanged?(selectedStatus)
                     }
                 }
             }
         }
+        
+        
     }
 }

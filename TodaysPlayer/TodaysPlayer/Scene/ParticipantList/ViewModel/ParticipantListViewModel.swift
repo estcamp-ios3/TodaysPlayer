@@ -10,6 +10,7 @@ import Foundation
 
 @Observable
 final class ParticipantListViewModel {
+    let matchID: Int
     var participantDatas: [ParticipantEntity]
     
     var selectedStatus: ApplyStatus = .standby
@@ -20,13 +21,15 @@ final class ParticipantListViewModel {
     
     var toastManager: ToastMessageManager = ToastMessageManager()
     
-    init(){
+    init(matchID: Int){
+        self.matchID = matchID
         self.participantDatas = mockParticipants.filter { $0.status == .standby }
     }
     
     /// 신청자 정보 가져오기
-    func fetchParticipantDatas(status: ApplyStatus){
-        participantDatas = mockParticipants.filter { $0.status == status }
+    func fetchParticipantDatas(type: String){
+        guard let type = ApplyStatus(rawValue: type) else { return }
+        participantDatas = mockParticipants.filter { $0.status == type }
     }
     
     /// 신청 수락 / 거절

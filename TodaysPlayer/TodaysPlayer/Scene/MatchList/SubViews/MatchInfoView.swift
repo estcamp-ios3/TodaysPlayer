@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MatchInfoDetailView: View {
     let matchInfo: MatchInfo
-
+    
     var body: some View {
         // 시간
         HStack {
@@ -68,11 +68,12 @@ struct MatchInfoView: View {
     let matchInfo: MatchInfo
     let postedMatchCase: PostedMatchCase
     let userName: String
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // 제목
             Text(matchInfo.matchTitle)
+                .foregroundStyle(Color.black)
                 .font(.headline)
                 .bold()
             
@@ -81,7 +82,7 @@ struct MatchInfoView: View {
             
             Text("경기 주최자의 거절사유입니다.")
                 .visible(matchInfo.applyStatus == .rejected)
-
+            
             Text(matchInfo.rejectionReason)
                 .modifier(DescriptionTextStyle())
                 .visible(matchInfo.applyStatus == .rejected)
@@ -107,6 +108,8 @@ struct MatchInfoView: View {
             }
             .visible(postedMatchCase == .finishedMatch && matchInfo.postUserName == userName)
         }
+        .foregroundStyle(Color.black)
+        
     }
 }
 

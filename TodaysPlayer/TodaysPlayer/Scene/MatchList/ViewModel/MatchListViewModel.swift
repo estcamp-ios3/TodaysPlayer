@@ -29,14 +29,15 @@ final class MatchListViewModel {
         
         self.filteringButtonTypes = AppliedMatch.allCases.map { MatchFilter.applied($0) }
         
-        fetchMatchListDatas(selectedType: .appliedMatch)
+        fetchMatchListDatas(selectedType: PostedMatchCase.allMatches.rawValue)
     }
 
     /// 매치 데이터 불러오기
     /// - 상위 세그먼트 (신청한 경기, 내가 모집중인 경기, 종료된 경기) 별로 다른 데이터를 불러와야함
     /// - 하위 필터링 버튼을 통해 불러온 데이터를 필터링
-    func fetchMatchListDatas(selectedType: PostedMatchCase) {
-        switch selectedType {
+    func fetchMatchListDatas(selectedType: String) {
+        guard let type = PostedMatchCase(rawValue: selectedType) else { return }
+        switch type {
         case .appliedMatch:
             filteringButtonTypes = MatchFilter.appliedCases
             matchListDatas = mockMatchData.filter { $0.postUserName != "용헌" }

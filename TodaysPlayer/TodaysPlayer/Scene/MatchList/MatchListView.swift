@@ -37,17 +37,25 @@ struct MatchListView: View {
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             ForEach(viewModel.matchListDatas, id: \.self) { match in
-                                VStack(spacing: 20) {
-                                    MatchTagView(info: match, matchCase: viewModel.postedMatchCase)
-                                    MatchInfoView(
+                                NavigationLink(
+                                    destination: ApplyMatchDetailView(
                                         matchInfo: match,
-                                        postedMatchCase: viewModel.postedMatchCase,
-                                        userName: "용헌"
-                                    )
-                                }
-                                .padding()
-                                .background(Color.white)
-                                .cornerRadius(12)
+                                        postedMatchCase: viewModel.postedMatchCase
+                                    )) {
+                                        VStack(spacing: 20) {
+                                            MatchTagView(info: match, matchCase: viewModel.postedMatchCase)
+                                            MatchInfoView(
+                                                matchInfo: match,
+                                                postedMatchCase: viewModel.postedMatchCase,
+                                                userName: "용헌"
+                                            )
+                                        }
+                                        .padding()
+                                        .background(Color.white)
+                                        .cornerRadius(12)
+                                        
+                                    }
+                                
                             }
                         }
                         .padding(.vertical)
