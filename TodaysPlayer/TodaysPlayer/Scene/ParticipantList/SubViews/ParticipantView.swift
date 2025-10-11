@@ -13,34 +13,41 @@ struct ParticipantView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10){
-            HStack {
-                Image(systemName: "star.fill")
-                    .frame(width: 50, height: 50, alignment: .center)
-                    .foregroundStyle(Color.green)
-                    .background(Color.gray.opacity(0.2))
-                    .clipShape(Circle())
-                
-                
-                VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .center, spacing: 10) {
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40)
+                    .foregroundColor(.gray)
+                    
+
+                VStack(alignment: .leading, spacing: 8) {
                     Text("\(participantData.userName)(\(participantData.userNickName))")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    HStack {
+                        .font(.headline)
+
+                    HStack(spacing: 6) {
                         Text(participantData.userPosition)
-                            .padding(.all, 5)
-                            .background(Color.gray)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                        
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.gray.opacity(0.3))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+
                         Text(participantData.userLevel)
-                            .padding(.all, 5)
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
                             .background(Color.gray.opacity(0.2))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                        
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-                    
-                    Text(participantData.appliedDate + " 신청")
+
+                    Text("\(participantData.appliedDate) 신청")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("거절사유")

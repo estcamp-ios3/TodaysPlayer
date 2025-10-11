@@ -19,13 +19,14 @@ struct PlayerRatingView: View {
             // 종료된 매치 정보
             VStack(alignment: .leading) {
                 FinishedMatchView(matchInfo: viewModel.matchInfo)
+                    .padding()
                 
                 // 매치에 참여한 참가자 목록
                 Text("참여자 목록")
                     .font(.headline)
                     .padding(.leading, 12)
                 
-                List(viewModel.participatedUsers, id: \.id) { user in
+                List(viewModel.participatedUsers, id: \.self) { user in
                     VStack(alignment: .leading, spacing: 12) {
                         ParticipatedPlayerInfoView(userInfo: user, viewModel: viewModel)
                         
@@ -44,13 +45,17 @@ struct PlayerRatingView: View {
                 .padding()
                 .scrollContentBackground(.hidden)
                 
-                Button("평가 완료") {
-                    
+                Button(action: {
+                    print("평가완료 탭")
+                }) {
+                    Text("평가 완료")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .foregroundColor(.white)
+                        .background(Color.green)
+                        .cornerRadius(12)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.green)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.top, 8)
+                .padding(.horizontal)
             }
         }
         .navigationTitle("참여자 평가하기")
