@@ -297,7 +297,7 @@ struct MatchActionButtonsViewForMatch: View {
     
     var body: some View {
         NavigationLink(
-            destination: ApplyMatchView()
+            destination: ApplyMatchView(match: match)
         ) {
             Text(actionType.title)
                 .font(.headline)

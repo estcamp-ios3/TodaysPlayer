@@ -365,14 +365,16 @@ struct MatchActionButtonsView: View {
     }
     
     var body: some View {
-        NavigationLink(
-            destination: ApplyMatchView()
-        ) {
+        // 임시: 버튼을 일반 버튼으로 변경하고 알림 표시
+        Button(action: {
+            print("⚠️ MatchInfo를 사용하는 목업 화면입니다")
+            print("⚠️ 실제 신청은 FirebaseMatchListView에서 가능합니다")
+        }) {
             Text(actionType.title)
                 .font(.headline)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(actionType.backgroundColor)
+                .background(actionType.backgroundColor.opacity(0.5)) // 비활성화 표시
                 .foregroundColor(.white)
                 .cornerRadius(12)
         }
@@ -381,6 +383,33 @@ struct MatchActionButtonsView: View {
         .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
     }
 }
+
+//// MARK: - 하단 버튼 (참여신청하기)
+//struct MatchActionButtonsView: View {
+//    let matchInfo: MatchInfo
+//    let postedMatchCase: PostedMatchCase
+//        
+//    private var actionType: MatchActionType {
+//        postedMatchCase.defaultActionType
+//    }
+//    
+//    var body: some View {
+//        NavigationLink(
+//            destination: ApplyMatchView()
+//        ) {
+//            Text(actionType.title)
+//                .font(.headline)
+//                .frame(maxWidth: .infinity)
+//                .padding()
+//                .background(actionType.backgroundColor)
+//                .foregroundColor(.white)
+//                .cornerRadius(12)
+//        }
+//        .padding()
+//        .background(Color(.systemBackground))
+//        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
+//    }
+//}
 
 // MARK: - MatchType Extension (표시용)
 extension MatchType {
