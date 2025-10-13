@@ -21,18 +21,11 @@ struct AccountView: View {
         }
     }
     
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                pwEdit
-            }
-        }
-        
-        
+    private var checkOut: some View {
         Button {
             showDeleteAlert = true
         } label: {
-            MyPageRowView(icon: "person.slash.fill", iconColor: .red, title: "회원 탈퇴", subtitle: "회원 탈퇴 합니다.")
+            MyPageRowView(icon: "person.slash.fill", iconColor: .red, title: "회원 탈퇴", subtitle: "모든 정보를 지우고 회원 탈퇴 합니다.")
         }
         .alert("정말 탈퇴하시겠습니까?", isPresented: $showDeleteAlert) {
             Button("취소", role: .cancel) { }
@@ -64,6 +57,15 @@ struct AccountView: View {
                         .background(Color.white)
                         .cornerRadius(12)
                 }
+            }
+        }
+    }
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                pwEdit
+                checkOut
             }
         }
     }
