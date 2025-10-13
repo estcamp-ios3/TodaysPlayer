@@ -6,6 +6,9 @@ struct FirebaseMatchListView: View {
     @State private var matches: [Match] = []
     @State private var isLoading = false
     
+    // ✅ FavoriteViewModel 추가
+    @EnvironmentObject var favoriteViewModel: FavoriteViewModel
+    
     // 부모 뷰(ApplyView)로부터 선택된 날짜 받기
     var selectedDate: Date
 
@@ -43,90 +46,110 @@ struct FirebaseMatchListView: View {
                 } else {
                     // matches 대신 filteredMatches 사용
                     ForEach(filteredMatches, id: \.id) { match in
-                        NavigationLink(destination: MatchDetailView(
-                            match: match,
-                            currentUserId: AuthHelper.currentUserId
-                        )) {
-                            VStack(alignment: .leading, spacing: 12) {
-                                // 1️⃣ 풋살/축구 태그
-                                HStack {
-                                    Text(match.matchType == "futsal" ? "풋살" : "축구")
-                                        .font(.caption)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(match.matchType == "futsal" ? Color.green : Color.blue)
-                                        .foregroundColor(.white)
-                                        .cornerRadius(8)
+                        // ✅ ZStack으로 카드와 북마크 버튼 겹치기
+                        ZStack(alignment: .topTrailing) {
+                            // 기존 카드 (NavigationLink)
+                            NavigationLink(destination: MatchDetailView(
+                                match: match
+                            )) {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    // 1️⃣ 풋살/축구 태그
+                                    HStack {
+                                        Text(match.matchType == "futsal" ? "풋살" : "축구")
+                                            .font(.caption)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(match.matchType == "futsal" ? Color.green : Color.blue)
+                                            .foregroundColor(.white)
+                                            .cornerRadius(8)
+                                        
+                                        Spacer()
+                                        
+                                        // ✅ 북마크 공간 확보 (투명)
+                                        Color.clear
+                                            .frame(width: 44, height: 44)
+                                    }
                                     
-                                    Spacer()
-                                }
-                                
-                                // 2️⃣ 제목
-                                Text(match.title)
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                
-                                // 3️⃣ 시간 (시작 시간만)
-                                HStack(spacing: 4) {
-                                    Image(systemName: "clock")
-                                        .font(.caption)
+                                    // 2️⃣ 제목
+                                    Text(match.title)
+                                        .font(.headline)
                                         .foregroundColor(.primary)
-                                    Text(match.dateTime.formatForDisplay())
-                                        .font(.caption)
-                                        .foregroundColor(.primary)
-                                }
-                                
-                                // 4️⃣ 장소명
-                                HStack(spacing: 4) {
-                                    Image(systemName: "mappin.circle")
-                                        .font(.caption)
-                                        .foregroundColor(.primary)
-                                    Text(match.location.name)
-                                        .font(.caption)
-                                        .foregroundColor(.primary)
-                                }
-                                
-                                // 5️⃣ 인원 / 참가비 / 성별 / 실력 (간격 넓힘)
-                                HStack(spacing: 16) {
-                                    // 인원
-                                    HStack(spacing: 2) {
-                                        Image(systemName: "person.2")
-                                            .font(.caption2)
+                                    
+                                    // 3️⃣ 시간 (시작 시간만)
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "clock")
+                                            .font(.caption)
                                             .foregroundColor(.primary)
-                                        Text("\(match.participants.count)/\(match.maxParticipants)명")
+                                        Text(match.dateTime.formatForDisplay())
                                             .font(.caption)
                                             .foregroundColor(.primary)
                                     }
                                     
-                                    // 참가비
-                                    HStack(spacing: 2) {
-                                        Image(systemName: "wonsign.circle")
-                                            .font(.caption2)
+                                    // 4️⃣ 장소명
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "mappin.circle")
+                                            .font(.caption)
                                             .foregroundColor(.primary)
-                                        Text(match.price == 0 ? "무료" : "\(match.price)원")
+                                        Text(match.location.name)
                                             .font(.caption)
                                             .foregroundColor(.primary)
                                     }
                                     
-                                    // 성별
-                                    Text(match.genderKorean)
-                                        .font(.caption)
-                                        .foregroundColor(.primary)
-                                    
-                                    // 실력
-                                    Text(skillLevelKorean(match.skillLevel))
-                                        .font(.caption)
-                                        .foregroundColor(.primary)
-                                    
-                                    Spacer()
+                                    // 5️⃣ 인원 / 참가비 / 성별 / 실력 (간격 넓힘)
+                                    HStack(spacing: 16) {
+                                        // 인원
+                                        HStack(spacing: 2) {
+                                            Image(systemName: "person.2")
+                                                .font(.caption2)
+                                                .foregroundColor(.primary)
+                                            Text("\(match.participants.count)/\(match.maxParticipants)명")
+                                                .font(.caption)
+                                                .foregroundColor(.primary)
+                                        }
+                                        
+                                        // 참가비
+                                        HStack(spacing: 2) {
+                                            Image(systemName: "wonsign.circle")
+                                                .font(.caption2)
+                                                .foregroundColor(.primary)
+                                            Text(match.price == 0 ? "무료" : "\(match.price)원")
+                                                .font(.caption)
+                                                .foregroundColor(.primary)
+                                        }
+                                        
+                                        // 성별
+                                        Text(match.genderKorean)
+                                            .font(.caption)
+                                            .foregroundColor(.primary)
+                                        
+                                        // 실력
+                                        Text(skillLevelKorean(match.skillLevel))
+                                            .font(.caption)
+                                            .foregroundColor(.primary)
+                                        
+                                        Spacer()
+                                    }
                                 }
+                                .padding()
+                                .background(Color(.systemBackground))
+                                .cornerRadius(12)
+                                .shadow(color: .black.opacity(0.1), radius: 4)
                             }
-                            .padding()
-                            .background(Color(.systemBackground))
-                            .cornerRadius(12)
-                            .shadow(color: .black.opacity(0.1), radius: 4)
+                            .buttonStyle(PlainButtonStyle())
+                            
+                            // ✅ 북마크 버튼 (카드 위에 겹침)
+                            BookmarkButton(
+                                match: match,
+                                isFavorited: favoriteViewModel.isFavorited(matchId: match.id),
+                                action: {
+                                    favoriteViewModel.toggleFavorite(
+                                        matchId: match.id,
+                                        organizerId: match.organizerId
+                                    )
+                                }
+                            )
+                            .padding(8)
                         }
-                        .buttonStyle(PlainButtonStyle())
                     }
                 }
             }
@@ -191,5 +214,35 @@ struct FirebaseMatchListView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - 북마크 버튼 컴포넌트
+struct BookmarkButton: View {
+    let match: Match
+    let isFavorited: Bool
+    let action: () -> Void
+    
+    // 본인 매치인지 확인
+    private var isMyMatch: Bool {
+        match.organizerId == AuthHelper.currentUserId
+    }
+    
+    var body: some View {
+        Button(action: {
+            // 본인 매치가 아닐 때만 토글
+            if !isMyMatch {
+                action()
+            }
+        }) {
+            Image(systemName: isFavorited ? "bookmark.fill" : "bookmark")
+                .font(.system(size: 20))
+                .foregroundColor(isMyMatch ? .gray : (isFavorited ? .blue : .primary))
+                .frame(width: 44, height: 44)
+                .background(Color(.systemBackground))
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+        }
+        .disabled(isMyMatch) // 본인 매치는 비활성화
     }
 }
