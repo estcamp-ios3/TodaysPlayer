@@ -37,8 +37,8 @@ class HomeViewModel {
     
     // 배너 데이터
     let bannerData = [
-        BannerItem(discountTag: "30% OFF", imageName: "HomeBanner1"),
-        BannerItem(discountTag: "20% off", imageName: "HomeBanner2")
+        BannerItem(discountTag: "", imageName: "HomeBanner1", link: "https://www.nike.com/kr"),
+        BannerItem(discountTag: "", imageName: "HomeBanner2", link: "https://intro.queenssmile.co.kr/")
     ]
     
     
