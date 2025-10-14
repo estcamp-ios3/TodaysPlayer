@@ -190,10 +190,10 @@ struct MatchBasicInfoCardForMatch: View {
     // 실력 레벨 한글 변환
     private func skillLevelKorean(_ level: String) -> String {
         switch level.lowercased() {
-        case "beginner": return "입문자"
-        case "amateur": return "초급"
-        case "elite": return "중급"
-        case "professional": return "상급"
+        case "beginner": return "초급"
+        case "intermediate": return "중급"
+        case "advanced": return "고급"
+        case "expert": return "상급"
         default: return "무관"
         }
     }
