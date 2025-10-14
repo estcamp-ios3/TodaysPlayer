@@ -29,10 +29,10 @@ enum Region: String, CaseIterable {
 
 // 실력 레벨 enum
 enum SkillLevel: String, CaseIterable {
-    case professional = "상급"
-    case elite = "중급"
-    case amateur = "초급"
-    case beginner = "입문자"
+    case expert = "상급"
+    case advanced = "고급"
+    case intermediate = "중급"
+    case beginner = "초급"
 }
 
 enum Gender: String, CaseIterable {
@@ -92,6 +92,9 @@ struct ApplyView: View {
     // 달력 선택된 날짜
     @State private var selectedDate: Date = Date()
     
+    // filterViewModel 추가
+    @StateObject private var filterViewModel = FilterViewModel()
+    
     // 필터 관련 상태
     @State private var currentFilter = GameFilter()
     
@@ -143,7 +146,7 @@ struct ApplyView: View {
                             isFilterSheetPresented = true
                         }) {
                             HStack(spacing: 6) {
-                                Image(systemName: currentFilter.isEmpty ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+                                Image(systemName: filterViewModel.currentFilter.isEmpty ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
                                     .font(.system(size: 14))
                                     .foregroundColor(.blue)
                                 Text("필터")
@@ -189,6 +192,11 @@ struct ApplyView: View {
                         .padding(.horizontal, 16)
                         .padding(.top, 8)
                         .padding(.bottom, 8)
+                        .onChange(of: selectedDate) { oldValue, newValue in
+                            // ✅ 날짜 변경 시 필터 재적용
+                            filterViewModel.selectedDate = newValue
+                            filterViewModel.applyFilter()
+                        }
                     
                     // 게시글 공고 스크롤뷰
                     ScrollView {
@@ -205,7 +213,8 @@ struct ApplyView: View {
                                     isScrolling = true
                                 }
                             
-                            FirebaseMatchListView(selectedDate: selectedDate)
+                            FirebaseMatchListView()
+                                .environmentObject(filterViewModel)
                         }
                         .padding(.horizontal, 16)
                         .padding(.top, 0)
@@ -233,9 +242,14 @@ struct ApplyView: View {
         }
         .sheet(isPresented: $isFilterSheetPresented) {
             FilterBottomSheet(
-                currentFilter: $currentFilter,
                 isPresented: $isFilterSheetPresented
             )
+            .environmentObject(filterViewModel)
+        }
+        .onAppear {
+            // ✅ 초기 데이터 로드
+            filterViewModel.selectedDate = selectedDate
+            filterViewModel.fetchInitialMatches()
         }
     }
     
