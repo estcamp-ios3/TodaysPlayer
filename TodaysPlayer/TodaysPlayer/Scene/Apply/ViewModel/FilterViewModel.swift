@@ -22,9 +22,9 @@ class FilterViewModel: ObservableObject {
     /// SkillLevel enum → Firebase 필드값 변환
     private func skillLevelToFirebase(_ skillLevel: SkillLevel) -> String {
         switch skillLevel {
-        case .professional: return "professional"
-        case .elite: return "elite"
-        case .amateur: return "amateur"
+        case .expert: return "expert"
+        case .advanced: return "advanced"
+        case .intermediate: return "intermediate"
         case .beginner: return "beginner"
         }
     }
@@ -39,7 +39,10 @@ class FilterViewModel: ObservableObject {
     
     /// MatchType enum → Firebase 필드값 변환
     private func matchTypeToFirebase(_ matchType: MatchType) -> String {
-        return matchType.rawValue.lowercased() // "풋살" → "futsal", "축구" → "soccer"
+        switch matchType {
+        case .futsal: return "futsal"
+        case .soccer: return "soccer"
+        }
     }
     
     // MARK: - 필터 적용 및 데이터 가져오기
