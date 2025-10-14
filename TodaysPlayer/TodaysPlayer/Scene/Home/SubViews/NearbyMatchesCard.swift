@@ -51,7 +51,7 @@ struct NearbyMatchesCard: View {
                                 time: match.dateTime.formatForDisplay(),
                                 participants: "\(match.participants.count)/\(match.maxParticipants)",
                                 gender: GenderType(rawValue: match.gender) ?? .mixed,
-                                rating: match.rating != nil ? String(format: "%.1f", match.rating!) : "0.0",
+                                rating: nil, //match.rating != nil ? String(format: "%.1f", match.rating!) : "0.0",
                                 price: match.price == 0 ? "무료" : String.formatPrice(match.price),
                                 skillLevel: match.skillLevel.skillLevelToKorean(),
                                 tags: match.createMatchTags()
