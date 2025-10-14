@@ -14,7 +14,7 @@ struct MatchItemView: View {
     let time: String
     let participants: String
     let gender: GenderType
-    let rating: String
+    let rating: String?
     let price: String
     let skillLevel: String
     let tags: [MatchTag]
@@ -52,14 +52,16 @@ struct MatchItemView: View {
                 
                 Spacer()
                 
-                HStack(spacing: 4) {
-                    Image(systemName: "star.fill")
-                        .foregroundColor(.yellow)
-                        .font(.system(size: 12))
-                    
-                    Text(rating)
-                        .font(.caption)
-                        .foregroundColor(.black)
+                if let rating {
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.yellow)
+                            .font(.system(size: 12))
+                        
+                        Text(rating)
+                            .font(.caption)
+                            .foregroundColor(.black)
+                    }
                 }
             }
             
@@ -156,4 +158,5 @@ struct MatchItemView: View {
         tags: []
     )
 }
+
 
