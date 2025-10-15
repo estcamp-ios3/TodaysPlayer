@@ -485,6 +485,8 @@ class SampleDataManager {
                 id: "", // 자동 생성
                 matchId: matches[0].id,
                 applicantId: users[1].id,
+                applicantDisplayName: users[1].displayName,      // 추가!
+                applicantSkillLevel: users[1].skillLevel,
                 position: "midfielder",
                 participantCount: 1,
                 message: "열심히 참여하겠습니다!",
@@ -497,6 +499,8 @@ class SampleDataManager {
                 id: "", // 자동 생성
                 matchId: matches[1].id,
                 applicantId: users[2].id,
+                applicantDisplayName: users.count > 2 ? users[2].displayName : users[1].displayName,  // 추가
+                applicantSkillLevel: users.count > 2 ? users[2].skillLevel : users[1].skillLevel,      // 추가
                 position: "goalkeeper",
                 participantCount: 1,
                 message: "고수들과 함께 뛰고 싶습니다.",

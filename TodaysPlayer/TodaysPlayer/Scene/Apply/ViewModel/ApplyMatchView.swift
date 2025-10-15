@@ -240,6 +240,8 @@ struct ApplyMatchView: View {
                     id: UUID().uuidString,
                     matchId: match.id,
                     applicantId: userId,
+                    applicantDisplayName: "임시이름",        // 추가
+                    applicantSkillLevel: "입문자",
                     position: position.isEmpty ? nil : position,
                     participantCount: participantCount,
                     message: message,
