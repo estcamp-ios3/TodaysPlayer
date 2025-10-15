@@ -255,6 +255,15 @@ struct ApplyMatchView: View {
                     data: apply
                 )
                 
+                // Match 문서의 participants 업데이트 (여기 추가!)
+                try await FirestoreManager.shared.updateDocument(
+                    collection: "matches",
+                    documentId: match.id,
+                    data: [
+                        "participants.\(userId)": "pending"
+                    ]
+                )
+                
                 print("✅ 매칭 신청 완료: \(apply.id)")
                 
                 await MainActor.run {
