@@ -101,7 +101,7 @@ struct ProfileEditView: View {
                         .background(RoundedRectangle(cornerRadius: 8).fill(Color(.systemGray5)))
                     }
                     HStack {
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .center, spacing: 4) {
                             Text("거주 지역").font(.caption).foregroundColor(.gray)
                             Picker("거주 지역", selection: $viewModel.region) {
                                 ForEach(viewModel.regions, id: \.self) { r in
@@ -110,14 +110,23 @@ struct ProfileEditView: View {
                             }
                             .pickerStyle(.menu)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(10)
+                            .padding(5.5)
                             .background(RoundedRectangle(cornerRadius: 8).fill(Color(.white)))
                             .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.15), lineWidth: 1))
                         }
                         
                         VStack(alignment: .leading, spacing: 4) {
                             Text("성별").font(.caption).foregroundColor(.gray)
-                            TextField("성별", text: .constant(viewModel.authGender.isEmpty ? viewModel.defaultGender : viewModel.authGender))
+                            HStack {
+                                Image(systemName: "Gender")
+                                    .foregroundColor(.black)
+                                TextField("성별", text: .constant(viewModel.authGender.isEmpty ? viewModel.defaultGender : viewModel.authGender))
+                                    .foregroundColor(.black)
+                                    .font(.body)
+                                    .disabled(true)
+                            }
+                            .padding(5.5)
+                            .background(RoundedRectangle(cornerRadius: 8).fill(Color(.systemGray5)))
                         }
                     }
                 }
