@@ -101,7 +101,7 @@ struct ProfileEditView: View {
                         .background(RoundedRectangle(cornerRadius: 8).fill(Color(.systemGray5)))
                     }
                     HStack {
-                        VStack(alignment: .center, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text("거주 지역").font(.caption).foregroundColor(.gray)
                             Picker("거주 지역", selection: $viewModel.region) {
                                 ForEach(viewModel.regions, id: \.self) { r in
@@ -109,7 +109,7 @@ struct ProfileEditView: View {
                                 }
                             }
                             .pickerStyle(.menu)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .frame(maxWidth: .infinity, alignment: .center)
                             .padding(5.5)
                             .background(RoundedRectangle(cornerRadius: 8).fill(Color(.white)))
                             .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.gray.opacity(0.15), lineWidth: 1))
@@ -198,7 +198,7 @@ struct ProfileEditView: View {
         .navigationTitle("프로필 편집")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .bottomBar) {
                 Button(action: {
                     // 입력값을 저장하고 화면을 닫습니다.
                     viewModel.save()

@@ -11,6 +11,8 @@ struct Apply: Codable, Identifiable {
     let id: String
     let matchId: String
     let applicantId: String
+    let applicantDisplayName: String
+    let applicantSkillLevel: String?
     let position: String?
     let participantCount: Int
     let message: String?
@@ -23,6 +25,8 @@ struct Apply: Codable, Identifiable {
         case id = "applyId"
         case matchId
         case applicantId
+        case applicantDisplayName
+        case applicantSkillLevel
         case position
         case participantCount
         case message
