@@ -33,7 +33,7 @@ class AIIntroductionService {
         // 프롬프트 생성
         let prompt = buildPrompt(position: position, skillLevel: skillLevel)
         
-        print("🤖 AI 프롬프트 전송: \(prompt)")
+        print("AI 프롬프트 전송: \(prompt)")
         
         // AI 호출
         let response = try await alanAI.question(query: prompt)
@@ -42,7 +42,7 @@ class AIIntroductionService {
             throw AIIntroductionError.emptyResponse
         }
         
-        print("✅ AI 응답 수신: \(content)")
+        print("AI 응답 수신: \(content)")
         
         return content.trimmingCharacters(in: .whitespacesAndNewlines)
     }

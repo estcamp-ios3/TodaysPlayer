@@ -91,25 +91,25 @@ class ApplyMatchViewModel: ObservableObject {
                 // 4. 결과를 메시지에 반영
                 message = generatedText
                 
-                print("✅ AI 자기소개 생성 완료")
+                print("AI 자기소개 생성 완료")
                 
             } catch let error as AlanAIError {
                 // AlanAI 에러 처리
                 errorMessage = "AI 생성 실패: \(error.localizedDescription)"
                 showErrorAlert = true
-                print("❌ AlanAI 에러: \(error)")
+                print("AlanAI 에러: \(error)")
                 
             } catch let error as AIIntroductionError {
                 // 커스텀 에러 처리
                 errorMessage = error.localizedDescription
                 showErrorAlert = true
-                print("❌ AI 생성 에러: \(error)")
+                print("AI 생성 에러: \(error)")
                 
             } catch {
                 // 기타 에러
                 errorMessage = "예상치 못한 오류가 발생했습니다."
                 showErrorAlert = true
-                print("❌ 알 수 없는 에러: \(error)")
+                print("알 수 없는 에러: \(error)")
             }
             
             isGeneratingAI = false
@@ -167,12 +167,12 @@ class ApplyMatchViewModel: ObservableObject {
                     ]
                 )
                 
-                print("✅ 매칭 신청 완료: \(apply.id)")
+                print("매칭 신청 완료: \(apply.id)")
                 
                 showSuccessAlert = true
                 
             } catch {
-                print("❌ 매칭 신청 실패: \(error)")
+                print("매칭 신청 실패: \(error)")
                 errorMessage = "신청 중 오류가 발생했습니다.\n다시 시도해주세요."
                 showErrorAlert = true
             }
