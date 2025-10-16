@@ -39,3 +39,9 @@ struct Apply: Codable, Identifiable, Hashable {
         case userRate
     }
 }
+
+extension Apply {
+    var applyStatusEnum: ApplyStatus {
+        ApplyStatusConverter.toStatus(from: status)
+    }
+}
