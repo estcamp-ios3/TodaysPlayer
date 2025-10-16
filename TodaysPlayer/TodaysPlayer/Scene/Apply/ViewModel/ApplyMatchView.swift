@@ -239,9 +239,9 @@ struct ApplyMatchView: View {
                 let apply = Apply(
                     id: UUID().uuidString,
                     matchId: match.id,
-                    applicantId: userId,
-                    applicantDisplayName: "임시이름",        // 추가
-                    applicantSkillLevel: "입문자",
+                    userId: userId,
+                    userNickname: "임시이름",
+                    userSkillLevel: "입문자",        // 추가
                     position: position.isEmpty ? nil : position,
                     participantCount: participantCount,
                     message: message,
