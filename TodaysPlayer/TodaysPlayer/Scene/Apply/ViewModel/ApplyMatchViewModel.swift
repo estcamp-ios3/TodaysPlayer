@@ -148,7 +148,8 @@ class ApplyMatchViewModel: ObservableObject {
                     status: "pending",
                     rejectionReason: nil,
                     appliedAt: Date(),
-                    processedAt: nil
+                    processedAt: nil,
+                    userRate: user.userRate
                 )
                 
                 // Firebase에 저장

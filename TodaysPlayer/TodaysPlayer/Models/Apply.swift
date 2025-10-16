@@ -54,7 +54,8 @@ struct Apply: Codable, Identifiable, Hashable {
         status: String,
         rejectionReason: String?,
         appliedAt: Date,
-        processedAt: Date?
+        processedAt: Date?,
+        userRate: UserRating
     ) {
         self.id = id
         self.matchId = matchId
@@ -68,6 +69,7 @@ struct Apply: Codable, Identifiable, Hashable {
         self.rejectionReason = rejectionReason
         self.appliedAt = appliedAt
         self.processedAt = processedAt
+        self.userRate = userRate
     }
     
     // ✅ 2. 커스텀 디코더 (Firestore 디코딩용)
@@ -92,5 +94,6 @@ struct Apply: Codable, Identifiable, Hashable {
         self.rejectionReason = try container.decodeIfPresent(String.self, forKey: .rejectionReason)
         self.appliedAt = try container.decode(Date.self, forKey: .appliedAt)
         self.processedAt = try container.decodeIfPresent(Date.self, forKey: .processedAt)
+        self.userRate = try container.decode(UserRating.self, forKey: .userRate)
     }
 }
