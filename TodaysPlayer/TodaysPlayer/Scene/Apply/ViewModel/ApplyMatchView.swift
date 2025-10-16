@@ -10,22 +10,15 @@ import SwiftUI
 struct ApplyMatchView: View {
     let match: Match
     
-    @State private var message: String = ""
-    @State private var position: String = ""
-    @State private var participantCount: Int = 1
-    @State private var isSubmitting: Bool = false
-    @State private var showSuccessAlert: Bool = false
-    @State private var showErrorAlert: Bool = false
-    @State private var errorMessage: String = ""
+    // ViewModel 연결
+    @StateObject private var viewModel: ApplyMatchViewModel
     
     @Environment(\.dismiss) private var dismiss
     
-    // 임시 userId (나중에 실제 로그인 완성되면 변경)
-    private let userId = "9uHP3cOHe8T2xwxS9lx"
-    
-    // 신청하기 버튼 활성화 조건
-    private var isFormValid: Bool {
-        !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    // init에서 ViewModel 초기화
+    init(match: Match, aiClientID: String = "c81645d9-ead6-4a91-9e47-f81311287298") {
+        self.match = match
+        _viewModel = StateObject(wrappedValue: ApplyMatchViewModel(match: match, aiClientID: aiClientID))
     }
     
     var body: some View {
@@ -55,10 +48,10 @@ struct ApplyMatchView: View {
                         .padding(.horizontal, 20)
                     
                     HStack(spacing: 12) {
-                        positionButton("공격수", isSelected: position == "공격수")
-                        positionButton("미드필더", isSelected: position == "미드필더")
-                        positionButton("수비수", isSelected: position == "수비수")
-                        positionButton("골키퍼", isSelected: position == "골키퍼")
+                        positionButton("공격수", isSelected: viewModel.position == "공격수")
+                        positionButton("미드필더", isSelected: viewModel.position == "미드필더")
+                        positionButton("수비수", isSelected: viewModel.position == "수비수")
+                        positionButton("골키퍼", isSelected: viewModel.position == "골키퍼")
                     }
                     .padding(.horizontal, 20)
                 }
@@ -72,7 +65,7 @@ struct ApplyMatchView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         // 텍스트 에디터
                         ZStack(alignment: .topLeading) {
-                            if message.isEmpty {
+                            if viewModel.message.isEmpty {
                                 Text("본인의 플레이 스타일, 축구 경력, 각오 등을 간단히 소개해주세요.\n\n예) 안녕하세요! 축구 경력 3년차로 수비를 담당하고 있습니다. 패스워크를 중시하며 팀워크를 중요하게 생각합니다. 좋은 경기 만들어가요!")
                                     .font(.body)
                                     .foregroundColor(.secondary)
@@ -80,12 +73,13 @@ struct ApplyMatchView: View {
                                     .padding(.vertical, 12)
                             }
                             
-                            TextEditor(text: $message)
+                            TextEditor(text: $viewModel.message)
                                 .font(.body)
                                 .frame(minHeight: 200)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
                                 .scrollContentBackground(.hidden)
+                                .disabled(viewModel.isGeneratingAI) // AI 생성 중엔 비활성화
                         }
                         .background(Color(.systemGray6))
                         .cornerRadius(12)
@@ -95,22 +89,33 @@ struct ApplyMatchView: View {
                         )
                         .padding(.horizontal, 20)
                         
-                        // AI 작성 버튼
+                        // AI 작성 버튼 (ViewModel 연결)
                         Button(action: {
-                            // TODO: 앨런 AI 연결
-                            print("AI로 자기소개 작성하기")
+                            viewModel.generateAIIntroduction()
                         }) {
                             HStack {
-                                Image(systemName: "sparkles")
-                                    .font(.system(size: 16))
+                                if viewModel.isGeneratingAI {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .scaleEffect(0.8)
+                                } else {
+                                    Image(systemName: "sparkles")
+                                        .font(.system(size: 16))
+                                }
                                 
-                                Text("AI로 자기소개 완성하기")
+                                Text(viewModel.isGeneratingAI ? "AI 작성 중..." : "AI로 자기소개 완성하기")
                                     .font(.system(size: 15, weight: .medium))
                             }
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
                             .background(
+                                viewModel.isGeneratingAI ?
+                                LinearGradient(
+                                    colors: [Color.purple.opacity(0.6), Color.blue.opacity(0.6)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ) :
                                 LinearGradient(
                                     colors: [Color.purple, Color.blue],
                                     startPoint: .leading,
@@ -119,6 +124,7 @@ struct ApplyMatchView: View {
                             )
                             .cornerRadius(12)
                         }
+                        .disabled(viewModel.isGeneratingAI)
                         .padding(.horizontal, 20)
                         
                         // 안내 문구
@@ -138,7 +144,6 @@ struct ApplyMatchView: View {
                         .padding(.top, 8)
                         
                         VStack(alignment: .leading, spacing: 6) {
-                            bulletPoint("경기 시작 24시간 전까지는 취소가 가능합니다")
                             bulletPoint("허위 정보 작성 시 매칭이 불가능할 수 있습니다")
                             bulletPoint("매칭 신청 후 주최자의 승인을 기다려주세요")
                         }
@@ -159,9 +164,9 @@ struct ApplyMatchView: View {
                 Divider()
                 
                 Button(action: {
-                    submitApplication()
+                    viewModel.submitApplication()
                 }) {
-                    if isSubmitting {
+                    if viewModel.isSubmitting {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             .frame(maxWidth: .infinity)
@@ -174,35 +179,35 @@ struct ApplyMatchView: View {
                             .padding(.vertical, 16)
                     }
                 }
-                .background(isFormValid ? Color.green : Color.gray)
+                .background(viewModel.isFormValid ? Color.green : Color.gray)
                 .cornerRadius(12)
-                .disabled(!isFormValid || isSubmitting)
+                .disabled(!viewModel.isFormValid || viewModel.isSubmitting)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
             }
             .background(Color(.systemBackground))
         }
-        .alert("신청 완료", isPresented: $showSuccessAlert) {
+        .alert("신청 완료", isPresented: $viewModel.showSuccessAlert) {
             Button("확인", role: .cancel) {
                 dismiss()
             }
         } message: {
             Text("매칭 신청이 완료되었습니다.\n주최자의 승인을 기다려주세요!")
         }
-        .alert("신청 실패", isPresented: $showErrorAlert) {
+        .alert("오류", isPresented: $viewModel.showErrorAlert) {
             Button("확인", role: .cancel) { }
         } message: {
-            Text(errorMessage)
+            Text(viewModel.errorMessage)
         }
     }
     
     // 포지션 버튼
     private func positionButton(_ title: String, isSelected: Bool) -> some View {
         Button(action: {
-            if position == title {
-                position = "" // 선택 해제
+            if viewModel.position == title {
+                viewModel.position = "" // 선택 해제
             } else {
-                position = title
+                viewModel.position = title
             }
         }) {
             Text(title)
@@ -226,62 +231,6 @@ struct ApplyMatchView: View {
             Text(text)
                 .font(.caption)
                 .foregroundColor(.secondary)
-        }
-    }
-    
-    // 신청하기 제출
-    private func submitApplication() {
-        isSubmitting = true
-        
-        Task {
-            do {
-                // Apply 객체 생성
-                let apply = Apply(
-                    id: UUID().uuidString,
-                    matchId: match.id,
-                    userId: userId,
-                    userNickname: "임시이름",
-                    userSkillLevel: "입문자",        // 추가
-                    position: position.isEmpty ? nil : position,
-                    participantCount: participantCount,
-                    message: message,
-                    status: "pending",
-                    rejectionReason: nil,
-                    appliedAt: Date(),
-                    processedAt: nil
-                )
-                
-                // Firebase에 저장
-                _ = try await FirestoreManager.shared.createDocument(
-                    collection: "apply",
-                    data: apply
-                )
-                
-                // Match 문서의 participants 업데이트 (여기 추가!)
-                try await FirestoreManager.shared.updateDocument(
-                    collection: "matches",
-                    documentId: match.id,
-                    data: [
-                        "participants.\(userId)": "pending"
-                    ]
-                )
-                
-                print("✅ 매칭 신청 완료: \(apply.id)")
-                
-                await MainActor.run {
-                    isSubmitting = false
-                    showSuccessAlert = true
-                }
-                
-            } catch {
-                print("❌ 매칭 신청 실패: \(error)")
-                
-                await MainActor.run {
-                    isSubmitting = false
-                    errorMessage = "신청 중 오류가 발생했습니다.\n다시 시도해주세요."
-                    showErrorAlert = true
-                }
-            }
         }
     }
 }
