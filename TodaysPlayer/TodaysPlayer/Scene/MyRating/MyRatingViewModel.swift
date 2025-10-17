@@ -10,25 +10,12 @@ import Foundation
 final class MyRatingViewModel {
     var userData: User? = nil
     
-    init(userId: String){
-        Task { await fetchUserData(with: userId)}
-    }
+    private let repository: UserDataRepository = UserDataRepository()
     
-    /// 사용자의 정보 가져오기
-    func fetchUserData(with userId: String) async {
-        do {
-            let user = try await FirestoreManager.shared
-                .queryDocuments(
-                    collection: "users",
-                    where: "userId",
-                    isEqualTo: userId,
-                    as: User.self
-                ).first
-            
-            userData = user
-            print("유저정보 가져옴")
-        } catch {
-            print("유저 데이터를 못가져옴 \(error.localizedDescription)")
+    init(userId: String){
+        Task {
+            let user = await repository.fetchUserData(with: userId)
+            self.userData = user
         }
     }
     
