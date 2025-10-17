@@ -126,21 +126,21 @@ struct ApplyView: View {
                     // 스크랩, 필터, 지역 버튼 (통일된 스타일)
                     HStack(spacing: 12) {
                         // 스크랩 버튼 (아이콘 변경)
-                        NavigationLink(destination: ScrapView()) {
-                            HStack(spacing: 6) {
-                                // 삼항연산자로 아이콘 변경
-                                Image(systemName: favoriteViewModel.favoritedMatchIds.isEmpty ? "bookmark" : "bookmark.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.blue)
-                                Text("찜한 매치")
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.primary)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color(.systemBackground))
-                            .cornerRadius(16)
-                        }
+//                        NavigationLink(destination: ScrapView()) {
+//                            HStack(spacing: 6) {
+//                                // 삼항연산자로 아이콘 변경
+//                                Image(systemName: favoriteViewModel.favoritedMatchIds.isEmpty ? "bookmark" : "bookmark.fill")
+//                                    .font(.system(size: 14))
+//                                    .foregroundColor(.blue)
+//                                Text("찜한 매치")
+//                                    .font(.system(size: 14, weight: .medium))
+//                                    .foregroundColor(.primary)
+//                            }
+//                            .padding(.horizontal, 12)
+//                            .padding(.vertical, 8)
+//                            .background(Color(.systemBackground))
+//                            .cornerRadius(16)
+//                        }
                         
                         // 필터 버튼
                         Button(action: {
