@@ -11,14 +11,7 @@ final class MyRatingViewModel {
     var userData: User? = nil
     
     private let repository: UserDataRepository = UserDataRepository()
-    
-    init(userId: String){
-        Task {
-            let user = await repository.fetchUserData(with: userId)
-            self.userData = user
-        }
-    }
-    
+
     /// 평균 평점 계산
     func avgRating() -> Double {
         guard let data = userData else { return 0.0 }
@@ -26,5 +19,12 @@ final class MyRatingViewModel {
         guard rate.totalRatingCount > 0 else { return 0.0 }
         let total = rate.appointmentSum + rate.mannerSum + rate.teamWorkSum
         return total / Double(rate.totalRatingCount * 3)
+    }
+    
+    func fetchUserRate(userId: String){
+        Task {
+            let user = await repository.fetchUserData(with: userId)
+            self.userData = user
+        }
     }
 }

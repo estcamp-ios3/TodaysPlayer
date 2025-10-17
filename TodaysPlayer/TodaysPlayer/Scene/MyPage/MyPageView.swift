@@ -161,7 +161,7 @@ struct MyPageView: View {
 #endif
 
             NavigationLink(
-                destination: MyRatingView(viewModel: MyRatingViewModel(userId: "9uHP3cOHe8T2xwxS9lx"))
+                destination: MyRatingView(viewModel: MyRatingViewModel())
             ) {
                 Stat(icon: "chart.line.uptrend.xyaxis", value: "4.8", label: "평균 평점", color: .purple)
                     .overlay(
