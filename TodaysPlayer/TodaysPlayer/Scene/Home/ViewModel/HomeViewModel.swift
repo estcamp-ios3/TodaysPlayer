@@ -92,12 +92,7 @@ class HomeViewModel {
         
         print("유효한 매치 수: \(validMatches.count)개")
         print("중복 제거 후 매치 수: \(uniqueMatches.count)개")
-        
-        // 매치 정보 출력
-        for (index, match) in uniqueMatches.enumerated() {
-            print("매치 \(index + 1): \(match.title) - \(match.location.name)")
-        }
-        
+
         await MainActor.run {
             self.matches = uniqueMatches
         }
