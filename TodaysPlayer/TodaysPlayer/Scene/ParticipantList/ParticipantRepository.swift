@@ -69,24 +69,20 @@ final class ParticipantRepository {
         let applyStatusString: String = ApplyStatusConverter.toString(from: applyStatus)
         
         do {
-            try await withThrowingTaskGroup { group in
-                group.addTask {
-                    try await self.updateApplyStatus(
-                        applyStatus: applyStatusString,
-                        applyInfo: applyInfo,
-                        rejectReason: rejectReason ?? ""
-                    )
-                }
-                group.addTask {
-                    try await self.updateApplyStatusInMatchData(
-                        matchId: matchId,
-                        applyStatus: applyStatusString,
-                        applyInfo: applyInfo
-                    )
-                }
-                
-                try await group.waitForAll()
-            }
+            async let updateApplyStatusTask: () = self.updateApplyStatus(
+                applyStatus: applyStatusString,
+                applyInfo: applyInfo,
+                rejectReason: rejectReason ?? ""
+            )
+            
+            async let updateMatchDataTask: () = self.updateApplyStatusInMatchData(
+                matchId: matchId,
+                applyStatus: applyStatusString + (rejectReason ?? ""),
+                applyInfo: applyInfo
+            )
+            
+            _ = try await (updateApplyStatusTask, updateMatchDataTask)
+
             print("Firebase 데이터 업데이트 완료")
         }catch {
             print("Firebase 데이터 업데이트 실패: \(error.localizedDescription)")

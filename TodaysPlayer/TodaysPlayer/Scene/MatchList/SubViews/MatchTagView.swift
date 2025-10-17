@@ -9,41 +9,38 @@ import SwiftUI
 
 
 struct MatchTagView: View {
-    let matchInfo: Match
+    let matchInfo: (matchType: String, appliedStatus: String, leftPersonCount: Int)
     let postedMatchCase: PostedMatchCase
-    private var leftPersonCount: Int
+    let convertedStatus: ApplyStatus
     
-    init(info: Match, matchCase: PostedMatchCase) {
+    init(info: (String, String, Int), matchCase: PostedMatchCase) {
         self.matchInfo = info
         self.postedMatchCase = matchCase
-        
-        let participants = matchInfo.participants.map { (_, value: String) in
-            value != "rejected"
-        }.count
-        
-        self.leftPersonCount = matchInfo.maxParticipants - participants
+        self.convertedStatus = ApplyStatusConverter.toStatus(from: matchInfo.appliedStatus)
     }
+    
     var body: some View {
         HStack(alignment: .center, spacing: 10) {
             // 태그
             HStack(spacing: 10) {
-                Text(matchInfo.convertMatchType(type: matchInfo.matchType).rawValue)
-                    .matchTagStyle(tagType: matchInfo.convertMatchType(type: matchInfo.matchType).rawValue == MatchType.futsal.rawValue ? MatchType.futsal : MatchType.soccer)
+                Text(matchInfo.matchType)
+                    .matchTagStyle(tagType: matchInfo.matchType == MatchType.futsal.rawValue
+                                   ? MatchType.futsal : MatchType.soccer)
                 
                 // 조건부 : 신청상태( 확정/대기중/거절 )
                 
-//                Text(matchInfo.convertMatchType(type: matchInfo.status).rawValue)
-//                    .matchTagStyle(tagType: matchInfo.applyStatus)
-//                    .visible(postedMatchCase == .appliedMatch)
-//                
-//                Text(MatchInfoStatus.lastOne.rawValue)
-//                    .matchTagStyle(tagType: MatchInfoStatus.lastOne)
-//                    .visible(leftPersonCount == 1 && matchInfo.applyStatus != .rejected)
-//                
-//                Text(MatchInfoStatus.deadline.rawValue)
-//                    .matchTagStyle(tagType: MatchInfoStatus.deadline)
-//                    .visible(leftPersonCount != 1 && matchInfo.applyStatus != .rejected)
-//                
+                Text(matchInfo.appliedStatus)
+                    .matchTagStyle(tagType: convertedStatus)
+                    .visible(postedMatchCase == .appliedMatch)
+                
+                Text(MatchInfoStatus.lastOne.rawValue)
+                    .matchTagStyle(tagType: MatchInfoStatus.lastOne)
+                    .visible(matchInfo.leftPersonCount == 1 && convertedStatus != .rejected)
+                
+                Text(MatchInfoStatus.deadline.rawValue)
+                    .matchTagStyle(tagType: MatchInfoStatus.deadline)
+                    .visible(matchInfo.leftPersonCount != 1 && convertedStatus != .rejected)
+                
             }
             .font(.system(size: 14))
             

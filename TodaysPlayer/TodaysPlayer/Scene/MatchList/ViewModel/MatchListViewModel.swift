@@ -11,9 +11,12 @@ import FirebaseFirestore
 
 @Observable
 final class MatchListViewModel {
+    // 필터링된 경기 데이터
     var appliedMatches: [Match] = []
     var recruitingMatches: [Match] = []
     var finishedMatches: [Match] = []
+    
+    // 화면에 보여줄 경기 데이터
     var displayedMatches: [Match] = []
     
     var filteringButtonTypes: [MatchFilter] = []
@@ -30,7 +33,7 @@ final class MatchListViewModel {
         didSet { updateDisplayedMatches() }
     }
 
-    private let userId: String = "9uHP3cOHe8T2xwxS9lfx"
+    private let userId: String = "9uHP3cOHe8T2xwxS9lx"
     private var lastAppliedSnapshot: DocumentSnapshot?
     private var lastRecruitingSnapshot: DocumentSnapshot?
     private let pageSize = 5
@@ -74,7 +77,7 @@ final class MatchListViewModel {
             let nextMatches: [Match]
             var fetchedCount: Int = 0
             switch postedMatchCase {
-            case .appliedMatch:
+            case .appliedMatch: // 신청한 경기의 경우
                 let page = try await repository.fetchAppliedMatchesPage(
                     with: userId,
                     pageSize: pageSize,
@@ -83,7 +86,7 @@ final class MatchListViewModel {
                 nextMatches = page.matches
                 lastAppliedSnapshot = page.lastDocument
                 fetchedCount = page.fetchedCount
-            case .myRecruitingMatch:
+            case .myRecruitingMatch:  // 내가 모집중인 경기의 경우
                 let page = try await repository.fetchRecruitingMatchesPage(
                     with: userId,
                     pageSize: pageSize,
@@ -92,7 +95,7 @@ final class MatchListViewModel {
                 nextMatches = page.matches
                 lastRecruitingSnapshot = page.lastDocument
                 fetchedCount = page.fetchedCount
-            case .finishedMatch:
+            case .finishedMatch:    // 종료된 경기의 경우
                 nextMatches = []
                 fetchedCount = 0
             default:
@@ -117,5 +120,27 @@ final class MatchListViewModel {
         case .finishedMatch:        displayedMatches = finishedMatches
         default:                    displayedMatches = []
         }
+    }
+    
+    func getUserApplyStatus(appliedMatch: Match) -> (String, String) {
+        // 내가 신청한 경기에 대한 정보를 받음
+        guard let status = appliedMatch.participants[userId] else {
+            return (userId, "")
+        }
+
+        print("매치아이디:\(appliedMatch.id)")
+        print("\(userId), 거절사유 혹은 상태 \(status)")
+        return (userId, status)
+    }
+    
+    func getTagInfomation(with match: Match) -> (String, String, Int) {
+        let matchType = match.convertMatchType(type: match.matchType).rawValue
+        let (_, appliedStatus) = getUserApplyStatus(appliedMatch: match)
+        let participants = match.participants.map { (_, value: String) in
+            value != "rejected"
+        }.count
+        let leftPersonCount = match.maxParticipants - participants
+
+        return (matchType, appliedStatus, leftPersonCount)
     }
 }

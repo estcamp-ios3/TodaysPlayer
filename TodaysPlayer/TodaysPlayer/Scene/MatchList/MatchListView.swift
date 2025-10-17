@@ -40,11 +40,16 @@ struct MatchListView: View {
                             ForEach(Array(viewModel.displayedMatches.enumerated()), id: \.element.id) { index, match in
                                 NavigationLink(destination: MatchDetailView(match: match)) {
                                     VStack(spacing: 20) {
-                                        MatchTagView(info: match, matchCase: viewModel.postedMatchCase)
+                                        // 상태에 따라 ui 구분이 안된다.
+                                        MatchTagView(
+                                            info: viewModel.getTagInfomation(with: match),
+                                            matchCase: viewModel.postedMatchCase
+                                        )
+                                        
                                         MatchInfoView(
                                             matchInfo: match,
                                             postedMatchCase: viewModel.postedMatchCase,
-                                            userName: "용헌"
+                                            applyStatus: viewModel.getUserApplyStatus(appliedMatch: match)
                                         )
                                     }
                                     .padding()
@@ -77,8 +82,4 @@ struct MatchListView: View {
 
         }
     }
-}
-
-#Preview {
-    MatchListView()
 }

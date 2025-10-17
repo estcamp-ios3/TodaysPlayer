@@ -15,7 +15,7 @@ enum ApplyStatusConverter {
         case "accepted": return .accepted
         case "pending": return .standby
         case "rejected": return .rejected
-        default: return .allType
+        default: return .rejected
         }
     }
 
