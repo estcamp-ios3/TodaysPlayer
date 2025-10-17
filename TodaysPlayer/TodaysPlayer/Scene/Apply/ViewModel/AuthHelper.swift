@@ -27,6 +27,9 @@ class AuthHelper {
         // return Auth.auth().currentUser?.uid ?? "temp_user_id"
         // ========================================
         
+        // 참여자 모집 공고 올릴때 post 임시 Id: bJYjlQZuaqvw2FDB5uNa
+        // 신청할 때 users에있는 documentid 박영희: 5bOGRmFYuV33r59uCKa4
+        // 복사 붙여넣기 하여 테스트 가능
         return "5bOGRmFYuV33r59uCKa4" // 임시 사용자 ID
     }
     

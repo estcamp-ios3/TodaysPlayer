@@ -126,21 +126,21 @@ struct ApplyView: View {
                     // 스크랩, 필터, 지역 버튼 (통일된 스타일)
                     HStack(spacing: 12) {
                         // 스크랩 버튼 (아이콘 변경)
-                        NavigationLink(destination: ScrapView()) {
-                            HStack(spacing: 6) {
-                                // 삼항연산자로 아이콘 변경
-                                Image(systemName: favoriteViewModel.favoritedMatchIds.isEmpty ? "bookmark" : "bookmark.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.blue)
-                                Text("찜한 매치")
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.primary)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color(.systemBackground))
-                            .cornerRadius(16)
-                        }
+//                        NavigationLink(destination: ScrapView()) {
+//                            HStack(spacing: 6) {
+//                                // 삼항연산자로 아이콘 변경
+//                                Image(systemName: favoriteViewModel.favoritedMatchIds.isEmpty ? "bookmark" : "bookmark.fill")
+//                                    .font(.system(size: 14))
+//                                    .foregroundColor(.blue)
+//                                Text("찜한 매치")
+//                                    .font(.system(size: 14, weight: .medium))
+//                                    .foregroundColor(.primary)
+//                            }
+//                            .padding(.horizontal, 12)
+//                            .padding(.vertical, 8)
+//                            .background(Color(.systemBackground))
+//                            .cornerRadius(16)
+//                        }
                         
                         // 필터 버튼
                         Button(action: {
@@ -258,11 +258,11 @@ struct ApplyView: View {
     private var floatingActionButton: some View {
         NavigationLink(destination: WritePostView()) {
             HStack(spacing: 8) {
-                Image(systemName: "plus")
+                Image(systemName: "person.fill.badge.plus")
                     .font(.system(size: 18, weight: .semibold))
                 
                 if !isScrolling {
-                    Text("글쓰기")
+                    Text("모집하기")
                         .font(.system(size: 16, weight: .semibold))
                 }
             }

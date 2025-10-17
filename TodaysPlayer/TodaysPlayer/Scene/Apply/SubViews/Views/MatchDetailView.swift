@@ -11,43 +11,33 @@ import MapKit
 // MARK: - 메인 뷰
 struct MatchDetailView: View {
     let match: Match
-    let postedMatchCase: PostedMatchCase = .allMatches // 기본값
+    let postedMatchCase: PostedMatchCase = .allMatches
     
-    // ✅ FavoriteViewModel 추가
+    @State private var viewModel: MatchDetailViewModel
     @EnvironmentObject var favoriteViewModel: FavoriteViewModel
     
-    // 본인이 작성한 매치인지 확인
-    private var isMyMatch: Bool {
-        match.organizerId == AuthHelper.currentUserId
+    init(match: Match) {
+        self.match = match
+        _viewModel = State(initialValue: MatchDetailViewModel(match: match))
     }
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // 기존 MatchTagView 재사용 (Match 버전)
                 MatchTagViewForMatch(match: match, postedMatchCase: .allMatches)
                 
-                // 헤더
                 MatchDetailHeaderView(
                     title: match.title,
                     subtitle: "함께 할 플레이어를 모집합니다"
                 )
                 
-                // 기본 정보 카드
                 MatchBasicInfoCardForMatch(match: match)
-                
-                // 장소 정보 섹션 (지도 포함)
                 MatchLocationSectionForMatch(match: match)
-                
-                // 설명 섹션
                 MatchDescriptionSection(description: match.description)
-                
-                // 주의사항
                 WarningNoticeView()
                 
-                // 주최자 정보 (임시로 기본값 사용)
                 OrganizerInfoView(
-                    name: "주최자", // TODO: User 정보 가져오기
+                    name: "주최자",
                     imageURL: ""
                 )
                 
@@ -63,10 +53,9 @@ struct MatchDetailView: View {
                     .font(.headline)
             }
             
-            // ✅ 북마크 버튼 추가
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    if !isMyMatch {
+                    if !viewModel.isMyMatch {
                         favoriteViewModel.toggleFavorite(
                             matchId: match.id,
                             organizerId: match.organizerId
@@ -75,17 +64,19 @@ struct MatchDetailView: View {
                 }) {
                     Image(systemName: favoriteViewModel.isFavorited(matchId: match.id) ? "bookmark.fill" : "bookmark")
                         .font(.system(size: 20))
-                        .foregroundColor(isMyMatch ? .gray : (favoriteViewModel.isFavorited(matchId: match.id) ? .blue : .primary))
+                        .foregroundColor(viewModel.isMyMatch ? .gray : (favoriteViewModel.isFavorited(matchId: match.id) ? .blue : .primary))
                 }
-                .disabled(isMyMatch) // 본인 매치는 비활성화
+                .disabled(viewModel.isMyMatch)
             }
         }
         .toolbar(.hidden, for: .tabBar)
         .safeAreaInset(edge: .bottom) {
-            MatchActionButtonsViewForMatch(
-                match: match,
-                postedMatchCase: postedMatchCase
-            )
+            DynamicMatchActionButton(viewModel: viewModel)
+        }
+        .task {
+            if viewModel.userApplyStatus == .rejected {
+                await viewModel.fetchDetailedApply()
+            }
         }
     }
 }
@@ -97,7 +88,6 @@ struct MatchTagViewForMatch: View {
     
     var body: some View {
         HStack(alignment: .center, spacing: 10) {
-            // 경기 종류 태그
             Text(match.matchType == "futsal" ? "풋살" : "축구")
                 .font(.system(size: 14))
                 .padding(.horizontal, 12)
@@ -106,7 +96,6 @@ struct MatchTagViewForMatch: View {
                 .foregroundColor(.white)
                 .cornerRadius(12)
             
-            // 마감 임박 태그
             if match.maxParticipants - match.participants.count == 1 {
                 Text("1자리 남음!")
                     .font(.system(size: 14))
@@ -188,7 +177,6 @@ struct MatchBasicInfoCardForMatch: View {
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
     }
     
-    // 실력 레벨 한글 변환
     private func skillLevelKorean(_ level: String) -> String {
         switch level.lowercased() {
         case "beginner": return "초급"
@@ -209,16 +197,13 @@ struct MatchBasicInfoCardForMatch: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         let startTime = formatter.string(from: date)
-        
-        // 종료 시간 계산
         let endDate = date.addingTimeInterval(TimeInterval(duration * 60))
         let endTime = formatter.string(from: endDate)
-        
         return "\(startTime)~\(endTime)"
     }
 }
 
-// MARK: - Match용 장소 정보 섹션 (애플맵 포함)
+// MARK: - Match용 장소 정보 섹션
 struct MatchLocationSectionForMatch: View {
     let match: Match
     
@@ -237,7 +222,6 @@ struct MatchLocationSectionForMatch: View {
             SectionHeaderView(title: "장소 정보")
             
             VStack(alignment: .leading, spacing: 16) {
-                // 구장명
                 HStack {
                     Image(systemName: "mappin.circle.fill")
                         .foregroundColor(.blue)
@@ -254,7 +238,6 @@ struct MatchLocationSectionForMatch: View {
                     }
                 }
                 
-                // 주소
                 HStack(alignment: .top) {
                     Image(systemName: "location.fill")
                         .foregroundColor(.gray)
@@ -273,13 +256,11 @@ struct MatchLocationSectionForMatch: View {
                 
                 Divider()
                 
-                // 애플 지도 영역
                 VStack(alignment: .leading, spacing: 8) {
                     Text("위치")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
-                    // 애플 지도
                     Map(position: .constant(MapCameraPosition.region(region))) {
                         Annotation(match.location.name, coordinate: CLLocationCoordinate2D(
                             latitude: match.location.coordinates.latitude,
@@ -311,58 +292,4 @@ struct MatchLocationSectionForMatch: View {
     }
 }
 
-
-// MARK: - Match용 하단 버튼
-struct MatchActionButtonsViewForMatch: View {
-    let match: Match
-    let postedMatchCase: PostedMatchCase
-    
-    private var actionType: MatchActionType {
-        postedMatchCase.defaultActionType
-    }
-    
-    // 본인이 작성한 매치인지 확인
-    private var isMyMatch: Bool {
-        match.organizerId == AuthHelper.currentUserId
-    }
-    
-    var body: some View {
-        Group {
-
-            
-#if DEBUG
-#warning("소정님")
-// TODO: 버튼 타이틀은 사용자의 신청상태, 사용자가 작성한 글 여부에 따라 변경해주세요 - 추후에 machID도 변경!
-#endif
-            let destinationView: AnyView = isMyMatch
-            ? AnyView(ParticipantListView(viewModel: ParticipantListViewModel(matchID: "qMRjJMLlVo5N8lgZeLOA")))
-            : AnyView(ApplyMatchView(match: match))
-//            if isMyMatch {
-//                // 본인 매치일 때 - 비활성화된 버튼
-//                Text("본인이 작성한 매치입니다")
-//                    .font(.headline)
-//                    .frame(maxWidth: .infinity)
-//                    .padding()
-//                    .background(Color.gray)
-//                    .foregroundColor(.white)
-//                    .cornerRadius(12)
-//            } else {
-//                // 다른 사람 매치일 때 - 신청 가능
-            
-                NavigationLink(
-                    destination: destinationView
-                ) {
-                    Text(actionType.title)
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(actionType.backgroundColor)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                }
-        }
-        .padding()
-        .background(Color(.systemBackground))
-        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
-    }
-}
+// ❌ MatchActionButtonsViewForMatch 삭제됨 (DynamicMatchActionButton으로 대체)
