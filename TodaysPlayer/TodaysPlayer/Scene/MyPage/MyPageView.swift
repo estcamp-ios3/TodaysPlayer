@@ -146,7 +146,7 @@ struct MyPageView: View {
             }
 
             NavigationLink(
-                destination: MyRatingView(viewModel: MyRatingViewModel(userId: ""))
+                destination: MyRatingView(viewModel: MyRatingViewModel())
             ) {
                 Stat(icon: "chart.line.uptrend.xyaxis", label: "나의 평점", color: .purple)
                     .overlay(
