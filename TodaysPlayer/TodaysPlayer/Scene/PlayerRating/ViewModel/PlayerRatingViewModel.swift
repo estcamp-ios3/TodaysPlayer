@@ -23,13 +23,6 @@ final class PlayerRatingViewModel {
     init(matchInfo: Match) {
         self.matchInfo = matchInfo
         self.userIds = matchInfo.participants.map { $0.key }
-        Task {
-            do {
-                self.participatedUsers = try await fetchUserData()
-            } catch {
-                print("Error fetching user data: \(error)")
-            }
-        }
     }
     
     
@@ -81,26 +74,29 @@ final class PlayerRatingViewModel {
     }
     
     /// 경기 참여자 정보 가져오기
-    func fetchUserData() async throws -> [User] {
+    func fetchUserData() async {
         // 매치아이디를 가지고 참여항목에 속한 유저 id 필터링
         var userDatas: [User] = []
         
-        // 유저 id를 토대로 개별 데이터 가져오기
-        try await withThrowingTaskGroup(of: User?.self) { group in
-            for userID in userIds {
-                group.addTask {
-                    guard let data = await self.repository.fetchUserData(with: userID) else { return nil }
-                    return data
+        do {
+            // 유저 id를 토대로 개별 데이터 가져오기
+            try await withThrowingTaskGroup(of: User?.self) { group in
+                for userID in userIds {
+                    group.addTask {
+                        guard let data = await self.repository.fetchUserData(with: userID) else { return nil }
+                        return data
+                    }
                 }
+                
+                for try await data in group {
+                    guard let _data = data else { continue }
+                    userDatas.append(_data)
+                }
+                participatedUsers = userDatas
             }
-            
-            for try await data in group {
-                guard let _data = data else { continue }
-                userDatas.append(_data)
-            }
+        }catch {
+            participatedUsers = []
         }
-        
-        return userDatas
     }
 
     /// 평가한 항목 저장하기
@@ -126,7 +122,6 @@ final class PlayerRatingViewModel {
                     let rating = ratings[userId] ?? [:]
                 
                     group.addTask {
-                        // 서버에서 수정이 안됨
                         await self.repository.editUserRateData(user: userData, rating: rating)
                     }
                 }

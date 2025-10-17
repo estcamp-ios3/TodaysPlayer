@@ -173,17 +173,6 @@ extension Match {
         }
     }
     
-    
-    /// 매칭 신청상태 변환
-    func covertApplyStatus(status: String) -> ApplyStatus {
-        switch status {
-        case "accepted": return .accepted
-        case "pending": return .standby
-        case "rejected": return .rejected
-        default: return .allType
-        }
-    }
-    
     func convertMatchType(type: String) -> MatchType {
         switch type {
         case "futsal": return .futsal

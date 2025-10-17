@@ -68,6 +68,9 @@ struct PlayerRatingView: View {
                 .padding(.horizontal)
             }
         }
+        .task({
+            await viewModel.fetchUserData()
+        })
         .navigationTitle("참여자 평가하기")
     }
     
