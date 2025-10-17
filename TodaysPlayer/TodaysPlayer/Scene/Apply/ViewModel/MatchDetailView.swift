@@ -80,6 +80,7 @@ struct MatchDetailView: View {
                 .disabled(isMyMatch) // 본인 매치는 비활성화
             }
         }
+        .toolbar(.hidden, for: .tabBar)
         .safeAreaInset(edge: .bottom) {
             MatchActionButtonsViewForMatch(
                 match: match,
