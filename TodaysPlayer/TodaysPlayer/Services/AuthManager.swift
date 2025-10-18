@@ -16,6 +16,8 @@ enum DuplicationCheckType: String {
 struct SignupData {
     let email: String
     let password: String
+    let displayName: String
+    let gender: String
 }
 
 enum AuthError: LocalizedError {
@@ -51,8 +53,6 @@ enum AuthError: LocalizedError {
 @Observable
 final class AuthManager {
     var isSignup: Bool = false
-    var currentUser: User? = nil
-    var isSignedIn: Bool = false
     
     // 이메일 중복 확인 네트워킹 처리
     // 닉네임 중복 확인 네트워킹 처리
@@ -105,7 +105,8 @@ final class AuthManager {
         let registerUserData = User(
             id: uid,
             email: userData.email,
-            displayName: "yh" ,
+            displayName: userData.displayName,
+            gender: userData.gender ,
             profileImageUrl: "",
             phoneNumber: "",
             position: "",
@@ -135,10 +136,12 @@ final class AuthManager {
             let result = try await Auth.auth()
                 .signIn(withEmail: email, password: password)
             
-            self.isSignedIn = true
             
-            self.currentUser = await UserDataRepository().fetchUserData(with: result.user.uid)
-
+            UserSessionManager.shared.currentUser = await UserDataRepository()
+                .fetchUserData(with: result.user.uid)
+            
+            UserSessionManager.shared.isLoggedIn = true
+            
             print("로그인 성공")
         }catch let error as NSError {
             throw mapFirebaseError(error)
@@ -150,26 +153,15 @@ final class AuthManager {
     func logout(){
         do {
             try Auth.auth().signOut()
-            self.isSignedIn = false
-            self.currentUser = nil
+            UserSessionManager.shared.isLoggedIn = false
+            UserSessionManager.shared.currentUser = nil
+
             print("로그아웃 완료")
         }catch {
             print("로그아웃 실패: \(error.localizedDescription)")
         }
     }
-    
-    // 자동로그인
-    func checkAuthState() async {
-        if let user = Auth.auth().currentUser {
-            self.isSignedIn = true
-            self.currentUser = await UserDataRepository().fetchUserData(with: user.uid)
-            
-            print("자동 로그인 성공")
-        } else {
-            self.isSignedIn = false
-        }
-    }
-    
+
     func resetPassword(email: String) async throws {
         do {
             try await Auth.auth().sendPasswordReset(withEmail: email)
