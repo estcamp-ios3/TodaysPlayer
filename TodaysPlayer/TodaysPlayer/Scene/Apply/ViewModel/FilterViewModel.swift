@@ -141,9 +141,11 @@ class FilterViewModel: ObservableObject {
             var filteredMatches = fetchedMatches
             
             // 지역 필터 (가장 먼저 적용)
-            filteredMatches = filteredMatches.filter { match in
-                let extractedRegion = extractRegion(from: match.location.address)
-                return extractedRegion == currentFilter.region
+            if currentFilter.region != .all {
+                filteredMatches = filteredMatches.filter { match in
+                    let extractedRegion = extractRegion(from: match.location.address)
+                    return extractedRegion == currentFilter.region
+                }
             }
             
             // 날짜 필터

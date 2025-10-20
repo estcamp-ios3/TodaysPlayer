@@ -9,6 +9,7 @@ import SwiftUI
 
 // 지역 enum 정의
 enum Region: String, CaseIterable {
+    case all = "전체"
     case seoul = "서울"
     case gyeonggi = "경기"
     case incheon = "인천"
@@ -52,7 +53,7 @@ struct GameFilter {
     var skillLevels: Set<SkillLevel> = [] // 복수선택: 프로, 아마추어 둘 다 가능
     var gender: Gender? = nil // 단일 선택: 남자만 or 여자만
     var feeType: FeeType? = nil // 단일 선택: 무료 or 유료
-    var region: Region = .seoul
+    var region: Region = .all
     
     // 서버로 보낼 딕셔너리 형태로 변환
     func toDictionary() -> [String: Any] {

@@ -39,13 +39,21 @@ struct RegionBottomSheet: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(Region.allCases, id: \.self) { region in
-                            regionRow(region)
+                            VStack(spacing: 0) {
+                                regionRow(region)
+                                
+                                // Divider 추가
+                                if region != Region.allCases.last {
+                                    Divider()
+                                        .padding(.leading, 20)
+                                }
+                            }
                         }
                     }
                     .padding(.top, 8)
                 }
             }
-            .presentationDetents([.height(225)])
+            .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
         }
     }
@@ -72,6 +80,8 @@ struct RegionBottomSheet: View {
                         .font(.system(size: 16, weight: .medium))
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)  // 전체 너비
+            .contentShape(Rectangle())  // 전체 영역 터치 가능하도록 변경
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
             .background(Color.clear)
