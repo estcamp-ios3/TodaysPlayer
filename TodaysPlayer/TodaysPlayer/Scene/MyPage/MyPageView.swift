@@ -95,8 +95,6 @@ struct MyPageView: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-//                        Text(viewModel.profile.displayName)
-//                            .font(.system(size: 20, weight: .bold))
                         Text((viewModel.profile.nickname ?? "").isEmpty ? "별명 미설정" : (viewModel.profile.nickname ?? ""))
                             .font(.system(size: 20, weight: .bold))
                     }
