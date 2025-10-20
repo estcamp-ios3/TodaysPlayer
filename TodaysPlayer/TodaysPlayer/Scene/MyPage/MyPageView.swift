@@ -118,6 +118,7 @@ struct MyPageView: View {
                 Spacer()
                 NavigationLink(destination: ProfileEditView()) {
                     Text("프로필 편집")
+                        .foregroundStyle(Color(.green))
                         .font(.system(size: 11.5, weight: .medium))
                         .padding(.horizontal, 5)
                         .padding(.vertical, 5)
