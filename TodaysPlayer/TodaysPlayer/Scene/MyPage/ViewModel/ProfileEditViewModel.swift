@@ -8,8 +8,6 @@
 import SwiftUI
 import PhotosUI
 import Combine
-import FirebaseAuth
-import FirebaseFirestore
 
 
 class ProfileEditViewModel: ObservableObject {
@@ -62,8 +60,6 @@ class ProfileEditViewModel: ObservableObject {
     let defaultEmail: String = "sample@sample.com"
     let defaultGender: String = "남성"
     
-    private let firestore = Firestore.firestore()
-    
     // MARK: - Load / Save
     func loadIfNeeded() {
         guard !didLoad else { return }
@@ -75,8 +71,6 @@ class ProfileEditViewModel: ObservableObject {
         position = storedPosition
         level = storedLevel
         preferredTimes = Set(storedPreferredTimesRaw.split(separator: ",").map { String($0) }.filter { !$0.isEmpty })
-        
-        Task { await self.loadFromFirebase() }
     }
     
     func save() {
@@ -87,59 +81,6 @@ class ProfileEditViewModel: ObservableObject {
         storedPosition = position
         storedLevel = level
         storedPreferredTimesRaw = preferredTimes.sorted().joined(separator: ",")
-        
-        Task { await self.saveToFirebase() }
-    }
-    
-    @MainActor
-    func saveToFirebase() async {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        let data: [String: Any] = [
-            "nickname": self.editNickname,
-            "region": self.region,
-            "position": self.position,
-            "level": self.level,
-            "preferredTimes": Array(self.preferredTimes.sorted()),
-            "intro": self.editIntro
-        ]
-        do {
-            try await firestore.collection("users").document(uid).setData(data, merge: true)
-        } catch {
-            #if DEBUG
-            print("Failed to save profile to Firestore: \(error)")
-            #endif
-        }
-    }
-    
-    func loadFromFirebase() async {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        do {
-            let snapshot = try await firestore.collection("users").document(uid).getDocument()
-            guard let data = snapshot.data() else { return }
-            let nickname = data["nickname"] as? String ?? ""
-            let region = data["region"] as? String ?? ""
-            let position = data["position"] as? String ?? ""
-            let level = data["level"] as? String ?? ""
-            let intro = data["intro"] as? String ?? ""
-            var times: Set<String> = []
-            if let arr = data["preferredTimes"] as? [String] {
-                times = Set(arr)
-            } else if let raw = data["preferredTimes"] as? String {
-                times = Set(raw.split(separator: ",").map { String($0) })
-            }
-            await MainActor.run {
-                self.editNickname = nickname
-                self.region = region
-                self.position = position
-                self.level = level
-                self.editIntro = intro
-                self.preferredTimes = times
-            }
-        } catch {
-            #if DEBUG
-            print("Failed to load profile from Firestore: \(error)")
-            #endif
-        }
     }
     
     func togglePreferredTime(_ t: String) {

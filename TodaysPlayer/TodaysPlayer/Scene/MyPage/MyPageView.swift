@@ -202,4 +202,3 @@ struct MyPageView: View {
 #Preview {
     MyPageView()
 }
-
