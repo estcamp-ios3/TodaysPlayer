@@ -156,8 +156,6 @@ final class MatchListViewModel {
             lastRecruitingSnapshot = nil
             hasMore = true
             isLoading = false
-            appliedMatches = []
-            recruitingMatches = []
         }
 
         Task {
