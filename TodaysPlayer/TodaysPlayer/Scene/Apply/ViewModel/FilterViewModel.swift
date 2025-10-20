@@ -141,9 +141,11 @@ class FilterViewModel: ObservableObject {
             var filteredMatches = fetchedMatches
             
             // 지역 필터 (가장 먼저 적용)
-            filteredMatches = filteredMatches.filter { match in
-                let extractedRegion = extractRegion(from: match.location.address)
-                return extractedRegion == currentFilter.region
+            if currentFilter.region != .all {
+                filteredMatches = filteredMatches.filter { match in
+                    let extractedRegion = extractRegion(from: match.location.address)
+                    return extractedRegion == currentFilter.region
+                }
             }
             
             // 날짜 필터
@@ -214,5 +216,12 @@ class FilterViewModel: ObservableObject {
     func updateRegion(_ region: Region) {
         currentFilter.region = region
         applyFilter()
+    }
+    
+    func addNewMatch(_ match: Match) {
+        matches.insert(match, at: 0)
+        
+        print("새 매치 추가됨: \(match.title)")
+        print(" - 현재 매치 개수: \(matches.count)")
     }
 }
