@@ -194,9 +194,12 @@ struct ProfileEditView: View {
             HStack {
                 Spacer()
                 Button(action: {
-                    // 입력값을 저장하고 화면을 닫습니다.
-                    viewModel.save()
-                    dismiss()
+                    Task {
+                        // Firebase 저장 트리거
+                        viewModel.save()
+                        try? await Task.sleep(nanoseconds: 300_000_000)
+                        dismiss()
+                    }
                 })
                 {
                     Text("저장")
