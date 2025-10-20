@@ -138,11 +138,6 @@ struct PersonalityView: View {
             .padding(.vertical, 12)
         }
         .navigationTitle("개인정보 처리방침")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("닫기") { dismiss() }
-            }
-        }
         .background(Color.gray.opacity(0.1))
     }
 }
