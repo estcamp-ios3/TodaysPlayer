@@ -257,7 +257,9 @@ struct ApplyView: View {
     
     // 플로팅 액션 버튼
     private var floatingActionButton: some View {
-        NavigationLink(destination: WritePostView()) {
+        NavigationLink(destination: WritePostView()
+            .environmentObject(filterViewModel)
+        ) {
             HStack(spacing: 8) {
                 Image(systemName: "person.fill.badge.plus")
                     .font(.system(size: 18, weight: .semibold))

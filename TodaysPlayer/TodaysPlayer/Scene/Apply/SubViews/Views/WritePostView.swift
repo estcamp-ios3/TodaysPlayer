@@ -12,6 +12,8 @@ struct WritePostView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showCalendar = false
     
+    @EnvironmentObject var filterViewModel: FilterViewModel
+    
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
@@ -235,7 +237,13 @@ struct WritePostView: View {
                                 }
                                 
                                 let userId = AuthHelper.currentUserId
-                                _ = try await viewModel.createMatch(organizerId: userId)
+                                
+                                // 생성된 match 객체 받기
+                                let newMatch = try await viewModel.createMatch(organizerId: userId)
+                                
+                                // filterViewModel 앞단에 추가
+                                filterViewModel.addNewMatch(newMatch)
+                                
                                 dismiss()
                             } catch {
                                 viewModel.errorMessage = error.localizedDescription

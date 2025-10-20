@@ -217,4 +217,11 @@ class FilterViewModel: ObservableObject {
         currentFilter.region = region
         applyFilter()
     }
+    
+    func addNewMatch(_ match: Match) {
+        matches.insert(match, at: 0)
+        
+        print("새 매치 추가됨: \(match.title)")
+        print(" - 현재 매치 개수: \(matches.count)")
+    }
 }
