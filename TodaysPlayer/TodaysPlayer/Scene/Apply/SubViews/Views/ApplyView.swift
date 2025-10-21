@@ -30,10 +30,10 @@ enum Region: String, CaseIterable {
 
 // 실력 레벨 enum
 enum SkillLevel: String, CaseIterable {
-    case expert = "상급"
-    case advanced = "고급"
-    case intermediate = "중급"
     case beginner = "초급"
+    case intermediate = "중급"
+    case advanced = "고급"
+    case expert = "상급"
 }
 
 enum Gender: String, CaseIterable {
@@ -91,10 +91,6 @@ struct ApplyView: View {
     @State private var isFilterSheetPresented: Bool = false
     @State private var isScrolling: Bool = false
     
-    // 달력 선택된 날짜
-    @State private var selectedDate: Date = Date()
-    
-    // filterViewModel 추가
     @StateObject private var filterViewModel = FilterViewModel()
     
     // 필터 관련 상태
@@ -106,9 +102,8 @@ struct ApplyView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                
                 Color(.systemGroupedBackground)
-                                .ignoresSafeArea()
+                    .ignoresSafeArea()
                 
                 VStack(alignment: .leading, spacing: 0) {
                     // 커스텀 타이틀 (네비게이션 타이틀 대신)
@@ -187,16 +182,15 @@ struct ApplyView: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 8)
                     
-                    // 주간 달력 추가
-                    CalendarView(selectedDate: $selectedDate)
+                    // 주간 달력 - filterViewModel.selectedDate 사용
+                    CalendarView(selectedDate: $filterViewModel.selectedDate)
                         .frame(height: 150)
                         .clipped()
                         .padding(.horizontal, 16)
                         .padding(.top, 8)
                         .padding(.bottom, 8)
-                        .onChange(of: selectedDate) { oldValue, newValue in
-                            // ✅ 날짜 변경 시 필터 재적용
-                            filterViewModel.selectedDate = newValue
+                        .onChange(of: filterViewModel.selectedDate) { oldValue, newValue in
+                            // 날짜 변경 시 필터 재적용
                             filterViewModel.applyFilter()
                         }
                     
@@ -249,8 +243,7 @@ struct ApplyView: View {
             .environmentObject(filterViewModel)
         }
         .onAppear {
-            //  초기 데이터 로드
-            filterViewModel.selectedDate = selectedDate
+            // 초기 데이터 로드 (selectedDate는 filterViewModel이 관리)
             filterViewModel.fetchInitialMatches()
         }
     }

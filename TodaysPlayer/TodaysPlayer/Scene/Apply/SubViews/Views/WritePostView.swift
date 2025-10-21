@@ -17,6 +17,9 @@ struct WritePostView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
+                Color(.systemGray6)
+                    .ignoresSafeArea()
+                
                 ScrollView {
                     VStack(spacing: 24) {
                         // 제목 입력
@@ -27,7 +30,7 @@ struct WritePostView: View {
                                 TextField("경기 제목을 입력하세요", text: $viewModel.title)
                             }
                             .padding()
-                            .background(Color(.systemGray6))
+                            .background(Color.white)
                             .cornerRadius(12)
                         }
                         
@@ -63,7 +66,7 @@ struct WritePostView: View {
                                         .foregroundColor(.gray)
                                 }
                                 .padding()
-                                .background(Color(.systemGray6))
+                                .background(Color.white)
                                 .cornerRadius(12)
                             }
                         }
@@ -79,7 +82,7 @@ struct WritePostView: View {
                                 .labelsHidden()
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color(.systemGray6))
+                                .background(Color.white)
                                 .cornerRadius(12)
                                 
                                 Text("~")
@@ -93,7 +96,7 @@ struct WritePostView: View {
                                 .labelsHidden()
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color(.systemGray6))
+                                .background(Color.white)
                                 .cornerRadius(12)
                             }
                         }
@@ -111,7 +114,7 @@ struct WritePostView: View {
                                     Spacer()
                                 }
                                 .padding()
-                                .background(Color(.systemGray6))
+                                .background(Color.white)
                                 .cornerRadius(12)
                             }
                             
@@ -130,7 +133,7 @@ struct WritePostView: View {
                             TextEditor(text: $viewModel.description)
                                 .frame(minHeight: 150)
                                 .padding(8)
-                                .background(Color(.systemGray6))
+                                .background(Color.white)
                                 .cornerRadius(12)
                                 .overlay(
                                     Group {
@@ -148,15 +151,56 @@ struct WritePostView: View {
                         
                         // 모집 인원
                         FormSection(title: "모집 인원") {
-                            HStack {
-                                TextField("모집하는 인원을 입력하세요", value: $viewModel.maxParticipants, format: .number)
-                                    .keyboardType(.numberPad)
-                                Text("명")
-                                    .foregroundColor(.primary)
+                            HStack(spacing: 12) {
+                                // 마이너스 버튼
+                                Button {
+                                    if viewModel.maxParticipants > 1 {
+                                        viewModel.maxParticipants -= 1
+                                    }
+                                } label: {
+                                    Image(systemName: "minus")
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(viewModel.maxParticipants > 1 ? .primary : .gray)
+                                        .frame(width: 44, height: 44)
+                                        .background(Color.white)
+                                        .cornerRadius(12)
+                                }
+                                .disabled(viewModel.maxParticipants <= 1)
+                                
+                                // 입력 필드
+                                HStack {
+                                    TextField("최대 30명까지 모집 가능", value: $viewModel.maxParticipants, format: .number)
+                                        .keyboardType(.numberPad)
+                                        .multilineTextAlignment(.center)
+                                        .onChange(of: viewModel.maxParticipants) { oldValue, newValue in
+                                            if newValue > 30 {
+                                                viewModel.maxParticipants = 30
+                                            } else if newValue < 1 {
+                                                viewModel.maxParticipants = 1
+                                            }
+                                        }
+                                    Text("명")
+                                        .foregroundColor(.primary)
+                                }
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                
+                                // 플러스 버튼
+                                Button {
+                                    if viewModel.maxParticipants < 30 {
+                                        viewModel.maxParticipants += 1
+                                    }
+                                } label: {
+                                    Image(systemName: "plus")
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(viewModel.maxParticipants < 30 ? .primary : .gray)
+                                        .frame(width: 44, height: 44)
+                                        .background(Color.white)
+                                        .cornerRadius(12)
+                                }
+                                .disabled(viewModel.maxParticipants >= 30)
                             }
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
                         }
                         
                         // 실력
@@ -185,7 +229,7 @@ struct WritePostView: View {
                                         }
                                         .frame(maxWidth: .infinity)
                                         .padding()
-                                        .background(Color(.systemGray6))
+                                        .background(Color.white)
                                         .cornerRadius(12)
                                     }
                                     
@@ -200,20 +244,34 @@ struct WritePostView: View {
                                         }
                                         .frame(maxWidth: .infinity)
                                         .padding()
-                                        .background(Color(.systemGray6))
+                                        .background(Color.white)
                                         .cornerRadius(12)
                                     }
                                 }
                                 
                                 if viewModel.hasFee {
                                     HStack {
-                                        TextField("금액을 입력하세요", value: $viewModel.price, format: .number)
-                                            .keyboardType(.numberPad)
+                                        TextField("최대 20,000원까지 입력", text: Binding(
+                                            get: {
+                                                viewModel.price == 0 ? "" : "\(viewModel.price)"
+                                            },
+                                            set: { newValue in
+                                                viewModel.price = Int(newValue) ?? 0
+                                            }
+                                        ))
+                                        .keyboardType(.numberPad)
+                                        .onChange(of: viewModel.price) { oldValue, newValue in
+                                            if newValue > 20000 {
+                                                viewModel.price = 20000
+                                            } else if newValue < 0 {
+                                                viewModel.price = 0
+                                            }
+                                        }
                                         Text("원")
                                             .foregroundColor(.primary)
                                     }
                                     .padding()
-                                    .background(Color(.systemGray6))
+                                    .background(Color.white)
                                     .cornerRadius(12)
                                 }
                             }
@@ -230,7 +288,6 @@ struct WritePostView: View {
                     Button {
                         Task {
                             do {
-                                // let userId = "bJYjlQZuaqvw2FDB5uNa" // 임시 사용자 ID
                                 guard AuthHelper.isLoggedIn else {
                                     viewModel.errorMessage = "로그인이 필요합니다."
                                     return
@@ -241,8 +298,14 @@ struct WritePostView: View {
                                 // 생성된 match 객체 받기
                                 let newMatch = try await viewModel.createMatch(organizerId: userId)
                                 
-                                // filterViewModel 앞단에 추가
+                                // 새 매치 추가
                                 filterViewModel.addNewMatch(newMatch)
+                                
+                                // 캘린더 날짜를 경기 날짜로 변경
+                                filterViewModel.selectedDate = newMatch.dateTime
+                                
+                                // 해당 날짜의 매치들로 필터 재적용
+                                filterViewModel.applyFilter()
                                 
                                 dismiss()
                             } catch {
@@ -364,7 +427,7 @@ struct MatchTypeButton: View {
                 .font(.headline)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(isSelected ? Color.green : Color(.systemGray5))
+                .background(isSelected ? Color.green : Color.white)
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(12)
         }
@@ -392,7 +455,7 @@ struct SkillLevelPicker: View {
                         .font(.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(selectedLevel == level.0 ? Color.blue : Color(.systemGray5))
+                        .background(selectedLevel == level.0 ? Color.blue : Color.white)
                         .foregroundColor(selectedLevel == level.0 ? .white : .primary)
                         .cornerRadius(8)
                 }
@@ -406,7 +469,7 @@ struct GenderPicker: View {
     @Binding var selectedGender: String
     
     let genders = [
-        ("mixed", "무관"),
+        ("mixed", "혼성"),
         ("male", "남성"),
         ("female", "여성")
     ]
@@ -421,7 +484,7 @@ struct GenderPicker: View {
                         .font(.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(selectedGender == gender.0 ? Color.blue : Color(.systemGray5))
+                        .background(selectedGender == gender.0 ? Color.blue : Color.white)
                         .foregroundColor(selectedGender == gender.0 ? .white : .primary)
                         .cornerRadius(8)
                 }
