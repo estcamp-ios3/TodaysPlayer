@@ -33,9 +33,10 @@ struct MonthCalendarView: View {
         HStack {
             Button(action: moveToPreviousMonth) {
                 Image(systemName: "chevron.left")
-                    .foregroundColor(.green)
+                    .foregroundColor(canMoveToPreviousMonth ? .green : .gray)
                     .padding(8)
             }
+            .disabled(!canMoveToPreviousMonth)
             
             Spacer()
             
@@ -102,6 +103,16 @@ struct MonthCalendarView: View {
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "yyyy년 M월"
         return formatter.string(from: currentMonth)
+    }
+    
+    /// 이전 달로 이동 가능한지 확인
+    private var canMoveToPreviousMonth: Bool {
+        // 현재 보고 있는 달이 오늘이 속한 달보다 이후거나 같으면 이동 가능
+        let today = Date()
+        let currentMonthStart = calendar.startOfDay(for: calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth))!)
+        let todayMonthStart = calendar.startOfDay(for: calendar.date(from: calendar.dateComponents([.year, .month], from: today))!)
+        
+        return currentMonthStart > todayMonthStart
     }
     
     /// 해당 월의 날짜 배열 생성 (앞뒤 빈 칸 포함)
