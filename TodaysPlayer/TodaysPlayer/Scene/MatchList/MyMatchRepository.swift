@@ -76,4 +76,24 @@ final class MatchRepository {
         let nextCursor = applySnapshot.documents.last
         return (matches, nextCursor, applySnapshot.documents.count)
     }
+
+    
+    func fetchFinishedMatches(with userId: String) async throws -> [Match] {
+        let query = db.collection("matches")
+            .whereFilter(
+                .orFilter([
+                    .whereField("participants.\(userId)", isEqualTo: userId),
+                    .whereField("organizerId", isEqualTo: userId)
+                ])
+            )
+            .whereField("status", isEqualTo: "finished")
+        
+        let snapshot = try await query.getDocuments()
+        
+        let matches: [Match] = snapshot.documents.compactMap { doc in
+            try? doc.data(as: Match.self)
+        }
+        
+        return matches
+    }
 }
