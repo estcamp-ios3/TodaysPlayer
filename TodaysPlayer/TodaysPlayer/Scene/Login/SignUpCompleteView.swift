@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SignUpCompleteView: View {
     @State private var goToMain = false   // 메인 화면 이동 트리거
+    @Binding var path: NavigationPath
     
     var body: some View {
         VStack(spacing: 24) {
@@ -85,7 +86,9 @@ struct SignUpCompleteView: View {
             Spacer()
             
             Button(action: {
-                goToMain = true
+                while path.count > 0 {
+                    path.removeLast()
+                }
             }) {
                 Text("오늘의 용병 시작하기")
                     .frame(maxWidth: .infinity)
@@ -129,6 +132,4 @@ struct MainHomeView: View {
     }
 }
 
-#Preview{
-    SignUpCompleteView()
-}
+

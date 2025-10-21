@@ -44,6 +44,7 @@ struct UserAgreementView: View {
     @State private var agreePrivacy = false
     @State private var agreeAge = false
     @State private var agreeMarketing = false
+    @Binding var path: NavigationPath
 
     // ✅ 회원가입 이동 상태
     @State private var goToSignUp = false
@@ -119,7 +120,7 @@ struct UserAgreementView: View {
                 Spacer()
                 
                 // ✅ 숨겨진 NavigationLink
-                NavigationLink(destination: SignUpView(), isActive: $goToSignUp) {
+                NavigationLink(destination: SignUpView(path: $path), isActive: $goToSignUp) {
                     EmptyView()
                 }
                 
@@ -146,9 +147,3 @@ struct UserAgreementView: View {
     }
 }
 
-// 미리보기
-struct UserAgreementView_Previews: PreviewProvider {
-    static var previews: some View {
-        UserAgreementView()
-    }
-}
