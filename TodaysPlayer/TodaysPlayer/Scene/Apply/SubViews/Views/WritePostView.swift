@@ -151,15 +151,56 @@ struct WritePostView: View {
                         
                         // 모집 인원
                         FormSection(title: "모집 인원") {
-                            HStack {
-                                TextField("모집하는 인원을 입력하세요", value: $viewModel.maxParticipants, format: .number)
-                                    .keyboardType(.numberPad)
-                                Text("명")
-                                    .foregroundColor(.primary)
+                            HStack(spacing: 12) {
+                                // 마이너스 버튼
+                                Button {
+                                    if viewModel.maxParticipants > 1 {
+                                        viewModel.maxParticipants -= 1
+                                    }
+                                } label: {
+                                    Image(systemName: "minus")
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(viewModel.maxParticipants > 1 ? .primary : .gray)
+                                        .frame(width: 44, height: 44)
+                                        .background(Color.white)
+                                        .cornerRadius(12)
+                                }
+                                .disabled(viewModel.maxParticipants <= 1)
+                                
+                                // 입력 필드
+                                HStack {
+                                    TextField("최대 30명까지 모집 가능", value: $viewModel.maxParticipants, format: .number)
+                                        .keyboardType(.numberPad)
+                                        .multilineTextAlignment(.center)
+                                        .onChange(of: viewModel.maxParticipants) { oldValue, newValue in
+                                            if newValue > 30 {
+                                                viewModel.maxParticipants = 30
+                                            } else if newValue < 1 {
+                                                viewModel.maxParticipants = 1
+                                            }
+                                        }
+                                    Text("명")
+                                        .foregroundColor(.primary)
+                                }
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                
+                                // 플러스 버튼
+                                Button {
+                                    if viewModel.maxParticipants < 30 {
+                                        viewModel.maxParticipants += 1
+                                    }
+                                } label: {
+                                    Image(systemName: "plus")
+                                        .font(.system(size: 18, weight: .semibold))
+                                        .foregroundColor(viewModel.maxParticipants < 30 ? .primary : .gray)
+                                        .frame(width: 44, height: 44)
+                                        .background(Color.white)
+                                        .cornerRadius(12)
+                                }
+                                .disabled(viewModel.maxParticipants >= 30)
                             }
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(12)
                         }
                         
                         // 실력
