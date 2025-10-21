@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MonthCalendarView: View {
     @Binding var selectedDate: Date
-    @State private var currentMonth: Date = Date()
+    @State private var currentMonth: Date = Calendar.current.startOfDay(for: Date())
     
     private let calendar = Calendar.current
     private let weekDays = ["일", "월", "화", "수", "목", "금", "토"]
@@ -33,9 +33,10 @@ struct MonthCalendarView: View {
         HStack {
             Button(action: moveToPreviousMonth) {
                 Image(systemName: "chevron.left")
-                    .foregroundColor(.green)
+                    .foregroundColor(canMoveToPreviousMonth ? .green : .gray)
                     .padding(8)
             }
+            .disabled(!canMoveToPreviousMonth)
             
             Spacer()
             
@@ -71,7 +72,7 @@ struct MonthCalendarView: View {
         let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
         
         return LazyVGrid(columns: columns, spacing: 8) {
-            ForEach(daysInMonth, id: \.self) { date in
+            ForEach(Array(daysInMonth.enumerated()), id: \.offset) { index, date in
                 if let date = date {
                     MonthDateCell(
                         date: date,
@@ -81,10 +82,10 @@ struct MonthCalendarView: View {
                         isCurrentMonth: calendar.isDate(date, equalTo: currentMonth, toGranularity: .month)
                     )
                     .onTapGesture {
-                        if !isPastDate(date) {
-                            selectedDate = date
+                            if !isPastDate(date) {
+                                selectedDate = date
+                            }
                         }
-                    }
                 } else {
                     // 빈 셀
                     Color.clear
@@ -104,6 +105,16 @@ struct MonthCalendarView: View {
         return formatter.string(from: currentMonth)
     }
     
+    /// 이전 달로 이동 가능한지 확인
+    private var canMoveToPreviousMonth: Bool {
+        // 현재 보고 있는 달이 오늘이 속한 달보다 이후거나 같으면 이동 가능
+        let today = Date()
+        let currentMonthStart = calendar.startOfDay(for: calendar.date(from: calendar.dateComponents([.year, .month], from: currentMonth))!)
+        let todayMonthStart = calendar.startOfDay(for: calendar.date(from: calendar.dateComponents([.year, .month], from: today))!)
+        
+        return currentMonthStart > todayMonthStart
+    }
+    
     /// 해당 월의 날짜 배열 생성 (앞뒤 빈 칸 포함)
     private func generateDaysInMonth() -> [Date?] {
         guard let monthInterval = calendar.dateInterval(of: .month, for: currentMonth),
@@ -116,14 +127,10 @@ struct MonthCalendarView: View {
         
         // 최대 6주 표시 (42일)
         for _ in 0..<42 {
-            if calendar.isDate(date, equalTo: monthInterval.start, toGranularity: .month) {
+            if calendar.isDate(date, equalTo: currentMonth, toGranularity: .month) {
                 days.append(date)
-            } else if date < monthInterval.start {
-                days.append(nil) // 이전 달 빈칸
-            } else if days.count < 35 { // 최소 5주는 보여주기
-                days.append(nil) // 다음 달 빈칸
             } else {
-                break
+                days.append(nil) // 다른 달 빈칸
             }
             
             date = calendar.date(byAdding: .day, value: 1, to: date) ?? date

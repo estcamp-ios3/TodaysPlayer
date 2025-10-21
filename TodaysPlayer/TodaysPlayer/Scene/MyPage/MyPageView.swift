@@ -18,7 +18,10 @@ struct MyPageView: View {
     @State private var notifications: [String] = []
     @State private var viewModel = MyPageViewModel()
     @EnvironmentObject var session: UserSessionManager
-    
+    @AppStorage("profile_position") private var storedPosition: String = ""
+    @AppStorage("profile_level") private var storedLevel: String = ""
+    @AppStorage("profile_name") private var storedName: String = ""
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -92,32 +95,36 @@ struct MyPageView: View {
                 .clipShape(Circle())
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(session.currentUser?.displayName ?? "여백의 미")
-                            .font(.system(size: 20, weight: .bold))
-                    HStack(spacing: 11.5) {
-                        Text(((session.currentUser?.position?.isEmpty == false) ? session.currentUser?.position : nil) ?? "포지션 미설정")
-                            .font(.caption)
-                            .padding(.horizontal, 2)
-                            .padding(.vertical, 2)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(3)
-                        Text(((session.currentUser?.skillLevel?.isEmpty == false) ? session.currentUser?.skillLevel : nil) ?? "레벨 미설정")
-                            .font(.caption)
-                            .padding(.horizontal, 2)
-                            .padding(.vertical, 2)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(3)
+                    HStack {
+                        Text(storedName.isEmpty ? "이름 없음" : storedName)
+                                .font(.system(size: 23, weight: .bold))
+                                .padding(7)
+                        Spacer()
+                        NavigationLink(destination: ProfileEditView()) {
+                            Image(systemName: "square.and.pencil")
+                                .foregroundStyle(Color(.green))
+                                .font(.system(size: 15, weight: .medium))
+                                .padding(.horizontal, 5)
+                                .padding(.vertical, 5)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(15)
+                        }
                     }
-                }
-                Spacer()
-                NavigationLink(destination: ProfileEditView()) {
-                    Text("프로필 편집")
-                        .foregroundStyle(Color(.green))
-                        .font(.system(size: 11.5, weight: .medium))
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 5)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(7)
+                    HStack(spacing: 11.5) {
+                            Text(storedPosition.isEmpty ? "포지션 미설정" : storedPosition)
+                            .font(.system(size: 13))
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 5)
+                            .background(Color(.systemGray5))
+                            .cornerRadius(6)
+                        Text(storedLevel.isEmpty ? "레벨 미설정" : storedLevel)
+                            .font(.system(size: 13))
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 5)
+                            .background(Color(.systemGray5))
+                            .cornerRadius(6)
+                        Spacer()
+                    }
                 }
             }
         }
@@ -137,9 +144,7 @@ struct MyPageView: View {
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
                             .stroke(Color.gray.opacity(0.15), lineWidth: 1)
-                    )
-                    .toolbar(.hidden, for: .tabBar)
-            }
+                    )            }
 
             NavigationLink(
                 destination: MyRatingView(viewModel: MyRatingViewModel())
