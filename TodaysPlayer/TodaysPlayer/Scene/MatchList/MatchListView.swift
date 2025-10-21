@@ -54,7 +54,8 @@ struct MatchListView: View {
                                         MatchInfoView(
                                             matchInfo: match,
                                             postedMatchCase: viewModel.postedMatchCase,
-                                            apply: viewModel.getUserApplyStatus(appliedMatch: match)
+                                            apply: viewModel.getUserApplyStatus(appliedMatch: match),
+                                            isFinishedMatch: $viewModel.isFinishedMatch
                                         )
                                     }
                                     .padding()

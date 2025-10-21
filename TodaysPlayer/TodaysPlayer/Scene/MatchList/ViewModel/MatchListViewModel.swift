@@ -46,7 +46,13 @@ final class MatchListViewModel {
     private let debounceDelay: UInt64 = 300_000_000
     private let repository: MatchRepository = MatchRepository()
  
-    
+    // 경기를 종료하기위한 id
+    var isFinishedMatch: String = "" {
+        didSet {
+            // 여기서 종료해주기
+            print(isFinishedMatch)
+        }
+    }
     
     // MARK: 세그먼트에 따라 경기 필터링
     // - 신청한 경기, 내가 모집중인 경기, 종료된 경기
@@ -163,6 +169,7 @@ final class MatchListViewModel {
         }
     }
 
+
     @MainActor
     func loadMoreMatches(for type: PostedMatchCase? = nil, shouldUpdateDisplay: Bool = true) async {
         guard !isLoading, hasMore else { return }
@@ -196,7 +203,7 @@ final class MatchListViewModel {
                     after: lastRecruitingSnapshot
                 )
                 lastRecruitingSnapshot = page.lastDocument
-                nextMatches = page.matches
+                nextMatches = page.matches.filter({ $0.status != "finished" })
                 fetchedCount = page.fetchedCount
                 appendMatches(&recruitingMatches, with: nextMatches)
 

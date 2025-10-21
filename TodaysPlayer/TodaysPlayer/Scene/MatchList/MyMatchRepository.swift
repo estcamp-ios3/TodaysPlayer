@@ -96,4 +96,20 @@ final class MatchRepository {
         
         return matches
     }
+    
+    
+    /// 경기 종료하기
+    func eidtMatchStatusToFinish(matchId: String) async {
+        do {
+            try await FirestoreManager.shared
+                .updateDocument(
+                    collection: "matches",
+                    documentId: matchId,
+                    data: ["status": "finished"]
+                )
+            print("경기 종료")
+        } catch {
+            print("경기 종료에 실패했습니다: \(error.localizedDescription)")
+        }
+    }
 }
