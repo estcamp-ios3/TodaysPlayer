@@ -138,6 +138,7 @@ struct MyPageView: View {
                         RoundedRectangle(cornerRadius: 14)
                             .stroke(Color.gray.opacity(0.15), lineWidth: 1)
                     )
+                    .toolbar(.hidden, for: .tabBar)
             }
 
             NavigationLink(
