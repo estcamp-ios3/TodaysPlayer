@@ -26,6 +26,8 @@ class ProfileEditViewModel: ObservableObject {
     
     @AppStorage("profile_level") private var storedLevel: String = ""
     
+    @AppStorage("profile_name") private var storedName: String = ""
+    
     // MARK: - Editing State (화면에서 편집 중인 값)
     @Published var editIntro: String = ""
     @Published var editAvatarData: Data?
@@ -86,6 +88,19 @@ class ProfileEditViewModel: ObservableObject {
         editIntro = storedIntro
         editAvatarData = storedAvatarData
         
+        // 저장된 포지션/레벨/지역 불러오기
+        if let p = Position(rawValue: storedPosition), !storedPosition.isEmpty {
+            position = p
+        } else {
+            position = .공격수
+        }
+        
+        if let lv = SkillLevel(rawValue: storedLevel), !storedLevel.isEmpty {
+            level = lv
+        } else {
+            level = .입문자
+        }
+        
         if let r = Region(rawValue: storedRegion), !storedRegion.isEmpty {
             region = r
         } else {
@@ -98,6 +113,7 @@ class ProfileEditViewModel: ObservableObject {
     
     func save() {
         // 편집 내용을 AppStorage로 반영
+        storedName = UserSessionManager.shared.currentUser?.displayName ?? ""
         storedPosition = position.rawValue
         storedLevel = level.rawValue
         storedIntro = editIntro
