@@ -49,8 +49,13 @@ struct UserAgreementView: View {
     @State private var goToSignUp = false
     
     var body: some View {
-        NavigationView {
             VStack(alignment: .leading, spacing: 20) {
+                Text("약관 동의")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding(.top, 10)
+                    .padding(.horizontal)
+                    .padding(.bottom, 4)
                 
                 Text("서비스 이용을 위한 약관에 동의해주세요")
                     .font(.subheadline)
@@ -133,8 +138,7 @@ struct UserAgreementView: View {
                 }
                 .disabled(!allRequiredAgreed)
             }
-            .navigationTitle("약관 동의")
-        }
+            .navigationBarTitleDisplayMode(.inline)
     }
     
     private var allRequiredAgreed: Bool {

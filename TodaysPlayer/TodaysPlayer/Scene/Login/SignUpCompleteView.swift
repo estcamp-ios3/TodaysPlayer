@@ -84,12 +84,6 @@ struct SignUpCompleteView: View {
             
             Spacer()
             
-            // ✅ NavigationLink (메인 화면 이동)
-            NavigationLink(destination: MainHomeView(), isActive: $goToMain) {
-                EmptyView()
-            }
-            .hidden()
-            
             Button(action: {
                 goToMain = true
             }) {
@@ -113,6 +107,10 @@ struct SignUpCompleteView: View {
         .padding()
         .background(Color(.systemGray6))
         .ignoresSafeArea(edges: .bottom)
+        
+        .fullScreenCover(isPresented: $goToMain) {
+            MainHomeView()
+        }
         .navigationBarBackButtonHidden(true)
     }
 }
@@ -127,6 +125,7 @@ struct MainHomeView: View {
             Text("여기서 주변 경기를 찾아볼 수 있습니다.")
                 .padding()
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
