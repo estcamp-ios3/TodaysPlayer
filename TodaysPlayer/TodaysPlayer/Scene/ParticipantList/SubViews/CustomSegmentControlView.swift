@@ -15,6 +15,8 @@ struct CustomSegmentControlView: View {
     
     var onSelectionChanged: ((String) -> Void)? = nil
     
+    @State private var tapWorkItem: DispatchWorkItem?
+    
     init(categories: [String],
          initialSelection: String,
          onSelectionChanged: ((String) -> Void)? = nil
@@ -31,7 +33,7 @@ struct CustomSegmentControlView: View {
                     Text(status)
                         .foregroundColor(selectedStatus == status ? .green : .gray)
                         .font(.headline)
-                        .lineLimit(1) 
+                        .lineLimit(1)
                         .minimumScaleFactor(0.7)
                         .overlay(
                             VStack {
@@ -50,15 +52,18 @@ struct CustomSegmentControlView: View {
                 .onTapGesture {
                     withAnimation(.spring()) {
                         selectedStatus = status
+                    }
+
+                    tapWorkItem?.cancel()
+                    
+                    let workItem = DispatchWorkItem {
                         onSelectionChanged?(selectedStatus)
                     }
+                    tapWorkItem = workItem
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
                 }
-//                .onAppear {
-//                    selectedStatus = "신청한 경기"
-//                }
+
             }
         }
-        
-        
     }
 }

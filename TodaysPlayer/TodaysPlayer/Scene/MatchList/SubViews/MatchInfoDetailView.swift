@@ -29,7 +29,7 @@ struct MatchInfoDetailView: View {
             Image(systemName: "person.fill")
             
             let participants = matchInfo.participants.map { (_, value: String) in
-                value != "rejected"
+                value == "accepted"
             }.count
             let personCount = "\(participants) / \(matchInfo.maxParticipants)"
             
