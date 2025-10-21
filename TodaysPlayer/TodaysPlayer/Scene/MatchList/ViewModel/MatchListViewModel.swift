@@ -19,6 +19,7 @@ final class MatchListViewModel {
     // 화면에 보여줄 경기 데이터
     var displayedMatches: [Match] = []
     
+    var selectedSegmentButton: MatchFilter = .applied(.all)
     var filteringButtonTypes: [MatchFilter] = MatchFilter.appliedCases
     var selectedFilterButton: MatchFilter = .applied(.all) {
         didSet {
@@ -26,7 +27,6 @@ final class MatchListViewModel {
             filteringButtonTapped(selectedFilterButton)
         }
     }
-    
     
     var isLoading: Bool = false
     var hasMore: Bool = true
@@ -133,7 +133,7 @@ final class MatchListViewModel {
                 return
             }
             
-            let matches = (appliedMatches + recruitingMatches).filter { $0.status == "finished" }
+            let matches = finishedMatches
             
             // 참여자 평가하기 버튼 ui 수정, 본인이 작성한거 프로필 제거
             displayedMatches = matches.filter { match in
@@ -149,25 +149,22 @@ final class MatchListViewModel {
     // MARK: 경기 데이터 가져오기
     /// 나의 매치 화면 진입 시 호출
     @MainActor
-    func fetchMyMatchData(forceReload: Bool = false) {
-        if forceReload {
-            lastAppliedSnapshot = nil
-            lastRecruitingSnapshot = nil
-            hasMore = true
-            isLoading = false
-            postedMatchCase = .appliedMatch
-        }
-        
+    func fetchMyMatchData() {
+        lastAppliedSnapshot = nil
+        lastRecruitingSnapshot = nil
+        hasMore = true
+        isLoading = false
+                
         Task {
-            async let fetchAppliedMatches: Void = loadMoreMatches(for: .appliedMatch)
-            async let fetchMyRecruitingMatches: Void = loadMoreMatches(for: .myRecruitingMatch)
-            _ = await (fetchAppliedMatches, fetchMyRecruitingMatches)
+            async let fetchAppliedMatches: Void = loadMoreMatches(for: .appliedMatch, shouldUpdateDisplay: true)
+            async let fetchMyRecruitingMatches: Void = loadMoreMatches(for: .myRecruitingMatch, shouldUpdateDisplay: false)
+            async let fetchFinishedMatches: Void = loadMoreMatches(for: .finishedMatch, shouldUpdateDisplay: false)
+            _ = await (fetchAppliedMatches, fetchMyRecruitingMatches, fetchFinishedMatches)
         }
     }
 
-
     @MainActor
-    func loadMoreMatches(for type: PostedMatchCase? = nil) async {
+    func loadMoreMatches(for type: PostedMatchCase? = nil, shouldUpdateDisplay: Bool = true) async {
         guard !isLoading, hasMore else { return }
         isLoading = true
         defer { isLoading = false }
@@ -177,11 +174,11 @@ final class MatchListViewModel {
         let currentType = type ?? postedMatchCase
 
         do {
-            let nextMatches: [Match]
+            var nextMatches: [Match] = []
             var fetchedCount: Int = 0
 
             switch currentType {
-            case .appliedMatch: // 신청한 경기
+            case .appliedMatch:
                 let page = try await repository.fetchAppliedMatchesPage(
                     with: userId ?? "",
                     pageSize: pageSize,
@@ -192,7 +189,7 @@ final class MatchListViewModel {
                 fetchedCount = page.fetchedCount
                 appendMatches(&appliedMatches, with: nextMatches)
 
-            case .myRecruitingMatch: // 내가 모집중인 경기
+            case .myRecruitingMatch:
                 let page = try await repository.fetchRecruitingMatchesPage(
                     with: userId ?? "",
                     pageSize: pageSize,
@@ -203,18 +200,28 @@ final class MatchListViewModel {
                 fetchedCount = page.fetchedCount
                 appendMatches(&recruitingMatches, with: nextMatches)
 
+            case .finishedMatch:
+                let matches = try await repository.fetchFinishedMatches(with: userId ?? "")
+                finishedMatches = matches
+                fetchedCount = matches.count
+
             default:
-                nextMatches = []
-                fetchedCount = 0
+                break
             }
 
-            filteringButtonTapped(selectedFilterButton)
-            hasMore = fetchedCount == pageSize
+            // 갱신이 필요할 때만 수행
+            if shouldUpdateDisplay {
+                filteringButtonTapped(selectedFilterButton)
+            }
+
+            hasMore = fetchedCount == pageSize && currentType != .finishedMatch
+
         } catch {
-            print("추가 데이터 로드 실패: \(error)")
+            print("❌ 추가 데이터 로드 실패:", error)
             hasMore = false
         }
     }
+
 
 
     private func appendMatches(_ target: inout [Match], with newMatches: [Match]) {
@@ -244,8 +251,6 @@ final class MatchListViewModel {
         let convertedStatus = ApplyStatusConverter.toStatus(from: status)
         // oncvertedStatus가 .standby 거나 .accepted 면 거절사유가 없음 .rejected면 거절사유가 잇음
         let rejectReason = convertedStatus == .rejected ? filteringRejectReason(status: status) : ""
-        print("매치아이디:\(appliedMatch.id)")
-        print("\(userId), 거절사유 혹은 상태 \(convertedStatus)")
         return (userId ?? "", rejectReason, convertedStatus)
     }
     

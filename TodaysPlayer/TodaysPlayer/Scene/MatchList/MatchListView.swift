@@ -9,9 +9,10 @@ import SwiftUI
 
 struct MatchListView: View {
     @State var viewModel: MatchListViewModel = MatchListViewModel()
+    @State private var path = NavigationPath()
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ZStack {
                 Color.gray.opacity(0.1)
                     .ignoresSafeArea()
@@ -43,7 +44,7 @@ struct MatchListView: View {
                             }
 
                             ForEach(Array(viewModel.displayedMatches.enumerated()), id: \.element.id) { index, match in
-                                NavigationLink(destination: MatchDetailView(match: match)) {
+                                NavigationLink(value: match) {
                                     VStack(spacing: 20) {
                                         MatchTagView(
                                             info: viewModel.getTagInfomation(with: match),
@@ -80,12 +81,14 @@ struct MatchListView: View {
                     }
                     .scrollIndicators(.hidden)
                     .padding(.horizontal, 20)
+                    .navigationDestination(for: Match.self) { match in
+                        MatchDetailView(match: match)
+                    }
                 }
             }
-            .task {
-                viewModel.fetchMyMatchData(forceReload: true)
+            .onAppear {
+                viewModel.fetchMyMatchData()
             }
-
         }
     }
 }

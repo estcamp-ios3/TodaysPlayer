@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CustomSegmentControlView: View {
     let categories: [String]
-    @State private var selectedStatus: String
+    @State var selectedStatus: String
     
     @Namespace private var underlineNamespace
     
@@ -53,6 +53,9 @@ struct CustomSegmentControlView: View {
                         onSelectionChanged?(selectedStatus)
                     }
                 }
+//                .onAppear {
+//                    selectedStatus = "신청한 경기"
+//                }
             }
         }
         
