@@ -17,6 +17,9 @@ struct WritePostView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
+                Color(.systemGray6)
+                    .ignoresSafeArea()
+                
                 ScrollView {
                     VStack(spacing: 24) {
                         // 제목 입력
@@ -27,7 +30,7 @@ struct WritePostView: View {
                                 TextField("경기 제목을 입력하세요", text: $viewModel.title)
                             }
                             .padding()
-                            .background(Color(.systemGray6))
+                            .background(Color.white)
                             .cornerRadius(12)
                         }
                         
@@ -63,7 +66,7 @@ struct WritePostView: View {
                                         .foregroundColor(.gray)
                                 }
                                 .padding()
-                                .background(Color(.systemGray6))
+                                .background(Color.white)
                                 .cornerRadius(12)
                             }
                         }
@@ -79,7 +82,7 @@ struct WritePostView: View {
                                 .labelsHidden()
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color(.systemGray6))
+                                .background(Color.white)
                                 .cornerRadius(12)
                                 
                                 Text("~")
@@ -93,7 +96,7 @@ struct WritePostView: View {
                                 .labelsHidden()
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color(.systemGray6))
+                                .background(Color.white)
                                 .cornerRadius(12)
                             }
                         }
@@ -111,7 +114,7 @@ struct WritePostView: View {
                                     Spacer()
                                 }
                                 .padding()
-                                .background(Color(.systemGray6))
+                                .background(Color.white)
                                 .cornerRadius(12)
                             }
                             
@@ -130,7 +133,7 @@ struct WritePostView: View {
                             TextEditor(text: $viewModel.description)
                                 .frame(minHeight: 150)
                                 .padding(8)
-                                .background(Color(.systemGray6))
+                                .background(Color.white)
                                 .cornerRadius(12)
                                 .overlay(
                                     Group {
@@ -155,7 +158,7 @@ struct WritePostView: View {
                                     .foregroundColor(.primary)
                             }
                             .padding()
-                            .background(Color(.systemGray6))
+                            .background(Color.white)
                             .cornerRadius(12)
                         }
                         
@@ -185,7 +188,7 @@ struct WritePostView: View {
                                         }
                                         .frame(maxWidth: .infinity)
                                         .padding()
-                                        .background(Color(.systemGray6))
+                                        .background(Color.white)
                                         .cornerRadius(12)
                                     }
                                     
@@ -200,7 +203,7 @@ struct WritePostView: View {
                                         }
                                         .frame(maxWidth: .infinity)
                                         .padding()
-                                        .background(Color(.systemGray6))
+                                        .background(Color.white)
                                         .cornerRadius(12)
                                     }
                                 }
@@ -213,7 +216,7 @@ struct WritePostView: View {
                                             .foregroundColor(.primary)
                                     }
                                     .padding()
-                                    .background(Color(.systemGray6))
+                                    .background(Color.white)
                                     .cornerRadius(12)
                                 }
                             }
@@ -364,7 +367,7 @@ struct MatchTypeButton: View {
                 .font(.headline)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(isSelected ? Color.green : Color(.systemGray5))
+                .background(isSelected ? Color.green : Color.white)
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(12)
         }
@@ -392,7 +395,7 @@ struct SkillLevelPicker: View {
                         .font(.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(selectedLevel == level.0 ? Color.blue : Color(.systemGray5))
+                        .background(selectedLevel == level.0 ? Color.blue : Color.white)
                         .foregroundColor(selectedLevel == level.0 ? .white : .primary)
                         .cornerRadius(8)
                 }
@@ -421,7 +424,7 @@ struct GenderPicker: View {
                         .font(.subheadline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(selectedGender == gender.0 ? Color.blue : Color(.systemGray5))
+                        .background(selectedGender == gender.0 ? Color.blue : Color.white)
                         .foregroundColor(selectedGender == gender.0 ? .white : .primary)
                         .cornerRadius(8)
                 }

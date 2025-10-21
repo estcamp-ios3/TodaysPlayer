@@ -19,11 +19,35 @@ final class WritePostViewModel {
     var startTime: Date = Date()
     var endTime: Date = Calendar.current.date(byAdding: .hour, value: 2, to: Date()) ?? Date()
     var duration: Int = 120 // 기본 120분
-    var maxParticipants: Int = 6
     var skillLevel: String = "beginner" // "beginner", "intermediate", "advanced", "expert"
     var hasFee: Bool = false
-    var price: Int = 0
     var selectedLocation: MatchLocation?
+    
+    var maxParticipants: Int = 6 {
+            didSet {
+                // 30명 초과 시 30으로 제한
+                if maxParticipants > 30 {
+                    maxParticipants = 30
+                }
+                // 0 이하 시 1로 제한
+                if maxParticipants < 1 {
+                    maxParticipants = 1
+                }
+            }
+        }
+    
+    var price: Int = 0 {
+            didSet {
+                // 20000원 초과 시 20000으로 제한
+                if price > 20000 {
+                    price = 20000
+                }
+                // 0 미만 시 0으로 제한
+                if price < 0 {
+                    price = 0
+                }
+            }
+        }
     
     // MARK: - UI State
     var isLoading: Bool = false
