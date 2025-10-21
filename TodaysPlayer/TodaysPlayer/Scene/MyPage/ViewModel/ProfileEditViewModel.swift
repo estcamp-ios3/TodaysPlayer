@@ -88,6 +88,19 @@ class ProfileEditViewModel: ObservableObject {
         editIntro = storedIntro
         editAvatarData = storedAvatarData
         
+        // 저장된 포지션/레벨/지역 불러오기
+        if let p = Position(rawValue: storedPosition), !storedPosition.isEmpty {
+            position = p
+        } else {
+            position = .공격수
+        }
+        
+        if let lv = SkillLevel(rawValue: storedLevel), !storedLevel.isEmpty {
+            level = lv
+        } else {
+            level = .입문자
+        }
+        
         if let r = Region(rawValue: storedRegion), !storedRegion.isEmpty {
             region = r
         } else {
