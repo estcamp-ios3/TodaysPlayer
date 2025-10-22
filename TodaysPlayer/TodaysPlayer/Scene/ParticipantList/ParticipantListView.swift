@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ParticipantListView: View {
     @State var viewModel: ParticipantListViewModel
-    @State private var selectedStatus: ApplyStatus = .standby
     
     var body: some View {
 
@@ -26,6 +25,10 @@ struct ParticipantListView: View {
                 ) {
                     viewModel.fetchParticipantDatas(type: $0)
                 }
+                
+                Text("참여자가 없습니다.")
+                    .visible(viewModel.displayedApplies.isEmpty)
+                    .padding(.top, 50)
                 
                 
                 ScrollView {
