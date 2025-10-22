@@ -25,6 +25,10 @@ enum ToastMessageType {
     // 본인 내역 관련
     case myRecordDeleted
     
+    // 경기 수정
+    case finishMactch
+    case finishRate
+    
     // MARK: - 표시 문자열
     var message: String {
         switch self {
@@ -35,6 +39,8 @@ enum ToastMessageType {
         case .participantAccepted:      "신청자를 수락했습니다."
         case .participantRejected:      "신청자를 거절했습니다."
         case .myRecordDeleted:          "내 기록이 삭제되었습니다."
+        case .finishMactch:             "해당 경기를 종료했습니다."
+        case .finishRate:               "참여자 평가를 완료했습니다."
         }
     }
 }

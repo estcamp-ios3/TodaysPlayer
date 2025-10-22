@@ -11,6 +11,8 @@ import SwiftUI
 /// 참여자 평가화면
 struct PlayerRatingView: View {
     let viewModel: PlayerRatingViewModel
+    let onCompletedBtnTapped: () -> ()
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         ZStack {
@@ -53,10 +55,17 @@ struct PlayerRatingView: View {
                     .padding(.leading, 12)
                     .padding(.bottom, 12)
                
-                Button(action: {
+                #warning("평가하기 완료 후 이전 화면으로 나가고 평가 하기 버튼을 수정해야함")
+                /*
+                 참여자 평가하기 버튼 -> 평가화면으로 이동 -> 평가완료 버튼 -> 얼랏(정말 평가를 완료할건가 수정이 불가능하다)
+-> 평가완료 메세지 -> 경기내역에서 평가하기버튼 없애기                 */
+                Button(action: {                    
                     Task {
                        await viewModel.updateUserRate()
                     }
+                    
+                    dismiss()
+                    onCompletedBtnTapped()
                 }) {
                     Text("평가 완료")
                         .frame(maxWidth: .infinity)

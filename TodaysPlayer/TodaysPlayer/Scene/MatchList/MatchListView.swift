@@ -55,7 +55,8 @@ struct MatchListView: View {
                                             matchInfo: match,
                                             postedMatchCase: viewModel.postedMatchCase,
                                             apply: viewModel.getUserApplyStatus(appliedMatch: match),
-                                            isFinishedMatch: $viewModel.isFinishedMatch
+                                            finishedMatchId: $viewModel.finishedMatchId,
+                                            finishedMatchWithRatingId: $viewModel.finishedMatchWithRatingId
                                         )
                                     }
                                     .padding()
@@ -86,9 +87,19 @@ struct MatchListView: View {
                         MatchDetailView(match: match)
                     }
                 }
+                
+                ToastMessageView(manager: viewModel.toastManager)
             }
             .onAppear {
                 viewModel.fetchMyMatchData()
+            }
+            .alert("해당 경기를 종료할까요?", isPresented: $viewModel.isFinishMatchAlertShow) {
+                Button("취소", role: .cancel) { }
+                
+                Button("종료", role: .close) {
+                    Task { await viewModel.finishSelectedMatch() }
+                }
+                .modifier(MyMatchButtonStyle())
             }
         }
     }

@@ -19,8 +19,9 @@ final class MatchListViewModel {
     // 화면에 보여줄 경기 데이터
     var displayedMatches: [Match] = []
     
-    var selectedSegmentButton: MatchFilter = .applied(.all)
+    // 세그먼트버튼의 타이틀
     var filteringButtonTypes: [MatchFilter] = MatchFilter.appliedCases
+    // 선택된 세그먼트 버튼
     var selectedFilterButton: MatchFilter = .applied(.all) {
         didSet {
             print(selectedFilterButton)
@@ -35,6 +36,7 @@ final class MatchListViewModel {
         .map { $0.rawValue }
         .filter { $0 != PostedMatchCase.allMatches.rawValue }
 
+    // 게시글 타입 
     var postedMatchCase: PostedMatchCase = .appliedMatch {
         didSet { updateDisplayedMatches() }
     }
@@ -45,14 +47,22 @@ final class MatchListViewModel {
     private let pageSize = 5
     private let debounceDelay: UInt64 = 300_000_000
     private let repository: MatchRepository = MatchRepository()
- 
+    var toastManager: ToastMessageManager = ToastMessageManager()
+    
     // 경기를 종료하기위한 id
-    var isFinishedMatch: String = "" {
+    var finishedMatchId: String = "" {
+        didSet { isFinishMatchAlertShow.toggle() }
+    }
+    
+    // 평가가 완료된 경기 id
+    var finishedMatchWithRatingId: String = "" {
         didSet {
-            // 여기서 종료해주기
-            print(isFinishedMatch)
+            toastManager.show(.finishRate)
+            Task { await finishSelectedMatchWithRating() }
         }
     }
+    
+    var isFinishMatchAlertShow: Bool = false
     
     // MARK: 세그먼트에 따라 경기 필터링
     // - 신청한 경기, 내가 모집중인 경기, 종료된 경기
@@ -162,17 +172,36 @@ final class MatchListViewModel {
         isLoading = false
                 
         Task {
-            async let fetchAppliedMatches: Void = loadMoreMatches(for: .appliedMatch, shouldUpdateDisplay: true)
-            async let fetchMyRecruitingMatches: Void = loadMoreMatches(for: .myRecruitingMatch, shouldUpdateDisplay: false)
-            async let fetchFinishedMatches: Void = loadMoreMatches(for: .finishedMatch, shouldUpdateDisplay: false)
+            async let fetchAppliedMatches: Void = loadMoreMatches(
+                for: .appliedMatch,
+                shouldUpdateDisplay: true,
+                isInitial: true
+            )
+            async let fetchMyRecruitingMatches: Void = loadMoreMatches(
+                for: .myRecruitingMatch,
+                shouldUpdateDisplay: false,
+                isInitial: true
+            )
+            async let fetchFinishedMatches: Void = loadMoreMatches(
+                for: .finishedMatch,
+                shouldUpdateDisplay: false,
+                isInitial: true
+            )
             _ = await (fetchAppliedMatches, fetchMyRecruitingMatches, fetchFinishedMatches)
         }
     }
 
 
     @MainActor
-    func loadMoreMatches(for type: PostedMatchCase? = nil, shouldUpdateDisplay: Bool = true) async {
-        guard !isLoading, hasMore else { return }
+    func loadMoreMatches(
+        for type: PostedMatchCase? = nil,
+        shouldUpdateDisplay: Bool = true,
+        isInitial: Bool = false
+    ) async {
+        if !isInitial {
+            guard !isLoading, hasMore else { return }
+        }
+        
         isLoading = true
         defer { isLoading = false }
 
@@ -237,6 +266,49 @@ final class MatchListViewModel {
         target.append(contentsOf: deduped)
     }
     
+    // MARK: 경기 종료하기
+    @MainActor
+    func finishSelectedMatch() async {
+        guard !finishedMatchId.isEmpty,
+              let finishedMatch = recruitingMatches.filter({ $0.id == finishedMatchId }).first
+        else { return }
+                
+        recruitingMatches.removeAll { $0 == finishedMatch }
+        finishedMatches.append(finishedMatch)
+        
+        // 보여줄 데이터 다시 넣어주기
+        filteringButtonTapped(.myRecruting)
+        
+        // 서버에서 처리해주기
+        await repository.eidtMatchStatusToFinish(matchId: finishedMatchId)
+        
+        finishedMatchId = ""
+        isFinishMatchAlertShow = false
+        
+        toastManager.show(.finishMactch)
+    }
+    
+    // MARK: 평가가 완료된 경기처리
+    @MainActor
+    private func finishSelectedMatchWithRating() async{
+        guard !finishedMatchWithRatingId.isEmpty,
+              let finishedRatingMatch = finishedMatches.filter({ $0.id == finishedMatchWithRatingId }).first
+        else { return }
+        
+        // 새로운 데이터 만들기
+        var ratedMatch = finishedRatingMatch
+        ratedMatch.rating = 1.0
+
+        // 경기 데이터 재설정 후 다시 넣기
+        finishedMatches.removeAll { $0 == finishedRatingMatch }
+        finishedMatches.append(ratedMatch)
+        
+        // 서버 반영
+        await repository.eidtMatchStatusToFinish(matchId: finishedRatingMatch.id, withRate: true)
+    }
+
+
+    
     // MARK: UI 표시를 위한 함수
     
     private func filteringRejectReason(status: String) -> String {
@@ -256,7 +328,6 @@ final class MatchListViewModel {
         }
         
         let convertedStatus = ApplyStatusConverter.toStatus(from: status)
-        // oncvertedStatus가 .standby 거나 .accepted 면 거절사유가 없음 .rejected면 거절사유가 잇음
         let rejectReason = convertedStatus == .rejected ? filteringRejectReason(status: status) : ""
         return (userId ?? "", rejectReason, convertedStatus)
     }

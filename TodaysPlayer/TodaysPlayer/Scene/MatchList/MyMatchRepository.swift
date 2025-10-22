@@ -99,17 +99,22 @@ final class MatchRepository {
     
     
     /// 경기 종료하기
-    func eidtMatchStatusToFinish(matchId: String) async {
+    /// - Parameters:
+    ///   - withRate: 평가가 완료된 경우(true), 평가가 완료되지 않은 경우 (false)
+    func eidtMatchStatusToFinish(matchId: String, withRate: Bool = false) async {
+        let data: [String: Any] = withRate
+            ? ["status": "finished", "rating": 1.0]
+            : ["status": "finished"]
+        
         do {
             try await FirestoreManager.shared
                 .updateDocument(
                     collection: "matches",
                     documentId: matchId,
-                    data: ["status": "finished"]
+                    data: data
                 )
-            print("경기 종료")
         } catch {
-            print("경기 종료에 실패했습니다: \(error.localizedDescription)")
+            print("경기데이터 업데이트에 실패했습니다: \(error.localizedDescription)")
         }
     }
 }
