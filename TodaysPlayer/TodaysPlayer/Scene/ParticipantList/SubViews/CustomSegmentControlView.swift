@@ -9,11 +9,13 @@ import SwiftUI
 
 struct CustomSegmentControlView: View {
     let categories: [String]
-    @State private var selectedStatus: String
+    @State var selectedStatus: String
     
     @Namespace private var underlineNamespace
     
     var onSelectionChanged: ((String) -> Void)? = nil
+    
+    @State private var tapWorkItem: DispatchWorkItem?
     
     init(categories: [String],
          initialSelection: String,
@@ -31,7 +33,7 @@ struct CustomSegmentControlView: View {
                     Text(status)
                         .foregroundColor(selectedStatus == status ? .green : .gray)
                         .font(.headline)
-                        .lineLimit(1) 
+                        .lineLimit(1)
                         .minimumScaleFactor(0.7)
                         .overlay(
                             VStack {
@@ -50,12 +52,18 @@ struct CustomSegmentControlView: View {
                 .onTapGesture {
                     withAnimation(.spring()) {
                         selectedStatus = status
+                    }
+
+                    tapWorkItem?.cancel()
+                    
+                    let workItem = DispatchWorkItem {
                         onSelectionChanged?(selectedStatus)
                     }
+                    tapWorkItem = workItem
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
                 }
+
             }
         }
-        
-        
     }
 }
