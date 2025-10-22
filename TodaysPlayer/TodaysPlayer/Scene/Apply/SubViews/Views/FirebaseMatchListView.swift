@@ -48,9 +48,11 @@ struct FirebaseMatchListView: View {
                                     
                                     Spacer()
                                     
-                                    // 북마크 공간 확보 (투명)
-                                    Color.clear
-                                        .frame(width: 44, height: 44)
+                                    // 내 글이 아닐때만 북마크 공간 확보
+                                    if match.organizerId != AuthHelper.currentUserId {
+                                        Color.clear
+                                            .frame(width: 44, height: 44)
+                                    }
                                 }
                                 
                                 // 2️⃣ 제목
@@ -161,19 +163,17 @@ struct BookmarkButton: View {
     }
     
     var body: some View {
-        Button(action: {
-            if !isMyMatch {
-                action()
+        // 내가 작성한 글이면 아예 렌더링 안 함
+        if !isMyMatch {
+            Button(action: action) {
+                Image(systemName: isFavorited ? "bookmark.fill" : "bookmark")
+                    .font(.system(size: 20))
+                    .foregroundColor(isFavorited ? .blue : .primary)
+                    .frame(width: 44, height: 44)
+                    .background(Color(.systemBackground))
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
             }
-        }) {
-            Image(systemName: isFavorited ? "bookmark.fill" : "bookmark")
-                .font(.system(size: 20))
-                .foregroundColor(isMyMatch ? .gray : (isFavorited ? .blue : .primary))
-                .frame(width: 44, height: 44)
-                .background(Color(.systemBackground))
-                .clipShape(Circle())
-                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
         }
-        .disabled(isMyMatch)
     }
 }

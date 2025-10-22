@@ -53,20 +53,19 @@ struct MatchDetailView: View {
                     .font(.headline)
             }
             
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    if !viewModel.isMyMatch {
+            if !viewModel.isMyMatch {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
                         favoriteViewModel.toggleFavorite(
                             matchId: match.id,
                             organizerId: match.organizerId
                         )
+                    }) {
+                        Image(systemName: favoriteViewModel.isFavorited(matchId: match.id) ? "bookmark.fill" : "bookmark")
+                            .font(.system(size: 20))
+                            .foregroundColor(favoriteViewModel.isFavorited(matchId: match.id) ? .blue : .primary)
                     }
-                }) {
-                    Image(systemName: favoriteViewModel.isFavorited(matchId: match.id) ? "bookmark.fill" : "bookmark")
-                        .font(.system(size: 20))
-                        .foregroundColor(viewModel.isMyMatch ? .gray : (favoriteViewModel.isFavorited(matchId: match.id) ? .blue : .primary))
                 }
-                .disabled(viewModel.isMyMatch)
             }
         }
         .toolbar(.hidden, for: .tabBar)
