@@ -3,7 +3,6 @@ import SwiftUI
 import FirebaseFirestore
 
 struct FirebaseMatchListView: View {
-    // ✅ ViewModel에서 데이터 받아오기
     @EnvironmentObject var filterViewModel: FilterViewModel
     @EnvironmentObject var favoriteViewModel: FavoriteViewModel
     
@@ -28,7 +27,7 @@ struct FirebaseMatchListView: View {
                 }
                 .padding(.top, 40)
             } else {
-                // ✅ ViewModel의 matches 표시
+                // ViewModel의 matches 표시
                 ForEach(filterViewModel.matches, id: \.id) { match in
                     ZStack(alignment: .topTrailing) {
                         // 기존 카드 (NavigationLink)
@@ -137,6 +136,12 @@ struct FirebaseMatchListView: View {
                     }
                 }
             }
+        }
+        .refreshable {
+            filterViewModel.applyFilter()
+        }
+        .onAppear {
+            filterViewModel.applyFilter()
         }
     }
     
