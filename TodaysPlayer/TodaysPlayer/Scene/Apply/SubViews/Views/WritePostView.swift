@@ -267,8 +267,10 @@ struct WritePostView: View {
                                                 viewModel.price = 0
                                             }
                                         }
-                                        Text("원")
-                                            .foregroundColor(.primary)
+                                        if viewModel.price > 0 {
+                                            Text("원")
+                                                .foregroundColor(.primary)
+                                        }
                                     }
                                     .padding()
                                     .background(Color.white)
