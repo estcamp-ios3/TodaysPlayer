@@ -1,5 +1,5 @@
 {
-  "originHash" : "a1569f9895aa2be8e24832f98525d5da4eb90b5d158a82691c15b47eb72a13d7",
+  "originHash" : "7cf6136f05fb0387245ccd90e7e1cb7c231c41fe44c82920de575bbe17faba3a",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "bbe8b69694d7873315fd3a4ad41efe043e1c07c5",
         "version" : "1.2024072200.0"
+      }
+    },
+    {
+      "identity" : "alan-ios-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/estcamp-ios3/alan-ios-sdk",
+      "state" : {
+        "branch" : "main",
+        "revision" : "270bf8853a816a692a5a4c321d5db58fdd2b0c11"
       }
     },
     {

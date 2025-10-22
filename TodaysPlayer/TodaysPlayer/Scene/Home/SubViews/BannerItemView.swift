@@ -1,3 +1,10 @@
+//
+//  MatchItemView.swift
+//  TodaysPlayer
+//
+//  Created by J on 9/24/25.
+//
+
 import SwiftUI
 
 struct BannerItemView: View {
@@ -22,7 +29,7 @@ struct BannerItemView: View {
                             Text(bannerItem.discountTag)
                                 .font(.caption)
                                 .fontWeight(.bold)
-                                .foregroundColor(.white)
+                                .foregroundStyle(.white)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
                                 .background(Color.red)

@@ -81,10 +81,6 @@ class SampleDataManager {
             try await createSampleApplications()
             print("✅ 신청 데이터 생성 완료")
             
-            print("🔥 알림 데이터 생성 시작...")
-            try await createSampleNotifications()
-            print("✅ 알림 데이터 생성 완료")
-            
             print("🎉 모든 샘플 데이터 생성 완료!")
         } catch {
             print("❌ 샘플 데이터 생성 실패: \(error)")
@@ -140,6 +136,7 @@ class SampleDataManager {
                 id: "bJYjlQZuaqvw2FDB5uNa", // 고정된 사용자 ID (스태틱)
                 email: "player1@example.com",
                 displayName: "축구왕김철수",
+                gender: "남자",
                 profileImageUrl: nil,
                 phoneNumber: "010-1234-5678",
                 position: "striker",
@@ -153,6 +150,7 @@ class SampleDataManager {
                 id: "", // 자동 생성
                 email: "player2@example.com",
                 displayName: "미드필더박영희",
+                gender: "여자",
                 profileImageUrl: nil,
                 phoneNumber: "010-2345-6789",
                 position: "midfielder",
@@ -166,6 +164,7 @@ class SampleDataManager {
                 id: "", // 자동 생성
                 email: "player3@example.com",
                 displayName: "골키퍼이민수",
+                gender: "남자",
                 profileImageUrl: nil,
                 phoneNumber: "010-3456-7890",
                 position: "goalkeeper",
@@ -476,10 +475,12 @@ class SampleDataManager {
         
         let applications = [
             Apply(
-                id: "", // 자동 생성
+                id: "",
+                // 자동 생성
                 matchId: matches[0].id,
                 userId: users[1].id,
-                userNickname: users[1].displayName,      // 추가!
+                userNickname: users[1].displayName,
+                // 추가!
                 userSkillLevel: users[1].skillLevel,
                 position: "midfielder",
                 participantCount: 1,
@@ -487,7 +488,13 @@ class SampleDataManager {
                 status: "pending",
                 rejectionReason: nil,
                 appliedAt: Date(),
-                processedAt: nil
+                processedAt: nil,
+                userRate: UserRating(
+                    totalRatingCount: 10,
+                    mannerSum: 40,
+                    teamWorkSum: 40,
+                    appointmentSum: 44
+                )
             ),
             Apply(
                 id: "", // 자동 생성
@@ -501,7 +508,13 @@ class SampleDataManager {
                 status: "accepted",
                 rejectionReason: nil,
                 appliedAt: Date(),
-                processedAt: Date()
+                processedAt: Date(),
+                userRate: UserRating(
+                    totalRatingCount: 10,
+                    mannerSum: 40,
+                    teamWorkSum: 40,
+                    appointmentSum: 44
+                )
             )
         ]
         
@@ -511,54 +524,5 @@ class SampleDataManager {
         }
         
         print("✅ 신청 데이터 생성 완료")
-    }
-    
-    // MARK: - 알림 데이터
-    
-    private func createSampleNotifications() async throws {
-        // 먼저 사용자와 매치들을 가져와서 실제 ID 사용
-        let users = try await firestore.getDocuments(collection: "users", as: User.self)
-        let matches = try await firestore.getDocuments(collection: "matches", as: Match.self)
-        
-        guard let firstUser = users.first, let firstMatch = matches.first else {
-            print("⚠️ 사용자나 매치가 없어서 알림 생성 건너뜀 (사용자: \(users.count)개, 매치: \(matches.count)개)")
-            return
-        }
-        
-        print("🔥 알림 생성에 사용할 사용자: \(firstUser.displayName) (ID: \(firstUser.id))")
-        
-        let notifications = [
-            Notification(
-                id: "", // 자동 생성
-                type: "application_received",
-                title: "새로운 신청이 도착했습니다",
-                message: "축구왕김철수님이 매치에 신청했습니다.",
-                data: ["matchId": firstMatch.id],
-                isRead: false,
-                createdAt: Date()
-            ),
-            Notification(
-                id: "", // 자동 생성
-                type: "application_accepted",
-                title: "신청이 승인되었습니다",
-                message: "실력별 축구 대회 신청이 승인되었습니다.",
-                data: ["matchId": firstMatch.id],
-                isRead: true,
-                createdAt: Date()
-            )
-        ]
-        
-        // 알림은 users/{userId}/notifications 서브컬렉션에 저장
-        for notification in notifications {
-            let documentId = try await firestore.createSubcollectionDocument(
-                collection: "users",
-                documentId: firstUser.id,
-                subcollection: "notifications",
-                data: notification
-            )
-            print("✅ 알림 생성됨: \(documentId) (사용자 ID: \(firstUser.id))")
-        }
-        
-        print("✅ 알림 데이터 생성 완료")
     }
 }

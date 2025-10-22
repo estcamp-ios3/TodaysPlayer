@@ -9,6 +9,7 @@ import SwiftUI
 
 // 지역 enum 정의
 enum Region: String, CaseIterable {
+    case all = "전체"
     case seoul = "서울"
     case gyeonggi = "경기"
     case incheon = "인천"
@@ -29,10 +30,10 @@ enum Region: String, CaseIterable {
 
 // 실력 레벨 enum
 enum SkillLevel: String, CaseIterable {
-    case expert = "상급"
-    case advanced = "고급"
-    case intermediate = "중급"
     case beginner = "초급"
+    case intermediate = "중급"
+    case advanced = "고급"
+    case expert = "상급"
 }
 
 enum Gender: String, CaseIterable {
@@ -52,7 +53,7 @@ struct GameFilter {
     var skillLevels: Set<SkillLevel> = [] // 복수선택: 프로, 아마추어 둘 다 가능
     var gender: Gender? = nil // 단일 선택: 남자만 or 여자만
     var feeType: FeeType? = nil // 단일 선택: 무료 or 유료
-    var region: Region = .seoul
+    var region: Region = .all
     
     // 서버로 보낼 딕셔너리 형태로 변환
     func toDictionary() -> [String: Any] {
@@ -90,10 +91,6 @@ struct ApplyView: View {
     @State private var isFilterSheetPresented: Bool = false
     @State private var isScrolling: Bool = false
     
-    // 달력 선택된 날짜
-    @State private var selectedDate: Date = Date()
-    
-    // filterViewModel 추가
     @StateObject private var filterViewModel = FilterViewModel()
     
     // 필터 관련 상태
@@ -105,9 +102,8 @@ struct ApplyView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                
                 Color(.systemGroupedBackground)
-                                .ignoresSafeArea()
+                    .ignoresSafeArea()
                 
                 VStack(alignment: .leading, spacing: 0) {
                     // 커스텀 타이틀 (네비게이션 타이틀 대신)
@@ -126,21 +122,21 @@ struct ApplyView: View {
                     // 스크랩, 필터, 지역 버튼 (통일된 스타일)
                     HStack(spacing: 12) {
                         // 스크랩 버튼 (아이콘 변경)
-                        NavigationLink(destination: ScrapView()) {
-                            HStack(spacing: 6) {
-                                // 삼항연산자로 아이콘 변경
-                                Image(systemName: favoriteViewModel.favoritedMatchIds.isEmpty ? "bookmark" : "bookmark.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.blue)
-                                Text("찜한 매치")
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.primary)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Color(.systemBackground))
-                            .cornerRadius(16)
-                        }
+//                        NavigationLink(destination: ScrapView()) {
+//                            HStack(spacing: 6) {
+//                                // 삼항연산자로 아이콘 변경
+//                                Image(systemName: favoriteViewModel.favoritedMatchIds.isEmpty ? "bookmark" : "bookmark.fill")
+//                                    .font(.system(size: 14))
+//                                    .foregroundColor(.blue)
+//                                Text("찜한 매치")
+//                                    .font(.system(size: 14, weight: .medium))
+//                                    .foregroundColor(.primary)
+//                            }
+//                            .padding(.horizontal, 12)
+//                            .padding(.vertical, 8)
+//                            .background(Color(.systemBackground))
+//                            .cornerRadius(16)
+//                        }
                         
                         // 필터 버튼
                         Button(action: {
@@ -186,16 +182,15 @@ struct ApplyView: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 8)
                     
-                    // 주간 달력 추가
-                    CalendarView(selectedDate: $selectedDate)
+                    // 주간 달력 - filterViewModel.selectedDate 사용
+                    CalendarView(selectedDate: $filterViewModel.selectedDate)
                         .frame(height: 150)
                         .clipped()
                         .padding(.horizontal, 16)
                         .padding(.top, 8)
                         .padding(.bottom, 8)
-                        .onChange(of: selectedDate) { oldValue, newValue in
-                            // ✅ 날짜 변경 시 필터 재적용
-                            filterViewModel.selectedDate = newValue
+                        .onChange(of: filterViewModel.selectedDate) { oldValue, newValue in
+                            // 날짜 변경 시 필터 재적용
                             filterViewModel.applyFilter()
                         }
                     
@@ -248,21 +243,22 @@ struct ApplyView: View {
             .environmentObject(filterViewModel)
         }
         .onAppear {
-            //  초기 데이터 로드
-            filterViewModel.selectedDate = selectedDate
+            // 초기 데이터 로드 (selectedDate는 filterViewModel이 관리)
             filterViewModel.fetchInitialMatches()
         }
     }
     
     // 플로팅 액션 버튼
     private var floatingActionButton: some View {
-        NavigationLink(destination: WritePostView()) {
+        NavigationLink(destination: WritePostView()
+            .environmentObject(filterViewModel)
+        ) {
             HStack(spacing: 8) {
-                Image(systemName: "plus")
+                Image(systemName: "person.fill.badge.plus")
                     .font(.system(size: 18, weight: .semibold))
                 
                 if !isScrolling {
-                    Text("글쓰기")
+                    Text("모집하기")
                         .font(.system(size: 16, weight: .semibold))
                 }
             }

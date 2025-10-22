@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct TotalAvgRatingView: View {
-    let userInfo: UserRating
+    var userInfo: UserRating? = nil
     var avgRating: Double
     
-    init(userInfo: UserRating) {
+    init(userInfo: UserRating? = nil, avgRating: Double) {
         self.userInfo = userInfo
-        let count = Double(max(userInfo.totalRatingCount, 1))
-        self.avgRating = (userInfo.appointmentSum + userInfo.mannerSum + userInfo.teamWorkSum) / (count * 3)
+        self.avgRating = avgRating
     }
     
     var body: some View {
@@ -23,7 +22,7 @@ struct TotalAvgRatingView: View {
                 .font(.largeTitle)
                 .foregroundColor(.black)
             
-            Text("나의 평군 점수")
+            Text("나의 평균 점수")
                 .padding(.top, 10)
             
             HStack(alignment: .center, spacing: 10) {
@@ -35,7 +34,7 @@ struct TotalAvgRatingView: View {
                     .foregroundColor(.gray)
             }
             
-            Text("총 \(userInfo.totalRatingCount)개의 평가")
+            Text("총 \(userInfo?.totalRatingCount ?? 0)개의 평가")
                 .font(.subheadline)
                 .foregroundColor(.gray)
         }

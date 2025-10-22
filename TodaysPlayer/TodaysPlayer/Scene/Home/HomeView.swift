@@ -13,7 +13,6 @@ struct HomeView: View {
     @State private var isAddingRating = false
     @State private var showSampleDataAlert = false
     @State private var sampleDataMessage = ""
-    @State private var hasAppeared = false  // 중복 로딩 방지
     
     var body: some View {
         ScrollView {
@@ -25,21 +24,26 @@ struct HomeView: View {
                 )
                 .padding(.top, 24)
                 
+                // 오늘의 날씨
+                TodaysWeatherCard(weatherData: viewModel.weatherData)
+                
                 // 내 주변 가까운 매치
                 NearbyMatchesCard(
                     matches: viewModel.getNearbyMatches(),
-                    viewModel: viewModel
+                    hasLocationPermission: viewModel.hasLocationPermission(),
+                    formatDistance: { coordinates in
+                        viewModel.formatDistance(to: coordinates)
+                    },
+                    onRequestLocationPermission: {
+                        Task {
+                            await viewModel.requestLocationPermission(shouldOpenSettings: true)
+                        }
+                    }
                 )
                 
-                // 내 활동 통계
-//                ActivityStatsCard()
-                
                 // 프로모션 배너
-                PromotionalBanner(viewModel: viewModel)
-                
-                // 하단 여백
-                Color.clear
-                    .frame(height: 20)
+                PromotionalBanner(bannerData: viewModel.bannerData)
+                    .padding(.bottom, 20)   // 하단 여백
             }
             .padding(.horizontal, 24)
         }
@@ -47,26 +51,9 @@ struct HomeView: View {
         .refreshable {
             await viewModel.loadInitialData()
         }
-        .onAppear {
-            // 중복 호출 방지
-            if hasAppeared == false {
-                hasAppeared = true
-                
-                Task {
-                    await viewModel.loadInitialData()
-                    // 홈 화면 진입 시 위치 권한 요청
-                    await viewModel.requestLocationPermission()
-                }
-            }
-        }
-        .alert("샘플 데이터 생성", isPresented: $showSampleDataAlert) {
-            Button("확인") { }
-        } message: {
-            Text(sampleDataMessage)
+        .task {
+            await viewModel.requestLocationPermission()     // 홈 화면 진입 시, 위치 권한 요청
+            await viewModel.loadInitialData()               // 홈 화면 진입 시, 초기 데이터 로드
         }
     }
-}
-
-#Preview {
-    HomeView()
 }

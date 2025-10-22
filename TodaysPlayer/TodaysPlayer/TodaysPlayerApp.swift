@@ -21,11 +21,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct TodaysPlayerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var favoriteViewModel = FavoriteViewModel()
+    @StateObject private var userSessionManager = UserSessionManager.shared
     
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            RootView()
                 .environmentObject(favoriteViewModel)
+                .environmentObject(userSessionManager)
         }
     }
+
 }

@@ -16,6 +16,9 @@ struct LocationSearchBottomSheet: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            // 서치 네비게이션 타이틀
+            searchTitle()
+                
             // 검색창
             SearchBar(
                 searchText: $viewModel.searchText,
@@ -54,10 +57,34 @@ struct LocationSearchBottomSheet: View {
                     viewModel.reset()
                 }) {
                     Image(systemName: "xmark")
-                        .foregroundColor(.primary)
+                        .foregroundStyle(.primary)
                 }
             }
         }
+    }
+}
+
+extension LocationSearchBottomSheet {
+    @ViewBuilder
+    private func searchTitle() -> some View {
+        HStack {
+            Text("구장 검색하기")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Spacer()
+            
+            Button(action: {
+                isPresented = false
+            }) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.top, 25)
+        .padding(.horizontal, 25)
+        .padding(.bottom, 8)
     }
 }
 

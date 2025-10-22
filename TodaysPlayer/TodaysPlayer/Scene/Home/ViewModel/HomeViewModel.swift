@@ -8,12 +8,10 @@
 import SwiftUI
 import Observation
 import CoreLocation
+import WeatherKit
 
 @Observable
 class HomeViewModel {
-    // 개발용 사용자 ID
-    private static let STATIC_USER_ID = "9uHP3cOHe8T2xwxS9lfx"
-    
     // 배너 관련
     var currentBannerIndex = 0
     private var bannerTimer: Timer?
@@ -40,6 +38,9 @@ class HomeViewModel {
         BannerItem(discountTag: "", imageName: "HomeBanner2", link: "https://intro.queenssmile.co.kr/")
     ]
     
+    // 날씨 데이터
+    var weatherData: Weather?
+    
     
     init() { }
     
@@ -58,14 +59,9 @@ class HomeViewModel {
             // 사용자를 먼저 로드
             try await self.loadCurrentUser()
             
-            // 나머지 데이터를 병렬로 로드
-            try await withThrowingTaskGroup(of: Void.self) { group in
-                group.addTask { try await self.loadMatches() }
-                group.addTask { try await self.loadAppliedMatches() }
-                
-                // 모든 작업 완료 대기
-                try await group.waitForAll()
-            }
+            async let _ = self.loadMatches()
+            async let _ = self.loadAppliedMatches()
+            async let _ = self.loadWeatherData()
             
             print("Firebase 데이터 로딩 완료!")
         } catch {
@@ -93,12 +89,7 @@ class HomeViewModel {
         
         print("유효한 매치 수: \(validMatches.count)개")
         print("중복 제거 후 매치 수: \(uniqueMatches.count)개")
-        
-        // 매치 정보 출력
-        for (index, match) in uniqueMatches.enumerated() {
-            print("매치 \(index + 1): \(match.title) - \(match.location.name)")
-        }
-        
+
         await MainActor.run {
             self.matches = uniqueMatches
         }
@@ -145,29 +136,42 @@ class HomeViewModel {
         print("사용자 데이터 로딩 중...")
         
         do {
-            // 개발용 사용자 ID로 사용자 가져오기
-            if let user = try await firestore.getDocument(collection: "users", documentId: Self.STATIC_USER_ID, as: User.self) {
+            if let user = UserSessionManager.shared.currentUser,
+               try await firestore.getDocument(collection: "users", documentId: user.id, as: User.self) != nil {
                 await MainActor.run {
                     self.user = user
                 }
                 
                 print("사용자 데이터 로딩 완료: \(user.displayName) (ID: \(user.id))")
-            } else {
-                print("사용자 ID \(Self.STATIC_USER_ID)를 찾을 수 없음")
-                
-                // 개발용 사용자가 없으면 첫 번째 사용자 사용
-                let users = try await firestore.getDocuments(collection: "users", as: User.self)
-                
-                await MainActor.run {
-                    self.user = users.first
-                }
-                
-                print("첫 번째 사용자 데이터 로딩 완료: \(users.first?.displayName ?? "없음")")
             }
         } catch {
             print("사용자 데이터 로딩 실패: \(error)")
             
             throw error
+        }
+    }
+    
+    func loadWeatherData() async throws {
+        guard let location = locationManager.currentLocation else {
+            print("위치 정보를 가져올 수 없습니다.")
+            return
+        }
+        
+        do {
+            let data = try await WeatherService().weather(for: location)
+            
+            await MainActor.run {
+                self.weatherData = data
+            }
+            
+            print("날씨 데이터 로딩 완료")
+        } catch {
+            print("날씨 데이터 로딩 실패: \(error)")
+            
+            await MainActor.run {
+                self.weatherData = nil
+                self.errorMessage = "날씨 정보를 불러올 수 없습니다."
+            }
         }
     }
 
@@ -193,8 +197,10 @@ class HomeViewModel {
         
         let now = Date()
         let availableMatches = matches.filter { match in
-            // 이미 신청한 매치 제외 && 미래 매치
-            !appliedMatchIds.contains(match.id) && match.dateTime > now
+            // 이미 신청한 매치 제외 && 본인이 모집한 매치 제외 && 미래 매치
+            !appliedMatchIds.contains(match.id) &&
+            match.organizerId != user?.id &&
+            match.dateTime > now
         }
         
         // 거리순으로 정렬 (가까운 순)

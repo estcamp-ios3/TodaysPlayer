@@ -11,7 +11,7 @@ import FirebaseFirestore
 final class MatchRepository {
     private let db = Firestore.firestore()
 
-    /// 모집중인 경기 페이지네이션 조회 (최신 생성 순)
+    /// 모집중인 경기 조회 (최신 생성 순)
     func fetchRecruitingMatchesPage(
         with userId: String,
         pageSize: Int,
@@ -38,7 +38,7 @@ final class MatchRepository {
         return (matches, nextCursor, snapshot.documents.count)
     }
 
-    /// 신청한 경기 페이지네이션 조회 (신청 최신 순)
+    /// 신청한 경기 조회 (최신 신청 순)
     func fetchAppliedMatchesPage(
         with userId: String,
         pageSize: Int,
@@ -46,7 +46,7 @@ final class MatchRepository {
     ) async throws -> (matches: [Match], lastDocument: DocumentSnapshot?, fetchedCount: Int) {
         var query: Query = db
             .collection("apply")
-            .whereField("applicantId", isEqualTo: userId)
+            .whereField("userId", isEqualTo: userId)
             .order(by: "appliedAt", descending: true)
             .limit(to: pageSize)
 

@@ -11,7 +11,9 @@ struct NearbyMatchesCard: View {
     @Environment(TabSelection.self) var tabSelection
 
     let matches: [Match]
-    let viewModel: HomeViewModel
+    let hasLocationPermission: Bool
+    let formatDistance: (Coordinates) -> String
+    let onRequestLocationPermission: () -> Void
     
     
     var body: some View {
@@ -25,7 +27,7 @@ struct NearbyMatchesCard: View {
     
     private func renderContent() -> some View {
         Group {
-            if viewModel.hasLocationPermission() {
+            if hasLocationPermission {
                 showMatchesList()
             } else {
                 showPermissionRequest()
@@ -40,12 +42,12 @@ struct NearbyMatchesCard: View {
         HStack {
             Image(systemName: "location.fill")
                 .font(.system(size: 16))
-                .foregroundColor(.green)
+                .foregroundStyle(.green)
             
             Text("내 주변 가까운 매치")
                 .font(.headline)
                 .fontWeight(.bold)
-                .foregroundColor(.black)
+                .foregroundStyle(.black)
             
             Spacer()
         }
@@ -57,17 +59,17 @@ struct NearbyMatchesCard: View {
             if matches.isEmpty {
                 Text("주변에 매치가 없습니다")
                     .font(.subheadline)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
                     .padding(.vertical, 20)
             } else {
                 ForEach(Array(matches.enumerated()), id: \.element.id) { index, match in
                     NavigationLink {
-                        Text("MatchTitle: \(match.title)")
+                        MatchDetailView(match: match)
                     } label: {
                         MatchItemView(
                             title: match.title,
                             location: match.location.name,
-                            distance: viewModel.formatDistance(to: match.location.coordinates),
+                            distance: formatDistance(match.location.coordinates),
                             time: match.dateTime.formatForDisplay(),
                             participants: "\(match.participants.count)/\(match.maxParticipants)",
                             gender: GenderType(rawValue: match.gender) ?? .mixed,
@@ -88,7 +90,7 @@ struct NearbyMatchesCard: View {
         }) {
             Text("더 많은 매치 보기")
                 .font(.headline)
-                .foregroundColor(.black)
+                .foregroundStyle(.black)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(Color.white)
@@ -110,12 +112,12 @@ struct NearbyMatchesCard: View {
             HStack {
                 Image(systemName: "location.slash")
                     .font(.system(size: 20))
-                    .foregroundColor(.orange)
+                    .foregroundStyle(.orange)
                 
                 Text("내 주변 가까운 매치")
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundColor(.black)
+                    .foregroundStyle(.black)
                 
                 Spacer()
             }
@@ -126,26 +128,24 @@ struct NearbyMatchesCard: View {
             VStack(spacing: 12) {
                 Text("내 주변 가까운 매치를 찾으려면\n위치 권한이 필요합니다")
                     .font(.system(size: 18))
-                    .foregroundColor(.black)
+                    .foregroundStyle(.black)
                     .multilineTextAlignment(.center)
                 
                 Text("설정 → 앱 → TodaysPlayer → 위치 → 앱을\n사용하는 동안으로 변경해주세요")
                     .font(.system(size: 12))
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal, 20)
             
             // 권한 허용 버튼
             Button(action: {
-                Task {
-                    await viewModel.requestLocationPermission(shouldOpenSettings: true)
-                }
+                onRequestLocationPermission()
             }) {
                 Text("위치 권한 허용하기")
                     .font(.headline)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
                     .background(Color.blue)
@@ -157,11 +157,11 @@ struct NearbyMatchesCard: View {
             HStack(spacing: 8) {
                 Image(systemName: "lock.shield")
                     .font(.system(size: 14))
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
                 
                 Text("위치 정보는 매치 검색에만 사용되며 안전하게 보호됩니다")
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundStyle(.gray)
                     .multilineTextAlignment(.leading)
             }
             .padding(.horizontal, 20)
@@ -172,6 +172,11 @@ struct NearbyMatchesCard: View {
 }
 
 #Preview {
-    NearbyMatchesCard(matches: [], viewModel: HomeViewModel())
-        .environment(TabSelection())
+    NearbyMatchesCard(
+        matches: [],
+        hasLocationPermission: true,
+        formatDistance: { _ in "1.2km" },
+        onRequestLocationPermission: { }
+    )
+    .environment(TabSelection())
 }

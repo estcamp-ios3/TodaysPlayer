@@ -18,11 +18,11 @@ struct ContentView: View {
                 }
             }
             
-            Tab("용병 신청", systemImage: "soccerball", value: 1) {
+            Tab("용병 모집", systemImage: "soccerball", value: 1) {
                 ApplyView()
             }
             
-            Tab("나의 매치", systemImage: "checklist", value: 2) {
+            Tab("나의 경기", systemImage: "checklist", value: 2) {
                 MatchListView()
             }
             

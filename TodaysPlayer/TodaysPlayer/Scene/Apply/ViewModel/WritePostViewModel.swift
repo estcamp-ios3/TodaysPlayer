@@ -15,15 +15,39 @@ final class WritePostViewModel {
     var description: String = ""
     var matchType: String = "futsal" // "futsal", "soccer"
     var gender: String = "mixed" // "male", "female", "mixed"
-    var selectedDate: Date = Date()
+    var selectedDate: Date = Calendar.current.startOfDay(for: Date())
     var startTime: Date = Date()
     var endTime: Date = Calendar.current.date(byAdding: .hour, value: 2, to: Date()) ?? Date()
     var duration: Int = 120 // 기본 120분
-    var maxParticipants: Int = 6
     var skillLevel: String = "beginner" // "beginner", "intermediate", "advanced", "expert"
     var hasFee: Bool = false
-    var price: Int = 0
     var selectedLocation: MatchLocation?
+    
+    var maxParticipants: Int = 6 {
+            didSet {
+                // 30명 초과 시 30으로 제한
+                if maxParticipants > 30 {
+                    maxParticipants = 30
+                }
+                // 0 이하 시 1로 제한
+                if maxParticipants < 1 {
+                    maxParticipants = 1
+                }
+            }
+        }
+    
+    var price: Int = 0 {
+            didSet {
+                // 20000원 초과 시 20000으로 제한
+                if price > 20000 {
+                    price = 20000
+                }
+                // 0 미만 시 0으로 제한
+                if price < 0 {
+                    price = 0
+                }
+            }
+        }
     
     // MARK: - UI State
     var isLoading: Bool = false
@@ -64,6 +88,16 @@ final class WritePostViewModel {
         isLoading = true
         defer { isLoading = false }
         
+        let user = try await FirestoreManager.shared.getDocument(
+            collection: "users",
+            documentId: organizerId,
+            as: User.self
+        )
+        
+        guard let user = user else {
+            throw ValidationError.userNotFound
+        }
+        
         // 시간 계산 (duration)
         let durationInMinutes = Int(endTime.timeIntervalSince(startTime) / 60)
         
@@ -73,8 +107,8 @@ final class WritePostViewModel {
             title: title,
             description: description,
             organizerId: organizerId,
-            organizerName: "test1",
-            organizerProfileURL: "",
+            organizerName: user.displayName,
+            organizerProfileURL: user.profileImageUrl,
             teamId: nil,
             matchType: matchType,
             gender: gender,
@@ -97,6 +131,7 @@ final class WritePostViewModel {
         // Firebase에 저장
         _ = try await FirestoreManager.shared.createDocument(
             collection: "matches",
+            documentId: match.id,
             data: match
         )
         
@@ -142,6 +177,7 @@ enum ValidationError: LocalizedError {
     case invalidForm
     case noLocation
     case invalidTime
+    case userNotFound
     
     var errorDescription: String? {
         switch self {
@@ -151,6 +187,8 @@ enum ValidationError: LocalizedError {
             return "장소를 선택해주세요"
         case .invalidTime:
             return "시간을 올바르게 입력해주세요"
+        case .userNotFound:
+            return "사용자 정보를 찾을 수 없습니다"
         }
     }
 }
