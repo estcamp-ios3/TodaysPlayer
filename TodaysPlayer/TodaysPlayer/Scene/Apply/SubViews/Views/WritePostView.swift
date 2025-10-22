@@ -253,20 +253,22 @@ struct WritePostView: View {
                                     HStack {
                                         TextField("최대 20,000원까지 입력", text: Binding(
                                             get: {
-                                                viewModel.price == 0 ? "" : "\(viewModel.price)"
+                                                if viewModel.price == 0 {
+                                                    return ""
+                                                } else {
+                                                    let formatter = NumberFormatter()
+                                                    formatter.numberStyle = .decimal
+                                                    formatter.groupingSeparator = ","
+                                                    return formatter.string(from: NSNumber(value: viewModel.price)) ?? "\(viewModel.price)"
+                                                }
                                             },
                                             set: { newValue in
-                                                viewModel.price = Int(newValue) ?? 0
+                                                let filtered = newValue.filter { $0.isNumber }
+                                                viewModel.price = Int(filtered) ?? 0
                                             }
                                         ))
                                         .keyboardType(.numberPad)
-                                        .onChange(of: viewModel.price) { oldValue, newValue in
-                                            if newValue > 20000 {
-                                                viewModel.price = 20000
-                                            } else if newValue < 0 {
-                                                viewModel.price = 0
-                                            }
-                                        }
+                                    
                                         if viewModel.price > 0 {
                                             Text("원")
                                                 .foregroundColor(.primary)
