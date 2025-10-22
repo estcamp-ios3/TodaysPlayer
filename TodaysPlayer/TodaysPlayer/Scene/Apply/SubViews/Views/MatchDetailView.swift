@@ -242,7 +242,7 @@ struct MatchLocationSectionForMatch: View {
                     }
                 }
                 
-                HStack(alignment: .top) {
+                HStack(alignment: .center) {
                     Image(systemName: "location.fill")
                         .foregroundColor(.gray)
                         .frame(width: 24)
