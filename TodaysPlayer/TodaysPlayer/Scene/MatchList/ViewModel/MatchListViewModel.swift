@@ -260,14 +260,15 @@ final class MatchListViewModel {
 
     private func appendMatches(_ target: inout [Match], with newMatches: [Match]) {
         var matchDict = Dictionary(uniqueKeysWithValues: target.map { ($0.id, $0) })
-        
-        // 동일 ID는 새 데이터로 갱신
+    
         for newMatch in newMatches {
             matchDict[newMatch.id] = newMatch
         }
-        
-        // 다시 배열로 변환
-        target = Array(matchDict.values)
+    
+        // 최신 날짜순으로 변경
+        target = matchDict.values.sorted(by: {
+            $0.updatedAt > $1.updatedAt
+        })
     }
 
     
