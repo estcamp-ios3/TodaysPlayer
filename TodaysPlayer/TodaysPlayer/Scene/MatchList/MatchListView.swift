@@ -9,10 +9,9 @@ import SwiftUI
 
 struct MatchListView: View {
     @State var viewModel: MatchListViewModel = MatchListViewModel()
-    @State private var path = NavigationPath()
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack {
             ZStack {
                 Color.gray.opacity(0.1)
                     .ignoresSafeArea()
@@ -44,7 +43,7 @@ struct MatchListView: View {
                             }
 
                             ForEach(Array(viewModel.displayedMatches.enumerated()), id: \.element.id) { index, match in
-                                NavigationLink(value: match) {
+                                NavigationLink(destination: MatchDetailView(match: match)) {
                                     VStack(spacing: 20) {
                                         MatchTagView(
                                             info: viewModel.getTagInfomation(with: match),
@@ -54,9 +53,7 @@ struct MatchListView: View {
                                         MatchInfoView(
                                             matchInfo: match,
                                             postedMatchCase: viewModel.postedMatchCase,
-                                            apply: viewModel.getUserApplyStatus(appliedMatch: match),
-                                            finishedMatchId: $viewModel.finishedMatchId,
-                                            finishedMatchWithRatingId: $viewModel.finishedMatchWithRatingId
+                                            apply: viewModel.getUserApplyStatus(appliedMatch: match)
                                         )
                                     }
                                     .padding()
@@ -83,24 +80,12 @@ struct MatchListView: View {
                     }
                     .scrollIndicators(.hidden)
                     .padding(.horizontal, 20)
-                    .navigationDestination(for: Match.self) { match in
-                        MatchDetailView(match: match)
-                    }
                 }
-                
-                ToastMessageView(manager: viewModel.toastManager)
             }
-            .onAppear {
-                viewModel.fetchMyMatchData()
+            .task {
+                viewModel.fetchMyMatchData(forceReload: true)
             }
-            .alert("해당 경기를 종료할까요?", isPresented: $viewModel.isFinishMatchAlertShow) {
-                Button("취소", role: .cancel) { }
-                
-                Button("종료", role: .close) {
-                    Task { await viewModel.finishSelectedMatch() }
-                }
-                .modifier(MyMatchButtonStyle())
-            }
+
         }
     }
 }

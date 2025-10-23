@@ -11,8 +11,6 @@ import SwiftUI
 /// 참여자 평가화면
 struct PlayerRatingView: View {
     let viewModel: PlayerRatingViewModel
-    let onCompletedBtnTapped: () -> ()
-    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         ZStack {
@@ -55,13 +53,10 @@ struct PlayerRatingView: View {
                     .padding(.leading, 12)
                     .padding(.bottom, 12)
                
-                Button(action: {                    
+                Button(action: {
                     Task {
                        await viewModel.updateUserRate()
                     }
-                    
-                    dismiss()
-                    onCompletedBtnTapped()
                 }) {
                     Text("평가 완료")
                         .frame(maxWidth: .infinity)

@@ -16,9 +16,6 @@ struct MatchInfoView: View {
     let postedMatchCase: PostedMatchCase
     let apply: (userId: String, rejectReason: String, status: ApplyStatus)   // 신청자Id: 참여상태
     
-    @Binding var finishedMatchId: String
-    @Binding var finishedMatchWithRatingId: String
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // 제목
@@ -53,22 +50,19 @@ struct MatchInfoView: View {
             }
             .visible(postedMatchCase == .appliedMatch && matchInfo.organizerId != apply.userId)
             
-            Button("경기 종료하기"){
-                finishedMatchId = matchInfo.id
-            }
-            .modifier(MyMatchButtonStyle())
-            .visible(postedMatchCase == .myRecruitingMatch && matchInfo.status != "finished")
             
             NavigationLink {
-                PlayerRatingView(viewModel: PlayerRatingViewModel(matchInfo: matchInfo)) {
-                    finishedMatchWithRatingId = matchInfo.id
-                }
-                
+                PlayerRatingView(viewModel: PlayerRatingViewModel(matchInfo: matchInfo))
             } label: {
                 Text("참여자 평가하기")
-                    .modifier(MyMatchButtonStyle())
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(Color.green)
+                    .cornerRadius(12)
             }
-            .visible(postedMatchCase == .finishedMatch && matchInfo.organizerId == apply.userId && matchInfo.rating == nil)
+            .visible(postedMatchCase == .finishedMatch && matchInfo.organizerId == apply.userId)
         }
         .foregroundStyle(Color.black)
         

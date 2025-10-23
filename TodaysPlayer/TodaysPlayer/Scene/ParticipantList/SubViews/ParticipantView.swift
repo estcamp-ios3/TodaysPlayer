@@ -36,21 +36,19 @@ struct ParticipantView: View {
                     }
                     
                     HStack(spacing: 6) {
-                        Text(participantData.position ?? "포지션무관")
+                        Text(participantData.position ?? "무관")
                             .font(.caption)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(Color.gray.opacity(0.3))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .visible(participantData.position != "")
-                        
+
                         Text(participantData.userSkillLevel ?? "초급")
                             .font(.caption)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(Color.gray.opacity(0.2))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .visible(participantData.userSkillLevel != "")
                     }
                 }
             }
