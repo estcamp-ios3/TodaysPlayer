@@ -103,15 +103,15 @@ final class MatchRepository {
     ///   - withRate: 평가가 완료된 경우(true), 평가가 완료되지 않은 경우 (false)
     func eidtMatchStatusToFinish(matchId: String, withRate: Bool = false) async {
         let data: [String: Any] = withRate
-            ? ["status": "finished", "rating": 1.0]
-            : ["status": "finished"]
+            ? ["status": "finished", "rating": 1.0, "updatedAt": Timestamp(date: Date())]
+            : ["status": "finished", "updatedAt": Timestamp(date: Date())]
         
         do {
             try await FirestoreManager.shared
                 .updateDocument(
                     collection: "matches",
                     documentId: matchId,
-                    data: data
+                    data: data,
                 )
         } catch {
             print("경기데이터 업데이트에 실패했습니다: \(error.localizedDescription)")
