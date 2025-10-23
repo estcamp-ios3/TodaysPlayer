@@ -80,9 +80,7 @@ struct TodaysWeatherCard: View {
             .padding(.leading, 10)
             
             // (강수, 바람, 습도) 정보
-            HStack(alignment: .center, spacing: 10) {
-                Spacer()
-                
+            HStack(spacing: 30) {
                 HStack {
                     Image(systemName: "cloud.rain")
                         .font(.system(size: 14))
@@ -91,8 +89,6 @@ struct TodaysWeatherCard: View {
                     Text("강수 확률\n\(Int(getPrecipitationChance(weather) * 100.0))%")
                         .font(.system(size: 15))
                         .foregroundStyle(.black.opacity(0.7))
-                    
-                    Spacer()
                 }
                 
                 HStack {
@@ -103,8 +99,6 @@ struct TodaysWeatherCard: View {
                     Text("바람\n\(Int(weather.currentWeather.wind.speed.value))m/s")
                         .font(.system(size: 15))
                         .foregroundStyle(.black.opacity(0.7))
-                    
-                    Spacer()
                 }
                 
                 HStack {
@@ -115,11 +109,7 @@ struct TodaysWeatherCard: View {
                     Text("습도\n\(Int(weather.currentWeather.humidity * 100))%")
                         .font(.system(size: 15))
                         .foregroundStyle(.black.opacity(0.7))
-                    
-                    Spacer()
                 }
-                
-                Spacer()
             }
             .padding(.vertical, 10)
             
