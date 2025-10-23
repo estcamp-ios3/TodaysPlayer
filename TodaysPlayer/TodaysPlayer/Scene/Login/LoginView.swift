@@ -121,10 +121,20 @@ struct LoginView: View {
                                     .cornerRadius(8)
                             }
                             
-                            NavigationLink(destination: PasswordResetView()) {
-                                Text("비밀번호를 잊으셨나요?")
-                                    .foregroundColor(.gray)
+                            Button {
+                                path.append("UserAgreement")
+                            } label: {
+                                Text("이메일로 회원가입")
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.white)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.gray.opacity(0.3))
+                                    )
                             }
+                            
+                            
                             
                             // 회원가입으로 이동 (약관동의 -> 회원가입)
                             //                            NavigationLink(destination: UserAgreementView()) {
@@ -138,17 +148,9 @@ struct LoginView: View {
                             //                                    )
                             //                            }
                             
-                            Button {
-                                path.append("UserAgreement")
-                            } label: {
-                                Text("이메일로 회원가입")
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.white)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color.gray.opacity(0.3))
-                                    )
+                            NavigationLink(destination: PasswordResetView()) {
+                                Text("비밀번호를 잊으셨나요?")
+                                    .foregroundColor(.gray)
                             }
                             
                             .navigationDestination(for: String.self) { value in
