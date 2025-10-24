@@ -150,7 +150,7 @@ struct WritePostView: View {
                         }
                         
                         // 모집 인원
-                        FormSection(title: "모집 인원") {
+                        FormSection(title: "모집할 인원") {
                             HStack(spacing: 12) {
                                 // 마이너스 버튼
                                 Button {
