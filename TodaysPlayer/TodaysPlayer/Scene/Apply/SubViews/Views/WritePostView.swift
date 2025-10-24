@@ -325,28 +325,40 @@ struct WritePostView: View {
                                     // 해당 날짜의 매치들로 필터 재적용
                                     filterViewModel.applyFilter()
                                     
+                                    // 토스트 메시지 표시
                                     toastManager.show(.postCreated, duration: 2.0)
                                     
-                                    Task {
-                                        try? await Task.sleep(nanoseconds: 2_000_000_000)
-                                        dismiss()
-                                    }
+                                    // 2초 대기 (토스트 메시지 표시 시간)
+                                    try? await Task.sleep(nanoseconds: 2_000_000_000)
+                                    
+                                    // 화면 닫기
+                                    dismiss()
                                     
                                 } catch {
+                                    viewModel.isSubmitting = false
+                                    viewModel.isLoading = false
                                     viewModel.errorMessage = error.localizedDescription
                                 }
                             }
                         } label: {
-                            Text("등록하기")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(viewModel.isFormValid ? Color.green : Color.gray)
-                                .cornerRadius(12)
-                                .padding(.horizontal)
+                            if viewModel.isSubmitting {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                            } else {
+                                Text("등록하기")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                            }
                         }
-                        .disabled(!viewModel.isFormValid)
+                        .background(
+                        (viewModel.isFormValid && !viewModel.isSubmitting) ? Color.green : Color.gray)
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                        .disabled(!viewModel.isFormValid || viewModel.isSubmitting)
                         .padding(.vertical, 12)
                     }
                     .background(Color(.systemBackground))
