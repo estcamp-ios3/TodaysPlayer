@@ -185,7 +185,9 @@ struct ApplyMatchView: View {
                                 .padding(.vertical, 16)
                         }
                     }
-                    .background(viewModel.isFormValid ? Color.green : Color.gray)
+                    .background(
+                        (viewModel.isFormValid && !viewModel.isSubmitting) ? Color.green : Color.gray
+                    )
                     .cornerRadius(12)
                     .disabled(!viewModel.isFormValid || viewModel.isSubmitting)
                     .padding(.horizontal, 20)
@@ -195,16 +197,13 @@ struct ApplyMatchView: View {
             }
             .onChange(of: viewModel.showSuccessAlert) { oldValue, newValue in
                 if newValue {
-                    // Toast 표시
                     toastManager.show(.applyCompleted, duration: 2.0)
-                    
-                    // 2초 후 화면 닫기
+                            
                     Task {
                         try? await Task.sleep(nanoseconds: 2_000_000_000)
                         dismiss()
                     }
                     
-                    // 플래그 리셋
                     viewModel.showSuccessAlert = false
                 }
             }

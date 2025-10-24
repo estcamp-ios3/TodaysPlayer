@@ -137,6 +137,11 @@ class ApplyMatchViewModel: ObservableObject {
     
     /// 매칭 신청 제출
     func submitApplication() {
+        guard !isSubmitting else {
+            print("이미 신청 처리 중입니다")
+            return
+        }
+        
         isSubmitting = true
         
         Task {
@@ -194,9 +199,8 @@ class ApplyMatchViewModel: ObservableObject {
                 print("매칭 신청 실패: \(error)")
                 errorMessage = "신청 중 오류가 발생했습니다.\n다시 시도해주세요."
                 showErrorAlert = true
+                isSubmitting = false
             }
-            
-            isSubmitting = false
         }
     }
     
