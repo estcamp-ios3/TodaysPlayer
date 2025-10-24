@@ -149,7 +149,7 @@ struct MatchBasicInfoCardForMatch: View {
                 InfoItemView(
                     icon: "person.2",
                     title: "인원",
-                    value: "\(match.participants.count)/\(match.maxParticipants)"
+                    value: "\(match.appliedParticipantsCount)/\(match.maxParticipants)"
                 )
                 
                 InfoItemView(
