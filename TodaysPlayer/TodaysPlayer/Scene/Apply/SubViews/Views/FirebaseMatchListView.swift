@@ -1,4 +1,10 @@
-// FirebaseMatchListView.swift
+//
+//  FirebaseMatchListView.swift
+//  TodaysPlayer
+//
+//  Created by 권소정 on 9/24/25.
+//
+
 import SwiftUI
 import FirebaseFirestore
 
