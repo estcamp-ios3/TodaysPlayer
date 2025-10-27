@@ -57,12 +57,6 @@ struct FirebaseMatchListView: View {
                                         .cornerRadius(12)
                                     
                                     Spacer()
-                                    
-                                    // 내 글이 아닐때만 북마크 공간 확보
-                                    if match.organizerId != AuthHelper.currentUserId {
-                                        Color.clear
-                                            .frame(width: 44, height: 44)
-                                    }
                                 }
                                 
                                 // 3️⃣ 시간
