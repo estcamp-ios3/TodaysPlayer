@@ -46,15 +46,8 @@ struct QuestionView: View {
             .padding(.vertical, 16)
             .padding(.horizontal, 16)
         }
-        .background(Color(.systemGray6))
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("운영자에게 문의하기")
-                    .font(.title2)
-                    .bold()
-            }
-        }
+        .background(Color.gray.opacity(0.1))
+        .navigationTitle("운영자에게 문의하기")
         .alert("알림", isPresented: $showAlert, actions: {
             Button("확인", role: .cancel) {}
         }, message: {
@@ -116,10 +109,9 @@ struct QuestionView: View {
 
             // 이메일
             LabeledContainer(label: "연락받을 이메일") {
-                TextField("example@email.com", text: $contactEmail)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
+                Text(UserSessionManager.shared.currentUser?.email ?? "")
                     .autocorrectionDisabled(true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 12)
                     .frame(height: 44)
                     .background(fieldBackground)
@@ -136,7 +128,7 @@ struct QuestionView: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
-                .background(Color(.green)) // dark on light, adapts
+                .background(Color.primaryBaseGreen) // dark on light, adapts
                 .clipShape(RoundedRectangle(cornerRadius: 40))
             }
             .buttonStyle(.plain)
@@ -177,7 +169,7 @@ struct QuestionView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("연락처 정보")
                 .font(.headline)
-            ContactRow(icon: "envelope.fill", title: "이메일", detail: "support@futsalmatch.com")
+            ContactRow(icon: "envelope.fill", title: "이메일", detail: "inCollection@futsalmatch.com")
             ContactRow(icon: "phone.fill", title: "고객센터", detail: "1588-1234 (평일 09:00~18:00)")
             ContactRow(icon: "clock.fill", title: "운영시간", detail: "평일 09:00~18:00 (주말 및 공휴일 제외)")
         }
@@ -197,8 +189,7 @@ struct QuestionView: View {
         guard let inquiryType else { return false }
         _ = inquiryType // silence unused warning if builds strip usage
         return !subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-               !bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-               isValidEmail(contactEmail)
+               !bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private func isValidEmail(_ email: String) -> Bool {
@@ -212,13 +203,13 @@ struct QuestionView: View {
         guard let inquiryType else { return }
 
         // Create and store the email message
-        let message = EmailMessage(
+        let message = QuestionMessage(
             inquiryType: inquiryType.title,
             subject: subject.trimmingCharacters(in: .whitespacesAndNewlines),
             body: bodyText.trimmingCharacters(in: .whitespacesAndNewlines),
             contactEmail: contactEmail.trimmingCharacters(in: .whitespacesAndNewlines)
         )
-        EmailCollection.shared.add(message)
+        QuestionCollection.shared.add(message)
 
         // Notify user
         alertMessage = "문의가 정상적으로 접수되었습니다. 빠른 시일 내에 답변드리겠습니다."

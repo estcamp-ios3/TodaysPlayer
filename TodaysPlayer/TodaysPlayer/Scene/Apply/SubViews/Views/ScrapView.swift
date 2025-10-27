@@ -15,7 +15,7 @@ struct ScrapView: View {
     
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground)
+            Color.gray.opacity(0.1)
                 .ignoresSafeArea()
             
             if isLoading {
@@ -72,7 +72,6 @@ struct ScrapView: View {
             }
         }
         .navigationTitle("찜한 매치")
-        .navigationBarTitleDisplayMode(.large)
         .toolbar(.hidden, for: .tabBar)
         .onAppear {
             loadScrapedMatches()
