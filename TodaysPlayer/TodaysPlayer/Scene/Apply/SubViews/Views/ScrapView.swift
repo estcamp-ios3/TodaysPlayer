@@ -153,7 +153,7 @@ struct MatchCardView: View {
                     Image(systemName: "person.2")
                         .font(.caption2)
                         .foregroundColor(.primary)
-                    Text("\(match.appliedParticipantsCount)/\(match.maxParticipants)명")
+                    Text("\(match.appliedParticipantsCount) / \(match.maxParticipants)")
                         .font(.caption)
                         .foregroundColor(.primary)
                 }

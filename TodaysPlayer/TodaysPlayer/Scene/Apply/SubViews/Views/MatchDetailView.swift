@@ -95,7 +95,7 @@ struct MatchTagViewForMatch: View {
                 .font(.system(size: 14))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(match.matchType == "futsal" ? Color.green : Color.blue)
+                .background(match.matchType == "futsal" ? Color.futsalGreen : Color.secondaryMintGreen)
                 .foregroundColor(.white)
                 .cornerRadius(12)
             
@@ -149,7 +149,7 @@ struct MatchBasicInfoCardForMatch: View {
                 InfoItemView(
                     icon: "person.2",
                     title: "인원",
-                    value: "\(match.appliedParticipantsCount)/\(match.maxParticipants)"
+                    value: "\(match.appliedParticipantsCount) / \(match.maxParticipants)"
                 )
                 
                 InfoItemView(

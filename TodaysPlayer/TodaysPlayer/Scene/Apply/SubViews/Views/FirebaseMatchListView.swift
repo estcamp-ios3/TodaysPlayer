@@ -52,7 +52,7 @@ struct FirebaseMatchListView: View {
                                         .font(.caption)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 4)
-                                        .background(match.matchType == "futsal" ? Color.green : Color.blue)
+                                        .background(match.matchType == "futsal" ? Color.futsalGreen : Color.secondaryMintGreen)
                                         .foregroundColor(.white)
                                         .cornerRadius(12)
                                     
@@ -86,7 +86,7 @@ struct FirebaseMatchListView: View {
                                         Image(systemName: "person.2")
                                             .font(.caption2)
                                             .foregroundColor(.primary)
-                                        Text("\(match.appliedParticipantsCount)/\(match.maxParticipants)명")
+                                        Text("\(match.appliedParticipantsCount) / \(match.maxParticipants)")
                                             .font(.caption)
                                             .foregroundColor(.primary)
                                     }
