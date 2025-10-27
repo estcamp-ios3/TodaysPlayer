@@ -100,7 +100,7 @@ final class MatchDetailViewModel {
     /// 버튼 배경색
     var buttonBackgroundColor: Color {
         if isMyMatch {
-            return .blue
+            return .secondaryMintGreen
         }
         
         if !currentMatch.isRecruiting {
@@ -108,7 +108,7 @@ final class MatchDetailViewModel {
         }
         
         guard let status = userApplyStatus else {
-            return .green // 신청하기
+            return .primaryBaseGreen // 신청하기
         }
         
         switch status {
@@ -133,14 +133,14 @@ final class MatchDetailViewModel {
             ) else { return }
             
             self.currentMatch = updatedMatch
-            print("✅ 매치 정보 갱신: \(updatedMatch.status), 신청인원: \(updatedMatch.appliedParticipantsCount)/\(updatedMatch.maxParticipants)")
+            print("매치 정보 갱신: \(updatedMatch.status), 신청인원: \(updatedMatch.appliedParticipantsCount)/\(updatedMatch.maxParticipants)")
         } catch {
-            print("⚠️ 매치 정보 갱신 실패: \(error)")
+            print("매치 정보 갱신 실패: \(error)")
         }
     }
     
     func refreshUserApplyStatus() async {
-        // ✅ 매치 정보도 함께 갱신
+        // 매치 정보도 함께 갱신
         await fetchLatestMatch()
         
         let userId = AuthHelper.currentUserId
@@ -149,7 +149,7 @@ final class MatchDetailViewModel {
         let allApplies = await repository.fetchParticipants(matchId: match.id)
         userApply = allApplies.first { $0.userId == userId }
         
-        print("✅ 신청 상태 새로고침: \(userApply?.status ?? "없음")")
+        print("신청 상태 새로고침: \(userApply?.status ?? "없음")")
     }
 
     // MARK: - Methods
@@ -166,7 +166,7 @@ final class MatchDetailViewModel {
         // 현재 사용자의 Apply 필터링
         userApply = allApplies.first { $0.userId == userId }
         
-        print("✅ Apply 상세 조회 완료: \(userApply?.status ?? "없음")")
+        print("Apply 상세 조회 완료: \(userApply?.status ?? "없음")")
     }
     
     // MARK: - Gender Validation
@@ -179,7 +179,7 @@ final class MatchDetailViewModel {
         }
         
         guard let userGender = AuthHelper.currentUser?.gender else {
-            print("❌ 사용자 성별 정보 없음")
+            print("사용자 성별 정보 없음")
             return false
         }
         
