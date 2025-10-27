@@ -76,6 +76,8 @@ struct SignUpView: View {
     @State private var emailState: FieldState = .idle
     @State private var nicknameState: FieldState = .idle
     @State private var passwordStrength: PasswordStrength = .none
+    @State private var job = ""
+    @State private var position = ""
     
     let genders = ["남성", "여성"]
     
@@ -183,6 +185,21 @@ struct SignUpView: View {
                             .padding(.vertical, 16)
                             .background(Color.gray.opacity(0.1))
                             .cornerRadius(8)
+                        }
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("직업 (선택사항)")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                            TextField("예: 개발자, 변호사, 학생 등", text: $job)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(maxWidth: .infinity)
+                                
+                            Text("포지션 (선택사항)")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                            TextField("예: 공격수, 수비수, 미드필더 등", text: $position)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(maxWidth: .infinity)
                         }
                     }
                     
