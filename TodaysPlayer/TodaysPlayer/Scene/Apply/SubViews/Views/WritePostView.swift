@@ -59,7 +59,7 @@ struct WritePostView: View {
                             }
                             
                             // 날짜 선택
-                            FormSection(title: "날짜") {
+                            FormSection(title: "경기 날짜") {
                                 Button(action: { showCalendar = true }) {
                                     HStack {
                                         Text(dateFormatter.string(from: viewModel.selectedDate))
@@ -75,7 +75,7 @@ struct WritePostView: View {
                             }
                             
                             // 시간 입력
-                            FormSection(title: "시간") {
+                            FormSection(title: "경기 시간") {
                                 HStack(spacing: 12) {
                                     DatePicker(
                                         "시작 시간",

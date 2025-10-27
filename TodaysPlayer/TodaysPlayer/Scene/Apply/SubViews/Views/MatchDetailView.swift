@@ -132,13 +132,13 @@ struct MatchBasicInfoCardForMatch: View {
             HStack(spacing: 24) {
                 InfoItemView(
                     icon: "calendar",
-                    title: "날짜",
+                    title: "경기 날짜",
                     value: formatDate(match.dateTime)
                 )
                 
                 InfoItemView(
                     icon: "clock",
-                    title: "시간",
+                    title: "경기 시간",
                     value: formatTime(match.dateTime, duration: match.duration)
                 )
             }
@@ -148,7 +148,7 @@ struct MatchBasicInfoCardForMatch: View {
             HStack(spacing: 24) {
                 InfoItemView(
                     icon: "person.2",
-                    title: "인원",
+                    title: "확정 인원",
                     value: "\(match.appliedParticipantsCount) / \(match.maxParticipants)"
                 )
                 
