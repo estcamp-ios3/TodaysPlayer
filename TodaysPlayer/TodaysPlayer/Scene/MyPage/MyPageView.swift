@@ -88,7 +88,7 @@ struct MyPageView: View {
                         Image(systemName: "person.crop.circle.fill")
                             .resizable()
                             .scaledToFill()
-                            .foregroundStyle(Color.green)
+                            .foregroundStyle(Color.green.opacity(0.7))
                     }
                 }
                 .frame(width: 75, height: 75)
@@ -118,7 +118,7 @@ struct MyPageView: View {
                             .padding(.vertical, 6)
                             .background(Color(.systemGray5))
                             .cornerRadius(20)
-                        Text(storedLevel.isEmpty ? "레벨 미설정" : storedLevel)
+                        Text(storedLevel.isEmpty ? "레벨 미설정" : storedLevel.skillLevelToKorean())
                             .font(.system(size: 11))
                             .padding(.horizontal, 30)
                             .padding(.vertical, 6)
