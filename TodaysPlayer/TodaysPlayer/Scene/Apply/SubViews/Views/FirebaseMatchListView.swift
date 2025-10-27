@@ -41,12 +41,12 @@ struct FirebaseMatchListView: View {
                             match: match
                         )) {
                             VStack(alignment: .leading, spacing: 12) {
-                                // 2️⃣ 제목
+                                // 제목
                                 Text(match.title)
                                     .font(.headline)
                                     .foregroundColor(.primary)
                                 
-                                // 1️⃣ 풋살/축구 태그
+                                // 풋살/축구 태그
                                 HStack {
                                     Text(match.matchType == "futsal" ? "풋살" : "축구")
                                         .font(.caption)
@@ -59,7 +59,7 @@ struct FirebaseMatchListView: View {
                                     Spacer()
                                 }
                                 
-                                // 3️⃣ 시간
+                                // 시간
                                 HStack(spacing: 4) {
                                     Image(systemName: "clock")
                                         .font(.caption)
@@ -69,7 +69,7 @@ struct FirebaseMatchListView: View {
                                         .foregroundColor(.primary)
                                 }
                                 
-                                // 4️⃣ 장소명
+                                // 장소명
                                 HStack(spacing: 4) {
                                     Image(systemName: "location")
                                         .font(.caption)
@@ -79,7 +79,7 @@ struct FirebaseMatchListView: View {
                                         .foregroundColor(.primary)
                                 }
                                 
-                                // 5️⃣ 인원 / 참가비 / 성별 / 실력
+                                // 인원 / 참가비 / 성별 / 실력
                                 HStack(spacing: 16) {
                                     // 인원
                                     HStack(spacing: 2) {
