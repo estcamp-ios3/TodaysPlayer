@@ -108,9 +108,15 @@ struct FirebaseMatchListView: View {
                                     }
                                     
                                     // 성별
-                                    Text(match.genderKorean)
-                                        .font(.caption)
-                                        .foregroundColor(.primary)
+                                    HStack(spacing: 2) {
+                                        Image(convertGenderIcon(gender: match.gender))
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 12, height: 12)
+                                        Text(match.genderKorean)
+                                            .font(.caption)
+                                            .foregroundColor(.primary)
+                                    }
                                     
                                     // 실력
                                     Text(match.skillLevel.skillLevelToKorean())
@@ -148,6 +154,18 @@ struct FirebaseMatchListView: View {
         }
         .onAppear {
             filterViewModel.applyFilter()
+        }
+    }
+    private func convertGenderIcon(gender: String) -> String {
+        switch gender {
+        case "male":
+            return "icon_male"
+        case "female":
+            return "icon_female"
+        case "mixed":
+            return "icon_mixed"
+        default:
+            return "icon_mixed"
         }
     }
 }
