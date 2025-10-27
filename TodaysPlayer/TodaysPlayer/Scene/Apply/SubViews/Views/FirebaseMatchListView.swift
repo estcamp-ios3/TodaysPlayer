@@ -77,7 +77,7 @@ struct FirebaseMatchListView: View {
                                 
                                 // 4️⃣ 장소명
                                 HStack(spacing: 4) {
-                                    Image(systemName: "mappin.circle")
+                                    Image(systemName: "location")
                                         .font(.caption)
                                         .foregroundColor(.primary)
                                     Text(match.location.name)
