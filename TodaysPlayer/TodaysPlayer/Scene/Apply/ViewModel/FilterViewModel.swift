@@ -14,97 +14,11 @@ class FilterViewModel: ObservableObject {
     @Published var currentFilter = GameFilter()
     @Published var matches: [Match] = []
     @Published var isLoading = false
-    
     @Published var selectedDate: Date = Date()
-    
     private let db = Firestore.firestore()
     
-    // MARK: - enum 값 ↔ Firebase 필드값 매핑
-    
-    /// SkillLevel enum → Firebase 필드값 변환
-    private func skillLevelToFirebase(_ skillLevel: SkillLevel) -> String {
-        switch skillLevel {
-        case .expert: return "expert"
-        case .advanced: return "advanced"
-        case .intermediate: return "intermediate"
-        case .beginner: return "beginner"
-        }
-    }
-    
-    /// Gender enum → Firebase 필드값 변환
-    private func genderToFirebase(_ gender: Gender) -> String {
-        switch gender {
-        case .male: return "male"
-        case .female: return "female"
-        }
-    }
-    
-    /// MatchType enum → Firebase 필드값 변환
-    private func matchTypeToFirebase(_ matchType: MatchType) -> String {
-        switch matchType {
-        case .futsal: return "futsal"
-        case .soccer: return "soccer"
-        }
-    }
-    
-    // MARK: - 주소에서 지역 추출
-    
-    /// 주소 문자열에서 Region enum 추출
-    private func extractRegion(from address: String) -> Region? {
-        if address.contains("서울") {
-            return .seoul
-        }
-        if address.contains("경기") {
-            return .gyeonggi
-        }
-        if address.contains("인천") {
-            return .incheon
-        }
-        if address.contains("강원") {
-            return .gangwon
-        }
-        if address.contains("대전") || address.contains("세종") {
-            return .daejeonSejong
-        }
-        if address.contains("충북") || address.contains("충청북도") {
-            return .chungbuk
-        }
-        if address.contains("충남") || address.contains("충청남도") {
-            return .chungnam
-        }
-        if address.contains("대구") {
-            return .daegu
-        }
-        if address.contains("부산") {
-            return .busan
-        }
-        if address.contains("울산") {
-            return .ulsan
-        }
-        if address.contains("경북") || address.contains("경상북도") {
-            return .gyeongbuk
-        }
-        if address.contains("경남") || address.contains("경상남도") {
-            return .gyeongnam
-        }
-        if address.contains("광주") {
-            return .gwangju
-        }
-        if address.contains("전북") || address.contains("전라북도") {
-            return .jeonbuk
-        }
-        if address.contains("전남") || address.contains("전라남도") {
-            return .jeonnam
-        }
-        if address.contains("제주") {
-            return .jeju
-        }
-        
-        return nil
-    }
     
     // MARK: - 필터 적용 및 데이터 가져오기
-    
     /// 필터를 적용하여 매치 데이터 가져오기
     func applyFilter() {
         Task {
@@ -137,57 +51,9 @@ class FilterViewModel: ObservableObject {
             }
             
             // 2. 클라이언트에서 모든 필터 적용
-            var filteredMatches = fetchedMatches
+            let filterdMatches = applyFilters(to: fetchedMatches)
             
-            // 지역 필터 (가장 먼저 적용)
-            if currentFilter.region != .all {
-                filteredMatches = filteredMatches.filter { match in
-                    let extractedRegion = extractRegion(from: match.location.address)
-                    return extractedRegion == currentFilter.region
-                }
-            }
-            
-            // 날짜 필터
-            filteredMatches = filteredMatches.filter { match in
-                Calendar.current.isDate(match.dateTime, inSameDayAs: selectedDate)
-            }
-            
-            // 시간 필터 추가: 현재 시간보다 미래 경기만 표시
-            filteredMatches = filteredMatches.filter { match in
-                match.dateTime > Date()
-            }
-            
-            // 경기 종류 필터
-            if let matchType = currentFilter.matchType {
-                let firebaseValue = matchTypeToFirebase(matchType)
-                filteredMatches = filteredMatches.filter { $0.matchType == firebaseValue }
-            }
-            
-            // 성별 필터
-            if let gender = currentFilter.gender {
-                let firebaseValue = genderToFirebase(gender)
-                filteredMatches = filteredMatches.filter { $0.gender == firebaseValue }
-            }
-            
-            // 참가비 필터
-            if let feeType = currentFilter.feeType {
-                switch feeType {
-                case .free:
-                    filteredMatches = filteredMatches.filter { $0.price == 0 }
-                case .paid:
-                    filteredMatches = filteredMatches.filter { $0.price > 0 }
-                }
-            }
-            
-            // 실력 필터
-            if !currentFilter.skillLevels.isEmpty {
-                let firebaseSkillLevels = currentFilter.skillLevels.map { skillLevelToFirebase($0) }
-                filteredMatches = filteredMatches.filter { match in
-                    firebaseSkillLevels.contains(match.skillLevel)
-                }
-            }
-            
-            self.matches = filteredMatches
+            self.matches = filterdMatches
             self.isLoading = false
             
             print("필터링 완료")
@@ -201,11 +67,65 @@ class FilterViewModel: ObservableObject {
         }
     }
     
+    // MARK: - 필터링 로직 분리
+    
+    private func applyFilters(to matches: [Match]) -> [Match] {
+        var filtered = matches
+        
+        // 지역 필터 (가장 먼저 적용)
+        if currentFilter.region != .all {
+            filtered = filtered.filter { match in
+                let extractedRegion = EnumMapper.extractRegion(from: match.location.address)
+                return extractedRegion == currentFilter.region
+            }
+        }
+        
+        // 날짜 필터
+        filtered = filtered.filter { match in
+            Calendar.current.isDate(match.dateTime, inSameDayAs: selectedDate)
+        }
+        
+        // 시간 필터 추가: 현재 시간보다 미래 경기만 표시
+        filtered = filtered.filter { match in
+            match.dateTime > Date()
+        }
+        
+        // 경기 종류 필터
+        if let matchType = currentFilter.matchType {
+            let firebaseValue = EnumMapper.matchType(matchType)
+            filtered = filtered.filter { $0.matchType == firebaseValue }
+        }
+        
+        // 성별 필터
+        if let gender = currentFilter.gender {
+            let firebaseValue = EnumMapper.gender(gender)
+            filtered = filtered.filter { $0.gender == firebaseValue }
+        }
+        
+        // 참가비 필터
+        if let feeType = currentFilter.feeType {
+            switch feeType {
+            case .free:
+                filtered = filtered.filter { $0.price == 0 }
+            case .paid:
+                filtered = filtered.filter { $0.price > 0 }
+            }
+        }
+        
+        // 실력 필터
+        if !currentFilter.skillLevels.isEmpty {
+            let firebaseSkillLevels = currentFilter.skillLevels.map { EnumMapper.skillLevel($0) }
+            filtered = filtered.filter { match in
+                firebaseSkillLevels.contains(match.skillLevel)
+            }
+        }
+        return filtered
+    }
+    
     // MARK: - 필터 관리
     
-    /// 필터 초기화 (기본값 서울로 리셋)
     func resetFilter() {
-        currentFilter = GameFilter() // region은 .seoul 기본값 유지
+        currentFilter = GameFilter()
         applyFilter()
     }
     
