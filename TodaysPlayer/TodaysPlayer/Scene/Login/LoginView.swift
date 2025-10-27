@@ -44,11 +44,13 @@ struct LoginView: View {
                         VStack(spacing: 16) {
                             ZStack {
                                 Circle()
-                                    .fill(Color.blue)
+                                    .fill(Color.white)
                                     .frame(width: 80, height: 80)
-                                Image(systemName: "shield.fill")
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 40))
+                                Image("2조")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .clipShape(Circle())
+                                    .frame(width: 70, height: 70)
                             }
                             Text("오늘의 용병")
                                 .font(.title)

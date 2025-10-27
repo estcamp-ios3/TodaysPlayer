@@ -28,10 +28,10 @@ struct CheckboxView: View {
                     .foregroundColor(required ? .red : .gray)
                     .font(.caption)
                 
-                Spacer()
+                // Spacer()
                 
-                Image(systemName: "eye")
-                    .foregroundColor(.gray)
+                //Image(systemName: "eye")
+                //    .foregroundColor(.gray)
             }
         }
     }
