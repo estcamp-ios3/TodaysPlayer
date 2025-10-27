@@ -19,7 +19,7 @@ struct ApplyView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground)
+                Color.gray.opacity(0.1)
                     .ignoresSafeArea()
                 
                 VStack(alignment: .leading, spacing: 0) {
