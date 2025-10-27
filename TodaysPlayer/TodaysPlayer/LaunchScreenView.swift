@@ -13,14 +13,14 @@ struct LottieView: UIViewRepresentable {
     let name: String
     let bundle: Bundle
     var loopMode: LottieLoopMode = .loop
-
+    
     func makeUIView(context: Context) -> LottieAnimationView {
         let view = LottieAnimationView(name: name, bundle: bundle)
         view.loopMode = loopMode
         view.play()
         return view
     }
-
+    
     func updateUIView(_ uiView: LottieAnimationView, context: Context) {
         // 업데이트 시 재생 유지
         if !uiView.isAnimationPlaying {
@@ -32,23 +32,22 @@ struct LottieView: UIViewRepresentable {
 // MARK: - LaunchScreenView
 struct LaunchScreenView: View {
     var body: some View {
-        ZStack {
-            LinearGradient(colors: [.primaryBaseGreen.opacity(0.8), .primaryLight],
-                           startPoint: .topLeading,
-                           endPoint: .bottomTrailing)
-                .ignoresSafeArea()
+        VStack {
+            Spacer().frame(height: 60) // 텍스트 위 여백
+
+            Text("오늘의 용병")
+                .font(.title.bold())
+                .foregroundColor(.black)
+
+            Spacer() // 텍스트와 애니메이션 사이 공간
 
             LottieView(name: "BouncingSoccerBall", bundle: .main)
                 .scaleEffect(0.6)
-                .frame(width: 100, height: 100)
+                .frame(width: 150, height: 150)
 
-//            VStack {
-//                Spacer()
-//                Text("Today's Player")
-//                    .font(.title.bold())
-//                    .foregroundColor(.white)
-//                    .padding(.bottom, 80)
-//            }
+            Spacer() // 애니메이션 아래 공간
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.white)
     }
 }
