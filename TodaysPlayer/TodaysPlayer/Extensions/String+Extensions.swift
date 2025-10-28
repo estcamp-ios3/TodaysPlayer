@@ -51,4 +51,22 @@ extension String {
             return "\(formatter.string(from: NSNumber(value: price)) ?? "\(price)")원"
         }
     }
+    
+    /// 우편번호(5자리 숫자)를 문자열에서 제거
+    /// - Returns: 우편번호가 제거된 주소 문자열
+    func removingPostalCode() -> String {
+        var result = self
+        
+        // 맨 앞의 5자리 숫자 제거
+        result = result.replacingOccurrences(of: "^\\d{5}\\s*", with: "", options: .regularExpression)
+        
+        // 맨 끝의 5자리 숫자 제거
+        result = result.replacingOccurrences(of: "\\s*\\d{5}$", with: "", options: .regularExpression)
+        
+        // 연속된 공백 정리
+        result = result.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespaces)
+        
+        return result
+    }
 }

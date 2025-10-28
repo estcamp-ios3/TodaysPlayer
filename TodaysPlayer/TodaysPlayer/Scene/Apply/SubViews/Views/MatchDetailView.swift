@@ -242,7 +242,7 @@ struct MatchLocationSectionForMatch: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
-                        Text(match.location.address)
+                        Text(match.location.address.removingPostalCode())
                             .font(.subheadline)
                             .fontWeight(.medium)
                     }
