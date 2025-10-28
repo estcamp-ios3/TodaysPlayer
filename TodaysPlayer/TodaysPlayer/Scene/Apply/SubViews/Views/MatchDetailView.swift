@@ -169,7 +169,7 @@ struct MatchBasicInfoCardForMatch: View {
                 )
                 
                 InfoItemView(
-                    icon: "star.circle",
+                    icon: "arrow.up.circle",
                     title: "실력",
                     value: match.skillLevel.skillLevelToKorean()
                 )
@@ -218,7 +218,7 @@ struct MatchLocationSectionForMatch: View {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
                     Image(systemName: "mappin.circle.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(.primaryBaseGreen)
                         .frame(width: 24)
                     
                     VStack(alignment: .leading, spacing: 2) {
@@ -242,7 +242,7 @@ struct MatchLocationSectionForMatch: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                         
-                        Text(match.location.address)
+                        Text(match.location.address.removingPostalCode())
                             .font(.subheadline)
                             .fontWeight(.medium)
                     }
