@@ -79,6 +79,9 @@ struct ScrapView: View {
         .refreshable {
             loadScrapedMatches()
         }
+        .onChange(of: favoriteViewModel.favoritedMatchIds) { _ in
+            loadScrapedMatches()
+        }
     }
     
     // 스크랩한 매치 불러오기
