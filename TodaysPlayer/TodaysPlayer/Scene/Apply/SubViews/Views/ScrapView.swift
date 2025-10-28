@@ -41,33 +41,31 @@ struct ScrapView: View {
                 ScrollView {
                     LazyVStack(spacing: 16) {
                         ForEach(scrapedMatches, id: \.id) { match in
-                            ZStack(alignment: .topTrailing) {
                                 // 매치 카드 (NavigationLink)
                                 NavigationLink(destination: MatchDetailView(match: match)) {
                                     MatchCardView(match: match)
                                 }
                                 .buttonStyle(PlainButtonStyle())
-                                
-                                // 북마크 버튼
-                                Button {
-                                    withAnimation {
-                                        scrapedMatches.removeAll { $0.id == match.id }
+                                .overlay(alignment: .topTrailing) {
+                                BookmarkButton(
+                                    match: match,
+                                    isFavorited: favoriteViewModel.isFavorited(matchId: match.id),
+                                    action: {
+                                        withAnimation {
+                                            scrapedMatches.removeAll { $0.id == match.id }
+                                        }
+                                        favoriteViewModel.toggleFavorite(
+                                            matchId: match.id,
+                                            organizerId: match.organizerId
+                                        )
                                     }
-                                    favoriteViewModel.toggleFavorite(
-                                        matchId: match.id,
-                                        organizerId: match.organizerId
-                                    )
-                                } label: {
-                                    Image(systemName: favoriteViewModel.isFavorited(matchId: match.id) ? "bookmark.fill" : "bookmark")
-                                        .font(.system(size: 22))
-                                        .foregroundColor(favoriteViewModel.isFavorited(matchId: match.id) ? .green : .gray)
-                                }
+                                )
                                 .padding(8)
                             }
                         }
                     }
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
+                    .padding(.top, 16)
                 }
             }
         }
@@ -77,9 +75,6 @@ struct ScrapView: View {
             loadScrapedMatches()
         }
         .refreshable {
-            loadScrapedMatches()
-        }
-        .onChange(of: favoriteViewModel.favoritedMatchIds) { _ in
             loadScrapedMatches()
         }
     }
