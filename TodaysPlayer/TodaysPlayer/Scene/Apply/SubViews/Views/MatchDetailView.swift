@@ -24,12 +24,11 @@ struct MatchDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                MatchTagViewForMatch(match: viewModel.currentMatch, postedMatchCase: .allMatches)
-                
                 MatchDetailHeaderView(
-                    title: match.title,
-                    subtitle: "함께 할 플레이어를 모집합니다"
+                    title: match.title
                 )
+                
+                MatchTagViewForMatch(match: viewModel.currentMatch, postedMatchCase: .allMatches)
                 
                 MatchBasicInfoCardForMatch(match: viewModel.currentMatch)
                 MatchLocationSectionForMatch(match: match)
@@ -45,7 +44,7 @@ struct MatchDetailView: View {
             }
             .padding()
         }
-        .background(Color(.systemGray6))
+        .background(Color.gray.opacity(0.1))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -63,7 +62,7 @@ struct MatchDetailView: View {
                     }) {
                         Image(systemName: favoriteViewModel.isFavorited(matchId: match.id) ? "bookmark.fill" : "bookmark")
                             .font(.system(size: 20))
-                            .foregroundColor(favoriteViewModel.isFavorited(matchId: match.id) ? .blue : .primary)
+                            .foregroundColor(favoriteViewModel.isFavorited(matchId: match.id) ? .primaryBaseGreen : .primary)
                     }
                 }
             }
@@ -96,7 +95,7 @@ struct MatchTagViewForMatch: View {
                 .font(.system(size: 14))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(match.matchType == "futsal" ? Color.green : Color.blue)
+                .background(match.matchType == "futsal" ? Color.futsalGreen : Color.secondaryMintGreen)
                 .foregroundColor(.white)
                 .cornerRadius(12)
             
@@ -133,13 +132,13 @@ struct MatchBasicInfoCardForMatch: View {
             HStack(spacing: 24) {
                 InfoItemView(
                     icon: "calendar",
-                    title: "날짜",
+                    title: "경기 날짜",
                     value: formatDate(match.dateTime)
                 )
                 
                 InfoItemView(
                     icon: "clock",
-                    title: "시간",
+                    title: "경기 시간",
                     value: formatTime(match.dateTime, duration: match.duration)
                 )
             }
@@ -149,8 +148,8 @@ struct MatchBasicInfoCardForMatch: View {
             HStack(spacing: 24) {
                 InfoItemView(
                     icon: "person.2",
-                    title: "인원",
-                    value: "\(match.appliedParticipantsCount)/\(match.maxParticipants)"
+                    title: "확정 인원",
+                    value: "\(match.appliedParticipantsCount) / \(match.maxParticipants)"
                 )
                 
                 InfoItemView(
@@ -172,24 +171,14 @@ struct MatchBasicInfoCardForMatch: View {
                 InfoItemView(
                     icon: "star.circle",
                     title: "실력",
-                    value: skillLevelKorean(match.skillLevel)
+                    value: match.skillLevel.skillLevelToKorean()
                 )
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(Color.white)
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
-    }
-    
-    private func skillLevelKorean(_ level: String) -> String {
-        switch level.lowercased() {
-        case "beginner": return "초급"
-        case "intermediate": return "중급"
-        case "advanced": return "고급"
-        case "expert": return "상급"
-        default: return "무관"
-        }
     }
     
     private func formatDate(_ date: Date) -> String {
@@ -296,5 +285,3 @@ struct MatchLocationSectionForMatch: View {
         }
     }
 }
-
-// MatchActionButtonsViewForMatch 삭제됨 (DynamicMatchActionButton으로 대체)

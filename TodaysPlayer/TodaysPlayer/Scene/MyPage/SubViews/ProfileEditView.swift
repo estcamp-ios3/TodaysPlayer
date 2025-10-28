@@ -19,7 +19,7 @@ struct ProfileEditView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                // 프로필 사진
+//                // 프로필 사진 편집 기능, 구현은 되어있지만, 서버로 데이터 이전 및 불러오기 하려면 firebaseStorage 필요로 인해 비활성화
                 VStack(spacing: 8) {
                     ZStack(alignment: .bottomTrailing) {
                         Group {
@@ -53,6 +53,7 @@ struct ProfileEditView: View {
                 }
                 .padding()
                 .background(RoundedRectangle(cornerRadius: 16).fill(Color(.white)))
+                .disabled(true)
                 
                 // 기본 정보
                 VStack(alignment: .leading, spacing: 16) {
@@ -62,44 +63,44 @@ struct ProfileEditView: View {
                         Text("닉네임").font(.caption).foregroundColor(.gray)
                         HStack {
                             Image(systemName: "person")
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                             Text(UserSessionManager.shared.currentUser?.displayName ?? "")
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                                 .font(.body)
                                 .disabled(true)
                             Spacer()
                         }
                         .padding(10)
-                        .background(RoundedRectangle(cornerRadius: 20).fill(Color(.systemGray5)))
+                        .background(RoundedRectangle(cornerRadius: 20).fill(Color.secondaryDeepGray))
                     }
                     // 연락처는 당장 받아오는 데이터가 아니므로 추후 필요한 상황에 활성화 예정
 //                    VStack(alignment: .leading, spacing: 4) {
 //                        Text("연락처").font(.caption).foregroundColor(.gray)
 //                        HStack {
 //                            Image(systemName: "phone")
-//                                .foregroundColor(.black)
+//                                .foregroundColor(.white)
 //                            Text(UserSessionManager.shared.currentUser?.phoneNumber ?? "")
-//                                .foregroundColor(.black)
+//                                .foregroundColor(.white)
 //                                .font(.body)
 //                                .disabled(true)
 //                            Spacer()
 //                        }
 //                        .padding(10)
-//                        .background(RoundedRectangle(cornerRadius: 20).fill(Color(.systemGray5)))
+//                        .background(RoundedRectangle(cornerRadius: 20).fill(Color.secondaryDeepGray))
 //                    }
                     VStack(alignment: .leading, spacing: 4) {
                         Text("이메일").font(.caption).foregroundColor(.gray)
                         HStack {
                             Image(systemName: "envelope")
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                             Text(UserSessionManager.shared.currentUser?.email ?? "")
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                                 .font(.body)
                                 .disabled(true)
                             Spacer()
                         }
                         .padding(10)
-                        .background(RoundedRectangle(cornerRadius: 20).fill(Color(.systemGray5)))
+                        .background(RoundedRectangle(cornerRadius: 20).fill(Color.secondaryDeepGray))
                     }
                     
                     let regionBinding = Binding(
@@ -123,7 +124,7 @@ struct ProfileEditView: View {
                                         .font(.system(size: 20, weight: .regular))
                                 }
                                 .frame(maxWidth: .infinity, maxHeight: .infinity , alignment: .center)
-                                .background(RoundedRectangle(cornerRadius: 20).fill(Color(.systemGray5)))
+                                .background(RoundedRectangle(cornerRadius: 20).fill(Color.secondaryCoolGray))
                             }
                         }
                         
@@ -133,13 +134,13 @@ struct ProfileEditView: View {
                                 Image("icon_mixed")
                                     .foregroundColor(.black)
                                 Text(UserSessionManager.shared.currentUser?.gender ?? "")
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                     .font(.body)
                                     .disabled(true)
                                 Spacer()
                             }
                             .padding(10)
-                            .background(RoundedRectangle(cornerRadius: 20).fill(Color(.systemGray5)))
+                            .background(RoundedRectangle(cornerRadius: 20).fill(Color.secondaryDeepGray))
                         }
                     }
                 }
@@ -178,11 +179,12 @@ struct ProfileEditView: View {
                                 Image(systemName: "chevron.down")
                                     .font(.system(size: 15, weight: .regular))
                             }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity , alignment: .center)
-                            .background(RoundedRectangle(cornerRadius: 20).fill(Color(.systemGray5)))
+                            .frame(maxHeight: .infinity , alignment: .center)
+                            .padding(.horizontal, 21)
+//                            .padding(.vertical, 10)
+                            .background(RoundedRectangle(cornerRadius: 20).fill(Color.secondaryCoolGray))
                         }
                     }
-                    
                     VStack(alignment: .leading, spacing: 7) {
                         Text("실력 레벨").font(.caption).foregroundColor(.gray)
                         Menu {
@@ -193,14 +195,15 @@ struct ProfileEditView: View {
                                 }
                             }
                         } label: {
-                            HStack(spacing: 35) {
+                            HStack(spacing: 25) {
                                 Text(viewModel.levelDisplay)
                                 Image(systemName: "chevron.down")
                                     .font(.system(size: 15, weight: .regular))
                             }
-                            .padding(.horizontal, 30)
+//                            .padding(.horizontal, 30)
+                            .frame(maxWidth: .infinity, alignment: .center)
                             .padding(.vertical, 10)
-                            .background(RoundedRectangle(cornerRadius: 20).fill(Color(.systemGray5)))
+                            .background(RoundedRectangle(cornerRadius: 20).fill(Color.secondaryCoolGray))
                         }
                     }
                 }
@@ -215,7 +218,7 @@ struct ProfileEditView: View {
                                     .foregroundColor(viewModel.preferredTimes.contains(t) ? .white : .black)
                                     .padding(.vertical, 8)
                                     .padding(.horizontal, 12)
-                                    .background(viewModel.preferredTimes.contains(t) ? Color(.green) : Color(.systemGray5))
+                                    .background(viewModel.preferredTimes.contains(t) ? Color.primaryDark : Color.secondaryCoolGray)
                                     .cornerRadius(20)
                             }
                             .buttonStyle(.plain)
@@ -230,7 +233,7 @@ struct ProfileEditView: View {
                         .foregroundColor(.black)
                         .padding(4)
                         .frame(minHeight: 150)
-                        .background(RoundedRectangle(cornerRadius: 20).fill(Color.gray.opacity(0.1)))
+                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.secondaryCoolGray))
                 }
             }
             .padding()
@@ -245,20 +248,20 @@ struct ProfileEditView: View {
                 {
                     Text("저장")
                         .fontWeight(.bold)
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .padding(.vertical, 12)
                         .frame(maxWidth: .infinity)
-                        .background(RoundedRectangle(cornerRadius: 20).fill(Color.green.opacity(0.5)))
+                        .background(RoundedRectangle(cornerRadius: 20).fill(Color.primaryBaseGreen))
                 }
                 Spacer()
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, 15)
         .toolbar(.hidden, for: .tabBar)
-        .background(Color.gray.opacity(0.1).ignoresSafeArea())
+        .background(Color.gray.opacity(0.1))
         .navigationTitle("프로필 편집")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
         .ignoresSafeArea(edges: .bottom)
 
         // 화면 최초 진입 시, 저장된 값을 편집용 상태로 로드 (한 번만 실행)
