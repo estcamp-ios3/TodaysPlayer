@@ -169,7 +169,7 @@ struct MatchBasicInfoCardForMatch: View {
                 )
                 
                 InfoItemView(
-                    icon: "star.circle",
+                    icon: "arrow.up.circle",
                     title: "실력",
                     value: match.skillLevel.skillLevelToKorean()
                 )
