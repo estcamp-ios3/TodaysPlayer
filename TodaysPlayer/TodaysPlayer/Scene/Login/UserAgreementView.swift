@@ -7,11 +7,41 @@
 
 import SwiftUI
 
+enum AgreeSessionURL: String, CaseIterable {
+    case serviceTerms
+    case privacyPolicy
+    case marketingConsent
+    
+    /// 각 항목별 외부 링크 URL
+    var url: URL? {
+        switch self {
+        case .serviceTerms:
+            return URL(string: "https://www.notion.so/29bdb27feebd8065bf50de6cc94a34fc?source=copy_link")
+        case .privacyPolicy:
+            return URL(string: "https://www.notion.so/29bdb27feebd80ff9c92fdb5a6c509f3?source=copy_link")
+        case .marketingConsent:
+            return URL(string: "https://www.notion.so/29bdb27feebd80c39a2becf603499502?source=copy_link")
+        }
+    }
+    
+    /// 표시용 이름 (UI 텍스트에 사용)
+    var displayName: String {
+        switch self {
+        case .serviceTerms:
+            return "서비스 이용약관"
+        case .privacyPolicy:
+            return "개인정보 처리방침"
+        case .marketingConsent:
+            return "마케팅 수신 동의"
+        }
+    }
+}
+
 struct CheckboxView: View {
     @Binding var isChecked: Bool
     var title: String
     var required: Bool = false
-    var onDetailTap: (() -> Void)? = nil
+    var linkURL: URL? = nil
 
     var body: some View {
         HStack {
@@ -29,27 +59,31 @@ struct CheckboxView: View {
                     Text(required ? "(필수)" : "(선택)")
                         .foregroundColor(required ? .accentRed : .gray)
                         .font(.caption)
-                    
-                    Spacer()
                 }
             }
             
-            Button {
-                onDetailTap?()
-            } label: {
-                HStack(spacing: 4) {
-                    Text("자세히보기")
-                        .foregroundColor(.gray)
-                        .font(.system(size: 14))
-                    
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.gray)
-                        .font(.system(size: 12))
+            Spacer()
+            
+            if let url = linkURL {
+                Button {
+                    UIApplication.shared.open(url)
+                } label: {
+                    HStack(spacing: 4) {
+                        Text("자세히보기")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 14))
+                        
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 12))
+                    }
                 }
             }
         }
+        .padding(.vertical, 4)
     }
 }
+
 
 struct UserAgreementView: View {
     @State private var agreeAll = false
@@ -97,10 +131,26 @@ struct UserAgreementView: View {
             
             // 개별 항목
             VStack(alignment: .leading, spacing: 16) {
-                CheckboxView(isChecked: $agreeService, title: "서비스 이용약관 동의", required: true)
-                CheckboxView(isChecked: $agreePrivacy, title: "개인정보 수집 및 이용 동의", required: true)
-//                CheckboxView(isChecked: $agreeAge, title: "만 14세 이상입니다", required: true)
-                CheckboxView(isChecked: $agreeMarketing, title: "마케팅 정보 수신 동의")
+                CheckboxView(
+                    isChecked: $agreeService,
+                    title: AgreeSessionURL.serviceTerms.displayName,
+                    required: true,
+                    linkURL: AgreeSessionURL.serviceTerms.url
+                )
+                
+                CheckboxView(
+                    isChecked: $agreePrivacy,
+                    title: AgreeSessionURL.privacyPolicy.displayName,
+                    required: true,
+                    linkURL: AgreeSessionURL.privacyPolicy.url
+                )
+                
+                CheckboxView(
+                    isChecked: $agreeMarketing,
+                    title: AgreeSessionURL.marketingConsent.displayName,
+                    linkURL: AgreeSessionURL.marketingConsent.url
+                )
+                
             }
             .onChange(of: [agreeService, agreePrivacy, agreeAge, agreeMarketing]) { _, _ in
                 updateAgreeAllState()
