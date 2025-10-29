@@ -37,7 +37,6 @@ struct LoginView: View {
                     .ignoresSafeArea()
                     .onTapGesture { focusedField = nil }
                 
-//                ScrollView {
                     VStack(spacing: 10) {
                         
                         // 상단 로고
@@ -58,10 +57,6 @@ struct LoginView: View {
                         
                         // 로그인 카드
                         VStack(spacing: 20) {
-//                            Text("로그인")
-//                                .font(.title2)
-//                                .fontWeight(.bold)
-//                                .padding(.bottom, 10)
                             
                             // 이메일 입력 필드
                             VStack(alignment: .leading, spacing: 4) {
@@ -69,9 +64,7 @@ struct LoginView: View {
                                 TextField("이메일을 입력하세요", text: $email)
                                     .textInputAutocapitalization(.never)
                                     .disableAutocorrection(true)
-//                                    .keyboardType(.emailAddress)
                                     .focused($focusedField, equals: .email)
-//                                    .submitLabel(.next)
                                     .onSubmit { focusedField = .password }
                                     .onChange(of: email) { newValue, _ in
                                         validateEmail(newValue)
@@ -92,9 +85,8 @@ struct LoginView: View {
                                 Text("비밀번호")
                                 SecureField("비밀번호를 입력하세요", text: $password)
                                     .focused($focusedField, equals: .password)
-//                                    .submitLabel(.done)
                                     .onSubmit { login() }
-                                    .onChange(of: password) { newValue, _ in
+                                    .onChange(of: password) { _ ,newValue in
                                         validatePassword(newValue)
                                     }
                                     .padding()
@@ -149,7 +141,6 @@ struct LoginView: View {
                     .padding(.bottom, keyboardHeight)
                     .animation(.easeOut(duration: 0.25), value: keyboardHeight)
                 }
-//            }
         }
         .alert(isPresented: $showAlert) {
             Alert(title: Text("로그인 오류"), message: Text(alertMessage), dismissButton: .default(Text("확인")))
