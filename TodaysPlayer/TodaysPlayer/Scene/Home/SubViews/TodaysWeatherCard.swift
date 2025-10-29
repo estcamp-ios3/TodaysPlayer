@@ -10,13 +10,19 @@ import WeatherKit
 
 struct TodaysWeatherCard: View {
     let weatherData: Weather?
+    let isLoading: Bool
+    let hasError: Bool
     
     var body: some View {
         Group {
             if let weather = weatherData {
                 weatherContentView(weather: weather)
-            } else {
+            } else if isLoading {
+                weatherLoadingView()
+            } else if hasError {
                 weatherErrorView()
+            } else {
+                weatherLoadingView()
             }
         }
         .padding(.horizontal, 16)
@@ -74,9 +80,7 @@ struct TodaysWeatherCard: View {
             .padding(.leading, 10)
             
             // (강수, 바람, 습도) 정보
-            HStack(alignment: .center, spacing: 10) {
-                Spacer()
-                
+            HStack(spacing: 30) {
                 HStack {
                     Image(systemName: "cloud.rain")
                         .font(.system(size: 14))
@@ -85,8 +89,6 @@ struct TodaysWeatherCard: View {
                     Text("강수 확률\n\(Int(getPrecipitationChance(weather) * 100.0))%")
                         .font(.system(size: 15))
                         .foregroundStyle(.black.opacity(0.7))
-                    
-                    Spacer()
                 }
                 
                 HStack {
@@ -97,8 +99,6 @@ struct TodaysWeatherCard: View {
                     Text("바람\n\(Int(weather.currentWeather.wind.speed.value))m/s")
                         .font(.system(size: 15))
                         .foregroundStyle(.black.opacity(0.7))
-                    
-                    Spacer()
                 }
                 
                 HStack {
@@ -109,11 +109,7 @@ struct TodaysWeatherCard: View {
                     Text("습도\n\(Int(weather.currentWeather.humidity * 100))%")
                         .font(.system(size: 15))
                         .foregroundStyle(.black.opacity(0.7))
-                    
-                    Spacer()
                 }
-                
-                Spacer()
             }
             .padding(.vertical, 10)
             
@@ -129,10 +125,58 @@ struct TodaysWeatherCard: View {
             .background(Color.white)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.blue.opacity(0.6), lineWidth: 1)
+                    .stroke(Color.futsalGreen, lineWidth: 1)
             )
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.bottom, 16)
+        }
+    }
+    
+    @ViewBuilder
+    private func weatherLoadingView() -> some View {
+        VStack(spacing: 15) {
+            // 타이틀 및 심볼
+            HStack {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Image(systemName: "sun.max.fill")
+                            .font(.system(size: 16))
+                            .foregroundStyle(.red)
+                        
+                        Text("오늘의 날씨")
+                            .font(.headline)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.black)
+                        
+                        Spacer()
+                    }
+                    
+                    Text("데이터를 불러오는 중입니다")
+                        .font(.system(size: 14))
+                        .fontWeight(.medium)
+                        .foregroundStyle(.gray)
+                }
+                
+                ProgressView()
+                    .scaleEffect(1.2)
+                    .tint(.blue)
+            }
+            .padding(.top, 16)
+            
+            // 로딩 메시지
+            VStack(spacing: 10) {
+                Text("날씨 정보를 가져오고 있어요")
+                    .font(.system(size: 18))
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.gray)
+                
+                Text("잠시만 기다려주세요")
+                    .font(.system(size: 14))
+                    .foregroundStyle(.gray)
+            }
+            .padding(.vertical, 20)
+            
+            Spacer()
         }
     }
     

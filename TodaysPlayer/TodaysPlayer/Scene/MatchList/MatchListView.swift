@@ -9,19 +9,18 @@ import SwiftUI
 
 struct MatchListView: View {
     @State var viewModel: MatchListViewModel = MatchListViewModel()
-    @State private var path = NavigationPath()
     
     var body: some View {
-        NavigationStack(path: $path) {
+        NavigationStack {
             ZStack {
                 Color.gray.opacity(0.1)
                     .ignoresSafeArea()
-                
-                VStack(alignment: .leading, spacing: 15) {
+     
+                VStack(alignment: .leading) {
                     Text("나의 경기관리")
-                        .font(.system(size: 26, weight: .bold))
-                        .padding(.leading, 20)
-                        .padding(.top, 15)
+                        .font(.title.bold())
+                        .padding(.leading, 22)
+                        .padding(.top, 8)
                     
                     CustomSegmentControlView(
                         categories: viewModel.myMatchSegmentTitles,
@@ -35,34 +34,39 @@ struct MatchListView: View {
                         selectedFilter: $viewModel.selectedFilterButton
                     )
                     .padding(.horizontal, 10)
+                    .visible(!viewModel.filteringButtonTypes.isEmpty)
+                    
+                    SortSheetButtonView(selectedOption: $viewModel.sortOption)
                     
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             if !viewModel.isLoading && viewModel.displayedMatches.isEmpty {
-                                Text("매치 데이터가 없습니다")
+                                Text("경기 데이터가 없습니다")
                                     .foregroundColor(.gray)
                             }
-
+                            
                             ForEach(Array(viewModel.displayedMatches.enumerated()), id: \.element.id) { index, match in
                                 NavigationLink(value: match) {
-                                    VStack(spacing: 20) {
-                                        MatchTagView(
-                                            info: viewModel.getTagInfomation(with: match),
-                                            matchCase: viewModel.postedMatchCase
-                                        )
-                                        
-                                        MatchInfoView(
-                                            matchInfo: match,
-                                            postedMatchCase: viewModel.postedMatchCase,
-                                            apply: viewModel.getUserApplyStatus(appliedMatch: match),
-                                            finishedMatchId: $viewModel.finishedMatchId,
-                                            finishedMatchWithRatingId: $viewModel.finishedMatchWithRatingId
-                                        )
-                                    }
+                                    MatchInfoView(
+                                        matchInfo: match,
+                                        postedMatchCase: viewModel.postedMatchCase,
+                                        apply: viewModel.getUserApplyStatus(appliedMatch: match),
+                                        matchTagInfo: viewModel.getTagInfomation(with: match),
+                                        finishedMatchId: $viewModel.finishedMatchId,
+                                        finishedMatchWithRatingId: $viewModel.finishedMatchWithRatingId
+                                    )
                                     .padding()
-                                    .background(Color.white)
+                                    .background(checkRejectMatch(match)
+                                                ? Color.gray.opacity(0.2) : Color.white)
                                     .cornerRadius(12)
+
                                 }
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(Color.white)
+                                        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+                                )
+                                .padding(.horizontal, 2)
                                 .onAppear {
                                     if index == viewModel.displayedMatches.count - 1 {
                                         Task { await viewModel.loadMoreMatches() }
@@ -81,8 +85,11 @@ struct MatchListView: View {
                         }
                         .padding(.vertical)
                     }
+                    .refreshable {
+                        viewModel.fetchMyMatchData()
+                    }
                     .scrollIndicators(.hidden)
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 24)
                     .navigationDestination(for: Match.self) { match in
                         MatchDetailView(match: match)
                     }
@@ -90,6 +97,7 @@ struct MatchListView: View {
                 
                 ToastMessageView(manager: viewModel.toastManager)
             }
+
             .onAppear {
                 viewModel.fetchMyMatchData()
             }
@@ -103,4 +111,10 @@ struct MatchListView: View {
             }
         }
     }
+    
+    private func checkRejectMatch(_ match: Match) -> Bool {
+        let applyStatus = viewModel.getUserApplyStatus(appliedMatch: match)
+        return applyStatus.2 == .rejected
+    }
+
 }

@@ -21,27 +21,34 @@ struct MyPageView: View {
     @AppStorage("profile_position") private var storedPosition: String = ""
     @AppStorage("profile_level") private var storedLevel: String = ""
     @AppStorage("profile_name") private var storedName: String = ""
+    @AppStorage("profile_avatar") private var storedAvatarData: Data?
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    if viewModel.isLoading {
-                        ProgressView().padding(.bottom, 8)
+            VStack(alignment: .leading, spacing: 0) {
+                header
+                    .padding(.top, 10)
+                    .padding(.horizontal)
+                    .background(Color.gray.opacity(0.1))
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        if viewModel.isLoading {
+                            ProgressView().padding(.bottom, 8)
+                        }
+                        if let error = viewModel.errorMessage {
+                            Text(error).font(.caption).foregroundStyle(.red)
+                        }
+                        profileCard
+                        statsRow
+                        bannerSection
+                        menuList
                     }
-                    if let error = viewModel.errorMessage {
-                        Text(error).font(.caption).foregroundStyle(.red)
-                    }
-                    header
-                    profileCard
-                    statsRow
-                    bannerSection
-                    menuList
+                    .padding(.top, 8)
+                    .padding(.horizontal, 16)
                 }
-                .padding(.vertical, 16)
-                .padding(.horizontal, 16)
+                .background(Color.gray.opacity(0.1))
             }
-            .background(Color.gray.opacity(0.1))
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
@@ -49,7 +56,7 @@ struct MyPageView: View {
     private var header: some View {
         HStack {
             Text("마이페이지")
-                .font(.system(size: 26, weight: .bold))
+                .font(.system(size: 28, weight: .bold))
             Spacer()
             HStack(spacing: 20) {
                 NavigationLink(destination: NotiView(notifications: $notifications)) {
@@ -64,31 +71,22 @@ struct MyPageView: View {
                 }
             }
         }
-        .padding(.top, 8)
     }
 
     private var profileCard: some View {
         VStack {
             HStack(alignment: .center, spacing: 10) {
                 Group {
-                    if let urlString = session.currentUser?.profileImageUrl, let url = URL(string: urlString) {
-                        AsyncImage(url: url) { phase in
-                            switch phase {
-                            case .empty:
-                                ProgressView()
-                            case .success(let image):
-                                image.resizable().scaledToFill()
-                            case .failure:
-                                Image(systemName: "person.crop.circle.fill").resizable().scaledToFill().foregroundStyle(Color.green)
-                            @unknown default:
-                                Image(systemName: "person.crop.circle.fill").resizable().scaledToFill().foregroundStyle(Color.green)
-                            }
-                        }
+                    if let data = storedAvatarData, let uiImage = UIImage(data: data) {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFill()
+                            .transition(.opacity)
                     } else {
                         Image(systemName: "person.crop.circle.fill")
                             .resizable()
                             .scaledToFill()
-                            .foregroundStyle(Color.green)
+                            .foregroundStyle(Color.primaryBaseGreen)
                     }
                 }
                 .frame(width: 75, height: 75)
@@ -98,31 +96,32 @@ struct MyPageView: View {
                     HStack {
                         Text(UserSessionManager.shared.currentUser?.displayName ?? "이름없음")
                                 .font(.system(size: 23, weight: .bold))
-                                .padding(7)
+                                .padding(1)
                         Spacer()
                         NavigationLink(destination: ProfileEditView()) {
                             Image(systemName: "square.and.pencil")
-                                .foregroundStyle(Color(.green))
+                                .foregroundStyle(Color.futsalGreen)
                                 .font(.system(size: 15, weight: .medium))
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 6)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(15)
+                                .background(Color.secondaryCoolGray)
+                                .cornerRadius(20)
                         }
                     }
                     HStack(spacing: 11.5) {
                         // 추후 추가될 종목에 따른 포지션 변경 요청
-                            Text(storedPosition.isEmpty ? "포지션 미설정" : storedPosition)
-                            .font(.system(size: 13))
-                            .frame(maxWidth: .infinity, maxHeight: .infinity , alignment: .center)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(6)
-                        Text(storedLevel.isEmpty ? "레벨 미설정" : storedLevel)
-                            .font(.system(size: 13))
-                            .padding(.horizontal, 37)
+                        Text(storedPosition.isEmpty ? "포지션 미설정" : storedPosition)
+                            .font(.system(size: 11).bold())
+                            .padding(.horizontal, 30)
                             .padding(.vertical, 6)
-                            .background(Color(.systemGray5))
-                            .cornerRadius(6)
+                            .background(Color.secondaryCoolGray)
+                            .cornerRadius(20)
+                        Text(storedLevel.isEmpty ? "레벨 미설정" : storedLevel.skillLevelToKorean())
+                            .font(.system(size: 11).bold())
+                            .padding(.horizontal, 30)
+                            .padding(.vertical, 6)
+                            .background(Color.secondaryCoolGray)
+                            .cornerRadius(20)
                         Spacer()
                     }
                 }
@@ -130,37 +129,38 @@ struct MyPageView: View {
         }
         .padding(16)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.gray.opacity(0.15), lineWidth: 1)
         )
     }
 
     private var statsRow: some View {
         HStack {
-            NavigationLink(destination: MatchListView()) {
-                // 나의 경기랑 탭이 겹치니 다른기능으로 바꾸기
-                Stat(icon: "calendar", label: "신청한 경기", color: .green)
+            NavigationLink(destination: MyQuestionView()) {
+                // 당장은 연결할 뷰가 없어서 문의사항 보여주는 뷰로 변경
+                Stat(icon: "mail.fill", label: "내 문의", color: .primaryDark)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14)
+                        RoundedRectangle(cornerRadius: 20)
                             .stroke(Color.gray.opacity(0.15), lineWidth: 1)
                     )            }
+//            .disabled(true)
 
             NavigationLink(
                 destination: MyRatingView(viewModel: MyRatingViewModel())
             ) {
-                Stat(icon: "chart.line.uptrend.xyaxis", label: "나의 평점", color: .green.opacity(0.7))
+                Stat(icon: "chart.line.uptrend.xyaxis", label: "나의 평점", color: .futsalGreen)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14)
+                        RoundedRectangle(cornerRadius: 20)
                             .stroke(Color.gray.opacity(0.15), lineWidth: 1)
                     )
             }
             
             NavigationLink(destination: ScrapView()) {
-                Stat(icon: "bookmark.fill", label: "찜한 매치", color: .cyan.opacity(0.4))
+                Stat(icon: "bookmark.fill", label: "찜한 매치", color: .secondaryMintGreen)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 14)
+                        RoundedRectangle(cornerRadius: 20)
                             .stroke(Color.gray.opacity(0.15), lineWidth: 1)
                     )
             }
@@ -174,7 +174,7 @@ struct MyPageView: View {
                 .frame(maxWidth: .infinity)
         }
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.gray.opacity(0.15), lineWidth: 1)
         )
     }
@@ -182,22 +182,25 @@ struct MyPageView: View {
     private var menuList: some View {
         VStack(spacing: 12) {
             NavigationLink(destination: AnnouncementView()) {
-                MyPageRow(icon: "megaphone.fill", iconColor: .blue, title: "앱 공지사항", subtitle: "최신 공지사항 및 업데이트 정보")
+                MyPageRow(icon: "megaphone.fill", iconColor: .secondaryMintGreen, title: "앱 공지사항", subtitle: "최신 공지사항 및 업데이트 정보")
             }
+            Divider()
             NavigationLink(destination: QuestionView()) {
-                MyPageRow(icon: "questionmark.circle.fill", iconColor: .green, title: "운영자에게 문의하기", subtitle: "궁금한 점이나 문제점을 문의하세요")
+                MyPageRow(icon: "questionmark.circle.fill", iconColor: .futsalGreen, title: "운영자에게 문의하기", subtitle: "궁금한 점이나 문제점을 문의하세요")
             }
+            Divider()
             NavigationLink(destination: PersonalityView()) {
-                MyPageRow(icon: "shield.lefthalf.fill", iconColor: .purple, title: "개인정보 처리방침", subtitle: "개인정보 보호 정책 및 이용약관")
+                MyPageRow(icon: "shield.lefthalf.fill", iconColor: .primaryLight, title: "개인정보 처리방침", subtitle: "개인정보 보호 정책 및 이용약관")
             }
         }
         .padding(7)
         .foregroundStyle(.black)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.gray.opacity(0.15), lineWidth: 1)
         )
     }
 }
+

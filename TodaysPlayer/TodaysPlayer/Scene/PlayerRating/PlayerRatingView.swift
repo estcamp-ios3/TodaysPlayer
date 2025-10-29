@@ -55,7 +55,7 @@ struct PlayerRatingView: View {
                     .padding(.leading, 12)
                     .padding(.bottom, 12)
                
-                Button(action: {                    
+                Button(action: {
                     Task {
                        await viewModel.updateUserRate()
                     }
@@ -80,4 +80,3 @@ struct PlayerRatingView: View {
     }
     
 }
-

@@ -14,6 +14,7 @@ final class MatchDetailViewModel {
     // MARK: - Properties
     let match: Match
     private let repository = ParticipantRepository()
+    var currentMatch: Match
     
     // MARK: - State
     var userApply: Apply? = nil
@@ -23,6 +24,11 @@ final class MatchDetailViewModel {
     var showGenderAlert: Bool = false
     var genderAlertMessage: String = ""
     
+    // MARK: - Initalization
+    init(match: Match) {
+        self.match = match
+        self.currentMatch = match
+    }
     // MARK: - Computed Properties
     
     /// Match.participants에서 빠르게 상태 확인
@@ -57,20 +63,24 @@ final class MatchDetailViewModel {
             return "참여자 관리"
         }
         
-        guard let status = userApplyStatus else {
-            return "신청하기"
+        if let status = userApplyStatus {
+            switch status {
+            case .standby:
+                return "수락 대기중"
+            case .accepted:
+                return "참여 확정"
+            case .rejected:
+                return "거절됨"
+            default:
+                break
+            }
         }
         
-        switch status {
-        case .standby:
-            return "수락 대기중"
-        case .accepted:
-            return "참여 확정"
-        case .rejected:
-            return "거절됨"
-        default:
-            return "신청하기"
+        if !currentMatch.isRecruiting {
+            return currentMatch.buttonTitle  // "모집마감", "경기확정" 등
         }
+        
+        return "신청하기"
     }
     
     /// 버튼 활성화 여부
@@ -79,37 +89,73 @@ final class MatchDetailViewModel {
             return true // 주최자는 항상 참여자 관리 가능
         }
         
+        if !currentMatch.isRecruiting {
+            return false
+        }
+        
         // 신청 안한 경우만 신청 가능
         return userApplyStatus == nil
     }
     
     /// 버튼 배경색
     var buttonBackgroundColor: Color {
+        // 1. 본인 매치 체크
         if isMyMatch {
-            return .blue
+            return .secondaryMintGreen  // 참여자 관리
         }
         
-        guard let status = userApplyStatus else {
-            return .green // 신청하기
+        // 2. 사용자의 신청 상태가 있으면 우선 체크
+        if let status = userApplyStatus {
+            switch status {
+            case .standby:
+                return .primaryLight  // 수락 대기중
+            case .accepted:
+                return .primaryBaseGreen  // 참여 확정
+            case .rejected:
+                return .accentRed
+            default:
+                return .gray
+            }
         }
         
-        switch status {
-        case .standby:
-            return .orange
-        case .accepted:
-            return .blue
-        case .rejected:
-            return .gray
-        default:
-            return .green
+        // 3. 신청 안했는데 모집 마감됐으면
+        if !currentMatch.isRecruiting {
+            return .accentRed  // 모집 마감
+        }
+        
+        // 4. 신청 가능한 상태
+        return .primaryBaseGreen  // 신청하기
+    }
+    
+    // 최신 매치 정보 가져오기
+    func fetchLatestMatch() async {
+        do {
+            guard let updatedMatch = try await FirestoreManager.shared.getDocument(
+                collection: "matches",
+                documentId: match.id,
+                as: Match.self
+            ) else { return }
+            
+            self.currentMatch = updatedMatch
+            print("매치 정보 갱신: \(updatedMatch.status), 신청인원: \(updatedMatch.appliedParticipantsCount)/\(updatedMatch.maxParticipants)")
+        } catch {
+            print("매치 정보 갱신 실패: \(error)")
         }
     }
     
-    // MARK: - Initialization
-    init(match: Match) {
-        self.match = match
+    func refreshUserApplyStatus() async {
+        // 매치 정보도 함께 갱신
+        await fetchLatestMatch()
+        
+        let userId = AuthHelper.currentUserId
+        
+        // Apply 문서 재조회
+        let allApplies = await repository.fetchParticipants(matchId: match.id)
+        userApply = allApplies.first { $0.userId == userId }
+        
+        print("신청 상태 새로고침: \(userApply?.status ?? "없음")")
     }
-    
+
     // MARK: - Methods
     
     /// Apply 문서의 상세 정보 가져오기 (거절 사유 등이 필요할 때)
@@ -124,17 +170,7 @@ final class MatchDetailViewModel {
         // 현재 사용자의 Apply 필터링
         userApply = allApplies.first { $0.userId == userId }
         
-        print("✅ Apply 상세 조회 완료: \(userApply?.status ?? "없음")")
-    }
-    
-    func refreshUserApplyStatus() async {
-        let userId = AuthHelper.currentUserId
-        
-        // Apply 문서 재조회
-        let allApplies = await repository.fetchParticipants(matchId: match.id)
-        userApply = allApplies.first { $0.userId == userId }
-        
-        print("✅ 신청 상태 새로고침: \(userApply?.status ?? "없음")")
+        print("Apply 상세 조회 완료: \(userApply?.status ?? "없음")")
     }
     
     // MARK: - Gender Validation
@@ -147,7 +183,7 @@ final class MatchDetailViewModel {
         }
         
         guard let userGender = AuthHelper.currentUser?.gender else {
-            print("❌ 사용자 성별 정보 없음")
+            print("사용자 성별 정보 없음")
             return false
         }
         

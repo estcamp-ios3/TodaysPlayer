@@ -22,7 +22,11 @@ final class PlayerRatingViewModel {
     
     init(matchInfo: Match) {
         self.matchInfo = matchInfo
-        self.userIds = matchInfo.participants.map { $0.key }
+        self.userIds = matchInfo.participants
+            .filter({ (userId: String, status: String) -> Bool in
+                status == ApplyStatus.accepted.title
+            })
+            .map({ $0.key})
     }
     
     
@@ -108,9 +112,9 @@ final class PlayerRatingViewModel {
         do {
             try await withThrowingTaskGroup(of: Void.self) { group in
                 for userId in userIds {
-                    guard let userData = participatedUsers.first(where: { $0.id == userId }) else { 
+                    guard let userData = participatedUsers.first(where: { $0.id == userId }) else {
                         print("사용자 데이터를 찾을 수 없음: \(userId)")
-                        continue 
+                        continue
                     }
                     
                     let rating = ratings[userId] ?? [:]

@@ -13,7 +13,7 @@ struct MatchInfoDetailView: View {
     var body: some View {
         // 시간
         HStack {
-            Image(systemName: "fitness.timer")
+            Image(systemName: "clock")
             Text(matchInfo.dateTime.formatForDisplay())
         }
         
@@ -26,7 +26,7 @@ struct MatchInfoDetailView: View {
         
         // 인원수
         HStack {
-            Image(systemName: "person.fill")
+            Image(systemName: "person.2")
             
             let participants = matchInfo.participants.filter { (_, value: String) in
                 value == "accepted"
@@ -52,15 +52,29 @@ struct MatchInfoDetailView: View {
             
             Spacer()
             
-            Image(systemName: "figure.2.arms.open")
-            Text(matchInfo.gender)
+            Image(convertGenderIcon(gender: matchInfo.gender))
+            Text(matchInfo.genderKorean)
             
             Spacer()
             
-            Image(systemName: "person.fill")
-            Text(matchInfo.skillLevel)
+            Image(systemName: "arrow.up.circle")
+            Text(matchInfo.skillLevel.skillLevelToKorean())
             
             Spacer()
         }
     }
+    
+    private func convertGenderIcon(gender: String) -> String {
+        switch gender {
+        case "male":
+            return "icon_male"
+        case "female":
+            return "icon_female"
+        case "mixed":
+            return "icon_mixed"
+        default:
+            return "icon_mixed"
+        }
+    }
+
 }

@@ -40,15 +40,16 @@ struct NotiView: View {
                                 onSelectMatch(docId)
                             }
                         } label: {
-                            HStack(alignment: .top, spacing: 12) {
+                            HStack(alignment: .center, spacing: 12) {
                                 Image(systemName: "bell")
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(.accentOrange)
                                 Text(message)
                                     .foregroundColor(.primary)
+                                Spacer()
                             }
-                            .padding(.vertical, 6)
+                            .padding()
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(.borderless)
                     }
                     .onDelete { indexSet in
                         for index in indexSet {
@@ -60,7 +61,9 @@ struct NotiView: View {
                         persistMessageDocMap()
                     }
                 }
-                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
+                .listStyle(.sidebar)
             }
         }
         .padding(.top, 12)
@@ -79,7 +82,7 @@ struct NotiView: View {
                     persistNotifications()
                     persistMessageDocMap()
                 }) {
-                    Image(systemName: "bell.slash")
+                    Image(systemName: "trash")
                 }
                 .accessibilityLabel("모든 알림 삭제")
                 .disabled(notifications.isEmpty)

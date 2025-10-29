@@ -9,13 +9,11 @@ import SwiftUI
 
 struct CustomSegmentControlView: View {
     let categories: [String]
-    @State var selectedStatus: String
+    @State private var selectedStatus: String
     
     @Namespace private var underlineNamespace
     
     var onSelectionChanged: ((String) -> Void)? = nil
-    
-    @State private var tapWorkItem: DispatchWorkItem?
     
     init(categories: [String],
          initialSelection: String,
@@ -31,14 +29,14 @@ struct CustomSegmentControlView: View {
             ForEach(categories, id: \.self) { status in
                 ZStack(alignment: .bottom) {
                     Text(status)
-                        .foregroundColor(selectedStatus == status ? .green : .gray)
+                        .foregroundColor(selectedStatus == status ? .primaryBaseGreen : .secondaryDeepGray)
                         .font(.headline)
-                        .lineLimit(1)
+                        .lineLimit(1) 
                         .minimumScaleFactor(0.7)
                         .overlay(
                             VStack {
                                 RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.green.opacity(0.5))
+                                    .fill(Color.primaryBaseGreen)
                                     .frame(height: 3)
                                     .matchedGeometryEffect(id: "underline", in: underlineNamespace)
                                     .offset(y: 10)
@@ -52,18 +50,12 @@ struct CustomSegmentControlView: View {
                 .onTapGesture {
                     withAnimation(.spring()) {
                         selectedStatus = status
-                    }
-
-                    tapWorkItem?.cancel()
-                    
-                    let workItem = DispatchWorkItem {
                         onSelectionChanged?(selectedStatus)
                     }
-                    tapWorkItem = workItem
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
                 }
-
             }
         }
+        
+        
     }
 }

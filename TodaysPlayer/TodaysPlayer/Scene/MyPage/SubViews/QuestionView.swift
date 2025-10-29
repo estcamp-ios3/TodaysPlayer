@@ -46,15 +46,8 @@ struct QuestionView: View {
             .padding(.vertical, 16)
             .padding(.horizontal, 16)
         }
-        .background(Color(.systemGray6))
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("운영자에게 문의하기")
-                    .font(.title2)
-                    .bold()
-            }
-        }
+        .background(Color.gray.opacity(0.1))
+        .navigationTitle("운영자에게 문의하기")
         .alert("알림", isPresented: $showAlert, actions: {
             Button("확인", role: .cancel) {}
         }, message: {
@@ -65,6 +58,18 @@ struct QuestionView: View {
     // MARK: - Sections
     private var inquiryCard: some View {
         VStack(alignment: .leading, spacing: 14) {
+            // 제목
+            LabeledContainer(label: "제목") {
+                TextField("문의 제목을 입력해주세요", text: $subject)
+                    .textInputAutocapitalization(.sentences)
+                    .padding(.horizontal, 12)
+                    .frame(height: 44)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(.systemGray4), lineWidth: 1)
+                            )
+            }
+            
             // 문의 유형
             LabeledContainer(label: "문의 유형") {
                 Menu {
@@ -81,19 +86,11 @@ struct QuestionView: View {
                     }
                     .padding(.horizontal, 12)
                     .frame(height: 44)
-                    .background(fieldBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
-            }
-
-            // 제목
-            LabeledContainer(label: "제목") {
-                TextField("문의 제목을 입력해주세요", text: $subject)
-                    .textInputAutocapitalization(.sentences)
-                    .padding(.horizontal, 12)
-                    .frame(height: 44)
-                    .background(fieldBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color(.systemGray4), lineWidth: 1)
+                )
             }
 
             // 문의 내용
@@ -102,8 +99,6 @@ struct QuestionView: View {
                     TextEditor(text: $bodyText)
                         .frame(minHeight: 150)
                         .padding(8)
-                        .background(fieldBackground)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     if bodyText.isEmpty {
                         Text("문의하실 내용을 자세히 작성해주세요. 문제 상황, 발생 시간, 사용 환경 등을 포함해주시면 더 빠른 답변이 가능합니다.")
                             .foregroundColor(.secondary)
@@ -112,18 +107,21 @@ struct QuestionView: View {
                             .allowsHitTesting(false)
                     }
                 }
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color(.systemGray4), lineWidth: 1)
+                )
             }
 
             // 이메일
             LabeledContainer(label: "연락받을 이메일") {
-                TextField("example@email.com", text: $contactEmail)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
+                Text(UserSessionManager.shared.currentUser?.email ?? "")
                     .autocorrectionDisabled(true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 12)
                     .frame(height: 44)
                     .background(fieldBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
             }
 
             // 전송 버튼
@@ -131,24 +129,24 @@ struct QuestionView: View {
                 HStack {
                     Image(systemName: "paperplane.fill")
                     Text("문의 보내기")
-                        .fontWeight(.semibold)
+                        .fontWeight(.bold)
                 }
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
-                .background(Color(.label)) // dark on light, adapts
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(Color.primaryBaseGreen) // dark on light, adapts
+                .clipShape(RoundedRectangle(cornerRadius: 40))
             }
             .buttonStyle(.plain)
             .disabled(!isFormValid)
-            .opacity(isFormValid ? 1 : 0.5)
+            .opacity(isFormValid ? 1 : 0.9)
         }
         .padding(16)
         .background(Color.white)
         .toolbar(.hidden, for: .tabBar)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.gray.opacity(0.15), lineWidth: 1)
         )
     }
@@ -166,9 +164,9 @@ struct QuestionView: View {
         }
         .padding(16)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.gray.opacity(0.15), lineWidth: 1)
         )
     }
@@ -177,15 +175,15 @@ struct QuestionView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("연락처 정보")
                 .font(.headline)
-            ContactRow(icon: "envelope.fill", title: "이메일", detail: "support@futsalmatch.com")
+            ContactRow(icon: "envelope.fill", title: "이메일", detail: "inCollection@futsalmatch.com")
             ContactRow(icon: "phone.fill", title: "고객센터", detail: "1588-1234 (평일 09:00~18:00)")
             ContactRow(icon: "clock.fill", title: "운영시간", detail: "평일 09:00~18:00 (주말 및 공휴일 제외)")
         }
         .padding(16)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.gray.opacity(0.15), lineWidth: 1)
         )
     }
@@ -197,8 +195,7 @@ struct QuestionView: View {
         guard let inquiryType else { return false }
         _ = inquiryType // silence unused warning if builds strip usage
         return !subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-               !bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-               isValidEmail(contactEmail)
+               !bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private func isValidEmail(_ email: String) -> Bool {
@@ -208,13 +205,27 @@ struct QuestionView: View {
     }
 
     private func sendInquiry() {
-        // In a real app, send to server here.
+        // Validate again just in case
+        guard let inquiryType else { return }
+
+        // Create and store the email message
+        let message = QuestionMessage(
+            inquiryType: inquiryType.title,
+            subject: subject.trimmingCharacters(in: .whitespacesAndNewlines),
+            body: bodyText.trimmingCharacters(in: .whitespacesAndNewlines),
+            contactEmail: contactEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+        QuestionCollection.shared.add(message)
+
+        // Notify user
         alertMessage = "문의가 정상적으로 접수되었습니다. 빠른 시일 내에 답변드리겠습니다."
         showAlert = true
-        // Optionally reset fields
+
+        // Reset fields (including contact email)
         subject = ""
         bodyText = ""
-        // keep email & type for convenience
+        contactEmail = ""
+        // Keep inquiryType for convenience
     }
 }
 
@@ -268,9 +279,9 @@ private struct FAQCard: View {
         }
         .padding(14)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 40)
                 .stroke(Color.gray.opacity(0.15), lineWidth: 1)
         )
     }
@@ -282,9 +293,9 @@ private struct ContactRow: View {
     let detail: String
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icon)
-                .foregroundColor(.accentColor)
+        HStack(alignment: .center, spacing: 12) {
+                Image(systemName: icon)
+                    .foregroundColor(.green)
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.subheadline)
@@ -297,9 +308,9 @@ private struct ContactRow: View {
         }
         .padding(12)
         .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 40)
                 .stroke(Color.gray.opacity(0.15), lineWidth: 1)
         )
     }
@@ -310,3 +321,4 @@ private struct ContactRow: View {
         QuestionView()
     }
 }
+

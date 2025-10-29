@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// 나의 경기 버튼 스타일
-struct MyMatchButtonStyle: ViewModifier {    
+struct MyMatchButtonStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
             .font(.headline)

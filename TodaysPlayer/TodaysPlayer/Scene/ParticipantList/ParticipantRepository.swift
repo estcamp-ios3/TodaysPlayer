@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import FirebaseCore
 
 final class ParticipantRepository {
     
@@ -37,7 +38,10 @@ final class ParticipantRepository {
             .updateDocument(
                 collection: "matches",
                 documentId: matchId ,
-                data: ["participants.\(applyInfo.userId)": applyStatus]
+                data: [
+                        "participants.\(applyInfo.userId)": applyStatus,
+                        "updatedAt": Timestamp(date: Date())
+                      ]
             )
     }
     

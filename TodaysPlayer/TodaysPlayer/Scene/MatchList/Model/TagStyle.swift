@@ -7,14 +7,16 @@
 
 import SwiftUI
 
+import SwiftUI
+
 protocol TagStyle {
     var backgroundColor: Color { get }
     var textColor: Color { get }
     var borderColor: Color { get }
     var title: String { get }
 }
- 
-/// 경기타입 태그 enum
+
+// MARK: - 경기 타입
 enum MatchType: String, TagStyle, CaseIterable {
     case futsal = "풋살"
     case soccer = "축구"
@@ -23,26 +25,22 @@ enum MatchType: String, TagStyle, CaseIterable {
     
     var backgroundColor: Color {
         switch self {
-        case .futsal: .green
-        case .soccer: .blue
+        case .futsal: return .primaryBaseGreen
+        case .soccer: return .secondaryMintGreen
         }
     }
     
-    var textColor: Color {
-        switch self {
-        case .futsal: .white
-        case .soccer: .white
-        }
-    }
+    var textColor: Color { .white }
     
     var borderColor: Color {
         switch self {
-        case .futsal: .green
-        case .soccer: .blue
+        case .futsal: return .primaryDark
+        case .soccer: return .secondaryDeepGray
         }
     }
 }
 
+// MARK: - 경기 정보 상태
 enum MatchInfoStatus: String, TagStyle {
     case deadline = "마감임박"
     case lastOne = "너만 오면 GO"
@@ -51,50 +49,51 @@ enum MatchInfoStatus: String, TagStyle {
 
     var backgroundColor: Color {
         switch self {
-        case .deadline: .red
-        case .lastOne: .orange
+        case .deadline: return .accentOrange
+        case .lastOne: return .primaryLight
         }
     }
 
-    var textColor: Color { .white }
+    var textColor: Color { .black }
 
     var borderColor: Color {
         switch self {
-        case .deadline: .red
-        case .lastOne: .orange
+        case .deadline: return .accentOrange
+        case .lastOne: return .primaryBaseGreen
         }
     }
 }
 
-
+// MARK: - 신청 상태
 enum ApplyStatus: String, TagStyle, CaseIterable {
     case allType = ""
     case standby = "대기중"
     case accepted = "확정"
     case rejected = "거절"
     
-    // MARK: - TagStyle title
     var title: String { rawValue }
     
-    // MARK: - TagStyle 색상
     var backgroundColor: Color {
         switch self {
-        case .standby: return .green
-        case .accepted: return .blue
-        case .rejected: return .red
-        case .allType: return .gray
+        case .standby: return .primaryLight
+        case .accepted: return .primaryDark
+        case .rejected: return .accentRed
+        case .allType: return .secondaryCoolGray
         }
     }
 
-    var textColor: Color { .white }
+    var textColor: Color {
+        switch self {
+        default: return .white
+        }
+    }
 
     var borderColor: Color {
         switch self {
-        case .standby: return .green
-        case .accepted: return .blue
-        case .rejected: return .red
-        case .allType: return .gray
+        case .standby: return .primaryBaseGreen
+        case .accepted: return .primaryDark
+        case .rejected: return .accentRed
+        case .allType: return .secondaryDeepGray
         }
     }
 }
-
