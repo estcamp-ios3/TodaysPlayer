@@ -204,26 +204,36 @@ struct AccountView: View {
     }
 }
 
-    extension View {
-            func showSystemAlert(title: String,
-                         message: String,
-                         tint: UIColor = .systemBlue,
-                         actions: [UIAlertAction] = []) {
-            guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                        let window = scene.windows.first,
-                        let rootVC = window.rootViewController else { return }
-        
-                let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                alert.view.tintColor = tint // ✅ 이게 핵심 (alert별로 색 지정 가능)
-        
-        // 전달된 액션이 있으면 추가하고, 없으면 기본 OK 버튼 추가
-                if actions.isEmpty {
-                    alert.addAction(UIAlertAction(title: "확인", style: .default))
-                } else {
-                actions.forEach { alert.addAction($0) }
+extension View {
+    func showSystemAlert(
+        title: String,
+        message: String,
+        tint: UIColor = .systemBlue,
+        actions: [UIAlertAction] = []
+    ) {
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = scene.windows.first,
+              let rootVC = window.rootViewController else { return }
+
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.view.tintColor = tint
+
+        if actions.isEmpty {
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+        } else {
+            actions.forEach { action in
+                if action.title == "종료" {
+                    action.setValue(UIColor.systemRed, forKey: "titleTextColor")
+                } else if action.title == "취소" {
+                    action.setValue(UIColor.systemGray, forKey: "titleTextColor")
+                } else if action.title == "수락" {
+                    action.setValue(UIColor.systemGreen, forKey: "titleTextColor")
                 }
-        
-                rootVC.present(alert, animated: true)
+                alert.addAction(action)
+            }
+        }
+
+        rootVC.present(alert, animated: true)
     }
 }
 
