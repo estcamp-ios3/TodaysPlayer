@@ -123,11 +123,24 @@ struct LoginView: View {
                                             .stroke(Color.gray.opacity(0.3))
                                     )
                             }
-                            
                             .navigationDestination(for: String.self) { value in
                                 if value == "UserAgreement" {
                                     UserAgreementView(path: $path)
                                 }
+                            }
+                            
+                            Button {
+                                print("구글로그인하기버튼 생성")
+                            } label: {
+                                Text("Google 계정으로 로그인")
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .foregroundStyle(Color.black)
+                                    .background(Color.white)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.gray.opacity(0.3))
+                                    )
                             }
                         }
                         .padding()
