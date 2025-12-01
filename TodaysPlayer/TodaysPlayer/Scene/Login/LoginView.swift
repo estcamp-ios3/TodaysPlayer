@@ -128,20 +128,39 @@ struct LoginView: View {
                                     UserAgreementView(path: $path)
                                 }
                             }
-                            
-                            Button {
-                                print("구글로그인하기버튼 생성")
-                            } label: {
-                                Text("Google 계정으로 로그인")
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .foregroundStyle(Color.black)
-                                    .background(Color.white)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .stroke(Color.gray.opacity(0.3))
-                                    )
+                            // 권소정추가한부분 시작
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let success = try await authManager.signInWithGoogle()
+                                        if success {
+                                            print("구글 로그인 완료!")
+                                            // UserSessionManager가 자동으로 업데이트됨
+                                        }
+                                    } catch {
+                                        alertMessage = (error as? AuthError)?.errorDescription ?? "로그인 실패"
+                                        showAlert = true
+                                    }
+                                }
+                            }) {
+                                HStack(spacing: 8){
+                                    Image("google")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 24, height: 24)
+                                    
+                                    Text("Google 계정으로 로그인")
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(12)
+                                .foregroundColor(.black)
+                                .cornerRadius(30)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.gray.opacity(0.3))
+                                )
                             }
+                            // 권소정추가한부분 종료
                         }
                         .padding()
                         .background(Color.white)
