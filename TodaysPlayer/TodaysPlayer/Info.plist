@@ -12,9 +12,22 @@
 				<string>com.googleusercontent.apps.620561059007-63mjbk6hef1lolbi3cr08313ajklng5h</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao357bbb1eca17bb3a78b4bb7fe0a72243</string>
+			</array>
+		</dict>
 	</array>
 	<key>GIDClientID</key>
 	<string>620561059007-63mjbk6hef1lolbi3cr08313ajklng5h.apps.googleusercontent.com</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kakaompassauth</string>
+		<string>kakaolink</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
